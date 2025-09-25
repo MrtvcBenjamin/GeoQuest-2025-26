@@ -1,4 +1,4 @@
-# Diplomarbeit_{JAHR}: {Diplomarbeitsname}
+# Diplomarbeit_2025: GeuQuest
 
 Hier kommit eine kurze Beschreibung Ihrer Diplomarbeit hin, damit die Besucher Ihres Repositories wissen worum es geht.
 
