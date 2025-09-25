@@ -1,54 +1,44 @@
 ---
-da-titel: Erstellen einer Diplomarbeit mit LaTex
+da-titel: GeoQuest - Die Schnitzeljagd App
 
-da-jahr: 2020/21 
+da-jahr: 2025/26 
 
-da-keywords: HTLLE, Keyword1, Keyword2, Keyword3
+da-keywords: HTLLE, Schnitzeljagd, App,
 
 #lang: english
 
 bibliography: [literatur.bib]
 
 da-author:
-- vorname: Joltawan 
-  nachname: Barodscheff
-  klasse: 5AHWIN
-  thema: Bauen des LaTex Templates
+- vorname: Benjamin 
+  nachname: Muratovic
+  klasse: 5BHWIN
+  thema: Projekt Management
   ki-tools:
   - name: ChatGPT3.5
     zweck: Informationsbeschaffung
   - name: Midjourney
     zweck: Künstlerische Illustration
 
-- vorname: Craig 
-  nachname: Tester
-  klasse: 5AHWIN
-  thema: Entwicklung eines Prototypen
+- vorname: Christian 
+  nachname: Kovacs
+  klasse: 5BHWIN
+  thema: Entwicklung - Backend
   ki-tools:
   - name: Github Copilot
     zweck: Boilerplate codegenerierung, Codedokumentation
 
-- vorname: Karl 
-  nachname: Ranseier
+- vorname: Tobias 
+  nachname: Zeismann
   klasse: 5AHWIN
-  thema: API-Mockups und Testen der Applikation
-
-- vorname: Frank 
-  nachname: Borland
-  klasse: 5AHWIN
-  thema: GUI Generierung
-  ki-tools:
-  - name: Galileo AI
-    zweck: Setendesign sowie UI/UX Design der App
-  - name: Grammarly Go
-    zweck: Stilverbesserung sowie Rechtschreibkorrekturen
+  thema: Entwicklung - Frontend
 
 da-betreuer:
-- paraffe: hg
-  name: Ing. DI(FH) Günther Hutter, Msc.
+- paraffe: wb
+  name: DI Andreas Weichbold
 
-- paraffe: me
-  name: DI Dr. mont Thomas Messner
+- paraffe: kep
+  name: DI (FH) Klaus Kepplinger, MSc
 
 da-kurzfassung-de: Hier kommt eine deutsche Kurzfassung hin.
 
