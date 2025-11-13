@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "844288326609",
+    "project_id": "geoquest-36484",
+    "storage_bucket": "geoquest-36484.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844288326609:android:f6ef20b81e26fc8facbef0",
+        "android_client_info": {
+          "package_name": "htl.le.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJRgudwaN4o6Ldml_VfHl-fsxOm8KLtos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
