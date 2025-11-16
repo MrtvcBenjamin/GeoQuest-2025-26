@@ -13,31 +13,31 @@ Ziel des Projekts ist daher die Entwicklung einer eigenen, vollständig kontroll
 
 #### Projektziele
 
--Entwicklung einer funktionsfähigen, stabilen und benutzerfreundlichen Anwendung zur Durchführung der jährlichen Schnitzeljagd.
--Umsetzung einer modularen Architektur, die zukünftige Erweiterungen (z. B. neue Fragetypen, neue Spielmodi, Statistiken) ermöglicht.
--Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben(Nice-To-Have).
--Integration einer Kartenansicht, um Stationen geographisch darzustellen.
--Sicherstellung eines zuverlässigen Betriebs ohne Internetverbindung, sofern technisch möglich (z. B. Offline-Caching).
--Entwicklung einer Lösung, die langfristig unabhängig von externen Softwareanbietern betrieben werden kann.
--Bereitstellung einer klar dokumentierten Codebasis und Anwendung, damit zukünftiges Weiterentwickeln der App im Rahmen des Unterrichts möglich ist.
+- Entwicklung einer funktionsfähigen, stabilen und benutzerfreundlichen Anwendung zur Durchführung der jährlichen Schnitzeljagd.
+- Umsetzung einer modularen Architektur, die zukünftige Erweiterungen (z. B. neue Fragetypen, neue Spielmodi, Statistiken) ermöglicht.
+- Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben(Nice-To-Have).
+- Integration einer Kartenansicht, um Stationen geographisch darzustellen.
+- Sicherstellung eines zuverlässigen Betriebs ohne Internetverbindung, sofern technisch möglich (z. B. Offline-Caching).
+- Entwicklung einer Lösung, die langfristig unabhängig von externen Softwareanbietern betrieben werden kann.
+- Bereitstellung einer klar dokumentierten Codebasis und Anwendung, damit zukünftiges Weiterentwickeln der App im Rahmen des Unterrichts möglich ist.
 
 #### Nicht-Ziele bzw. nicht Inhalte
 
--Die App ist nicht als vollständig kommerzielles Produkt vorgesehen.
-Es wird keine komplexe Analyseplattform entwickelt, die tiefgehende Statistiken über mehrere Jahre hinweg sammelt.
--Eine Mehrspieler- oder Echtzeit-Online-Interaktion zwischen Teams ist nicht Teil des Grundumfangs.
--Die App ist nicht für eine Nutzung außerhalb der HTL Leoben vorgesehen.
--Eine vollständige Web-Version als Alternative zur Mobil-App ist nicht Projektbestandteil.
+- Die App ist nicht als vollständig kommerzielles Produkt vorgesehen.
+- Es wird keine komplexe Analyseplattform entwickelt, die tiefgehende Statistiken über mehrere Jahre hinweg sammelt.
+- Eine Mehrspieler- oder Echtzeit-Online-Interaktion zwischen Teams ist nicht Teil des Grundumfangs.
+- Die App ist nicht für eine Nutzung außerhalb der HTL Leoben vorgesehen.
+- Eine vollständige Web-Version als Alternative zur Mobil-App ist nicht Projektbestandteil.
 
 #### Projektnutzen
 
 Der Hauptnutzen liegt darin, die jährliche Schnitzeljagd auf eine moderne, zuverlässige und schulinterne Lösung umzustellen.
 Dies bietet folgende Vorteile:
--Unabhängigkeit von Drittanbietern – keine Lizenzkosten, keine externen Einschränkungen.
--Langfristige Wiederverwendbarkeit – die App kann über Jahre hinweg genutzt und erweitert werden.
--Flexibilität – Aufgaben, Stationen und Spielmodi können exakt an schulische Bedürfnisse angepasst werden.
--Technisches Lernprojekt – die Schüler sammeln Erfahrungen in Projektmanagement, Softwareentwicklung, App-Design und Betreuung eines realen Kunden.
--Verbesserte Durchführung der Schnitzeljagd ohne technische Hürden oder Ausfälle durch fremde Anbieter.
+- Unabhängigkeit von Drittanbietern – keine Lizenzkosten, keine externen Einschränkungen.
+- Langfristige Wiederverwendbarkeit – die App kann über Jahre hinweg genutzt und erweitert werden.
+- Flexibilität – Aufgaben, Stationen und Spielmodi können exakt an schulische Bedürfnisse angepasst werden.
+- Technisches Lernprojekt – die Schüler sammeln Erfahrungen in Projektmanagement, Softwareentwicklung, App-Design und Betreuung eines realen Kunden.
+- Verbesserte Durchführung der Schnitzeljagd ohne technische Hürden oder Ausfälle durch fremde Anbieter.
 
 #### Projektauftraggeber/in
 
