@@ -1,24 +1,43 @@
 # Projekthandbuch
-\textauthor{Schueler XY}
+\textauthor{Muratovic}
 
 ## Entwicklungsplan
 
 ### Projektauftrag
 
-Hier beschreiben Sie die allgemeinen Informationen zu Ihrem Maturaprojekt. Hier beschreiben sie den Projektkontext, nämlich die Ausgangssituation und Problembeschreibung
+Die HTL Leoben organisiert am Ende jedes Schuljahres eine Schnitzeljagd für die ersten Klassen. Bislang wurde dafür eine externe App eingesetzt, die jedoch nur eingeschränkte Anpassungsmöglichkeiten bietet und eine starke Abhängigkeit von Drittanbietern erzeugt.
+Dies führt regelmäßig zu organisatorischen Problemen, eingeschränkter Flexibilität sowie einem fehlenden Einfluss auf technische Weiterentwicklungen.
+
+Ziel des Projekts ist daher die Entwicklung einer eigenen, vollständig kontrollierbaren Anwendung, die speziell auf die Anforderungen der Schule zugeschnitten ist. Die App soll langfristig einsetzbar, flexibel erweiterbar und intuitiv bedienbar sein. Dadurch werden externe Abhängigkeiten reduziert, der Funktionsumfang kann jederzeit erweitert werden, und die Schule erhält eine nachhaltige Lösung für zukünftige Jahrgänge.
 
 
 #### Projektziele
 
-Das Projektziel beschreibt den erwünschten Zustand (Sollzustand) nach dem erfolgreichen Abschluss des Projektes. Das Ziel wird wohlbedacht formuliert und durch aktives Handeln aller Projektbeteiligten erreicht. Projektziele sollten gemeinsam mit allen Projektbeteiligten erarbeitet werden.
+-Entwicklung einer funktionsfähigen, stabilen und benutzerfreundlichen Anwendung zur Durchführung der jährlichen Schnitzeljagd.
+-Umsetzung einer modularen Architektur, die zukünftige Erweiterungen (z. B. neue Fragetypen, neue Spielmodi, Statistiken) ermöglicht.
+-Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben(Nice-To-Have).
+-Integration einer Kartenansicht, um Stationen geographisch darzustellen.
+-Sicherstellung eines zuverlässigen Betriebs ohne Internetverbindung, sofern technisch möglich (z. B. Offline-Caching).
+-Entwicklung einer Lösung, die langfristig unabhängig von externen Softwareanbietern betrieben werden kann.
+-Bereitstellung einer klar dokumentierten Codebasis und Anwendung, damit zukünftiges Weiterentwickeln der App im Rahmen des Unterrichts möglich ist.
 
 #### Nicht-Ziele bzw. nicht Inhalte
 
-Nicht-Ziele sind aus mehreren Gründen wichtig. Erstens helfen sie beim Erwartungsmanagement. Zweitens schaffen sie Klarheit darüber, was erledigt werden soll. Und drittens erhöhen Nicht-Ziele die Transparenz. Denn wenn man schon früh im Projekt explizit die Bereiche definiert, die das Projekt nicht bearbeiten soll, kann dadurch eine Diskussion über genau diese Randbereiche entstehen. 
+-Die App ist nicht als vollständig kommerzielles Produkt vorgesehen.
+Es wird keine komplexe Analyseplattform entwickelt, die tiefgehende Statistiken über mehrere Jahre hinweg sammelt.
+-Eine Mehrspieler- oder Echtzeit-Online-Interaktion zwischen Teams ist nicht Teil des Grundumfangs.
+-Die App ist nicht für eine Nutzung außerhalb der HTL Leoben vorgesehen.
+-Eine vollständige Web-Version als Alternative zur Mobil-App ist nicht Projektbestandteil.
 
 #### Projektnutzen
 
-Wie soll ein Außenstehender ein Projekt genehmigen, wenn nicht klar formuliert ist, WARUM das Projekt überhaupt durchgeführt werden soll? Auch hier ist es wichtig, möglichst konkret zu werden. Einen Projektnutzen z.B. mit „neueste Technik“ zu bezeichnen, ist nicht ausreichend.
+Der Hauptnutzen liegt darin, die jährliche Schnitzeljagd auf eine moderne, zuverlässige und schulinterne Lösung umzustellen.
+Dies bietet folgende Vorteile:
+-Unabhängigkeit von Drittanbietern – keine Lizenzkosten, keine externen Einschränkungen.
+-Langfristige Wiederverwendbarkeit – die App kann über Jahre hinweg genutzt und erweitert werden.
+-Flexibilität – Aufgaben, Stationen und Spielmodi können exakt an schulische Bedürfnisse angepasst werden.
+-Technisches Lernprojekt – die Schüler sammeln Erfahrungen in Projektmanagement, Softwareentwicklung, App-Design und Betreuung eines realen Kunden.
+-Verbesserte Durchführung der Schnitzeljagd ohne technische Hürden oder Ausfälle durch fremde Anbieter.
 
 #### Projektauftraggeber/in
 
