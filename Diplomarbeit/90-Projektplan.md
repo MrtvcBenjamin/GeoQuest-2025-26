@@ -252,17 +252,17 @@ Als **Spieler** möchte ich mich per E-Mail oder Gastzugang anmelden können um 
 - When: Er klickt auf „Login“ oder „Als Gast fortfahren“
 - Then: Wird er eingeloggt und zur Startseite weitergeleitet
 
-- Given: Der Nutzer gibt eine ungültige E-Mail oder ein falsches Passwort ein
-- When: Er klickt auf „Anmelden“
-- Then: Erhält er eine Fehlermeldung „Ungültige Anmeldedaten“
++ Given: Der Nutzer gibt eine ungültige E-Mail oder ein falsches Passwort ein
++ When: Er klickt auf „Anmelden“
++ Then: Erhält er eine Fehlermeldung „Ungültige Anmeldedaten“
 
 - Given: Der Nutzer wählt den Gastmodus
 - When: Er beendet und erneut öffnet die App
 - Then: Bleibt seine Sitzung aktiv, solange sie nicht manuell beendet wird
 
-- Given: Ein neuer Nutzer registriert sich
-- When: Er bestätigt die Registrierung
-- Then: Wird ein neuer Firestore-Eintrag unter users erstellt
++ Given: Ein neuer Nutzer registriert sich
++ When: Er bestätigt die Registrierung
++ Then: Wird ein neuer Firestore-Eintrag unter users erstellt
 
 #### Conversation Points
 - Gastmodus temporär oder persistent speichern?
@@ -277,17 +277,17 @@ Als **Spieler** möchte ich mich per E-Mail oder Gastzugang anmelden können um 
 Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufgaben sehen um zu wissen, wohin ich als Nächstes gehen soll. -> Die Kartenansicht zeigt die aktuelle Position des Spielers und Aufgaben in der Umgebung.
 
 #### Akzeptanzkriterien
-- Given: Der Nutzer hat Standortfreigabe erteilt
-- When: Er öffnet die Karte
-- Then: Wird seine Position korrekt mit einem Marker angezeigt
++ Given: Der Nutzer hat Standortfreigabe erteilt
++ When: Er öffnet die Karte
++ Then: Wird seine Position korrekt mit einem Marker angezeigt
 
 - Given: Aufgaben befinden sich in der Nähe
 - When: Die Karte geladen wird
 - Then: Werden Marker für Aufgaben innerhalb eines 500 m Radius angezeigt
 
-- Given: Der Nutzer lehnt die Standortfreigabe ab
-- When: Er öffnet die Karte
-- Then: Wird eine Hinweismeldung angezeigt („Standortzugriff erforderlich“)
++ Given: Der Nutzer lehnt die Standortfreigabe ab
++ When: Er öffnet die Karte
++ Then: Wird eine Hinweismeldung angezeigt („Standortzugriff erforderlich“)
 
 - Given: Der Nutzer bewegt sich
 - When: Seine Position ändert sich
@@ -310,17 +310,17 @@ Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem
 - When: Er betritt den definierten Umkreis eines Checkpoints
 - Then: Wird die zugehörige Aufgabe automatisch auf dem Bildschirm angezeigt
 
-- Given: Ein Spieler hat eine Aufgabe bereits erledigt
-- When: Er betritt erneut den Checkpoint-Radius
-- Then: Erscheint keine neue Aufgabe – stattdessen optional ein Hinweis „Checkpoint bereits abgeschlossen“
++ Given: Ein Spieler hat eine Aufgabe bereits erledigt
++ When: Er betritt erneut den Checkpoint-Radius
++ Then: Erscheint keine neue Aufgabe – stattdessen optional ein Hinweis „Checkpoint bereits abgeschlossen“
 
 - Given: Eine Aufgabe wird ausgelöst
 - When: Sie öffnet sich
 - Then: Wird sie in einem rein visuellen Format angezeigt (z. B.: Bild, Animation, Icons, Slider, Buttons etc.)
 
-- Given: Der Spieler hat der App keine Standortberechtigung erteilt
-- When: Er startet die Runde
-- Then: Er erhält einen klaren Hinweis, dass der Standort benötigt wird, inkl. Button zum Erlauben
++ Given: Der Spieler hat der App keine Standortberechtigung erteilt
++ When: Er startet die Runde
++ Then: Er erhält einen klaren Hinweis, dass der Standort benötigt wird, inkl. Button zum Erlauben
 
 - Given: Der Standort ist ungenau (GPS-Jitter)
 - When: Der Spieler bewegt sich in der Nähe des Radius
@@ -342,17 +342,17 @@ Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem
 Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen um meine Leistung im Spiel nachvollziehen zu können. -> Spieler sollen sehen, welche Aufgaben erledigt und welche noch offen sind, inklusive Punkteübersicht.
 
 #### Akzeptanzkriterien
-- Given: Spieler hat mindestens eine Aufgabe abgeschlossen
-- When: Er öffnet die Fortschrittsseite
-- Then: Sieht er erledigte und offene Aufgaben getrennt aufgelistet
++ Given: Spieler hat mindestens eine Aufgabe abgeschlossen
++ When: Er öffnet die Fortschrittsseite
++ Then: Sieht er erledigte und offene Aufgaben getrennt aufgelistet
 
 - Given: Aufgaben besitzen unterschiedliche Punktwerte
 - When: Spieler erledigt mehrere Aufgaben
 - Then: Wird die Gesamtsumme korrekt berechnet
 
-- Given: Der Spieler aktualisiert die Seite
-- When: Neue Aufgaben als erledigt markiert wurden
-- Then: Aktualisiert sich der Fortschrittsbalken dynamisch
++ Given: Der Spieler aktualisiert die Seite
++ When: Neue Aufgaben als erledigt markiert wurden
++ Then: Aktualisiert sich der Fortschrittsbalken dynamisch
 
 - Given: Der Spieler hat alle Aufgaben abgeschlossen
 - When: Er öffnet die Fortschrittsseite
@@ -371,17 +371,17 @@ Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen
 Als **Lehrer** möchte ich Teams erstellen und Teilnehmer zuordnen um die Ergebnisse am Ende vergleichen zu können. -> Teams sind Sammlungen von Spielern, deren Punkte gemeinsam gezählt werden.
 
 #### Akzeptanzkriterien
-- Given: Organisator erstellt ein Team
-- When: Er gibt Teamname und Teilnehmer ein
-- Then: Wird das Team in Firestore gespeichert
++ Given: Organisator erstellt ein Team
++ When: Er gibt Teamname und Teilnehmer ein
++ Then: Wird das Team in Firestore gespeichert
 
 - Given: Spieler tritt einem Team bei
 - When: Er wählt den Teamcode oder Namen aus
 - Then: Wird er als Mitglied hinzugefügt
 
-- Given: Mehrere Teams existieren
-- When: Spielerpunkte aktualisiert werden
-- Then: Wird der Gesamtpunktestand automatisch neu berechnet
++ Given: Mehrere Teams existieren
++ When: Spielerpunkte aktualisiert werden
++ Then: Wird der Gesamtpunktestand automatisch neu berechnet
 
 - Given: Organisator löscht ein Team
 - When: Das Team entfernt wird
@@ -400,9 +400,9 @@ Als **Lehrer** möchte ich Teams erstellen und Teilnehmer zuordnen um die Ergebn
 Als **Lehrer** möchte ich am Ende der Schnitzeljagd ein Ranking der Teams sehen um die Gewinner zu ermitteln. -> Nach Ende des Spiels werden alle Punktestände zusammengefasst und in einem Ranking dargestellt.
 
 #### Akzeptanzkriterien
-- Given: Alle Teams haben Aufgaben abgeschlossen
-- When: Das Spiel wird beendet
-- Then: Wird ein Ranking nach Punktestand angezeigt
++ Given: Alle Teams haben Aufgaben abgeschlossen
++ When: Das Spiel wird beendet
++ Then: Wird ein Ranking nach Punktestand angezeigt
 
 - Given: Zwei Teams haben denselben Punktestand
 - When: Ranking wird generiert
