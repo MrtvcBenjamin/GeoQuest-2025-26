@@ -75,7 +75,7 @@ Hier dokumentieren Sie welche Kosten fallen Für Ihr Projekt an und wer kommt f�
 | Prototyp     | Personal  |  10.00 |   15.00 | 150.00      | Schüler       |
 | Prototyp     | Hardware  |  1     |  254.00 | 254.00      | Projektpartner|
 | DA-Schreiben | Druck     |  3     |   26.00 |  53.00      | Schüler       |
-
+-- Platzhalter
  : Geplante Projektkosten
  
 Am ende sollten Sie eine Projektkostensumme ermitteln und hier angeben damit man sagen kann
@@ -106,7 +106,7 @@ Hier wird definiert wer (welche Personen) an diesem Projekt beteiligt im Prinzip
 
 | Vorname     | Nachname     | Organisation | Kontaktinfos      |
 |:------------|:-------------|:-------------|:------------------|
-| Joltawan    | Barodscheff  | HTL Leoben   | jb@htl-leoben.at  |
+| Benjamin    | Muratovic  | HTL Leoben   | 211witb17@o365.htl-leoben.at  |
 | Frank       | Borland      | Firma XY     | frank@borla.nd    |
 | ...         | ...          | ...          | ...               |
 
@@ -120,10 +120,9 @@ Hier werden den Kontakten von oben konkrete Rollen zuewiesen.
 
 | Projektrolle           | Rollenbeschreibung     | Name              |
 |------------------------|------------------------|-------------------|
-| Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens | Joltawan Barodscheff |
-| Auftraggeber | Auftraggeber der internen Diplomarbeit | Frank Borland |
-| Betreuer | Schulischer Betreuer | G. Hutter |
-| Betreuer | Schulischer Betreuer | A. Poetscher |
+| Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens | Benjamin Muratovic |
+| Auftraggeber | Auftraggeber der internen Diplomarbeit | Klaus Kepplinger |
+| Betreuer | Schulischer Betreuer | A. Weichbold |
 
 : Projektrollen
 
@@ -212,6 +211,7 @@ Damit man auch versteht wer mit welchem Anwendungsfall agiert bietet es sich an 
 ![Übersicht Anwendungsfälle](img/anwendungsfalldiagramm.png){width=60%}
 
 \newpage
+
 ### Anwendungsfallname
 Anwendungsfälle haben einen eindeutigen Namen aus dem man auf den Inhalt des Anwendungsfalls schließen kann. Wenn Sie agil arbeiten dann stellt ein Anwendungsfall eine UserStory dar welche im Backlog liegt und im Laufe des Projekts (in einem Sprint) abgearbeitet wird.
 
@@ -241,28 +241,185 @@ Der Zustand, der nach einem erfolglosen Durchlauf des Anwendungsfalls erwartet w
 
 
 \newpage
-### Benutzer Anlegen
+
+### Registrierung & Login
 
 #### Kurzbeschreibung
-Der Benutzer "Admin" kann auf Anfrage einen neuen Benutzer als "Lehrende" und bzw. oder "Studierende" anlegen
+Als **Spieler** möchte ich mich per E-Mail oder Gastzugang anmelden können um an einer Schnitzeljagd teilnehmen zu können. -> Nutzer sollen sich registrieren oder als Gast schnell beitreten können, um sofort loszulegen.
 
-#### Trigger
-Admin legt auf Anfrage eines Benutzers einen neuen Account an
+#### Akzeptanzkriterien
+- Given: Ein Nutzer öffnet die App
+- When: Er klickt auf „Login“ oder „Als Gast fortfahren“
+- Then: Wird er eingeloggt und zur Startseite weitergeleitet
 
-#### Vorbedingung
-Benutzer als "Admin" angemeldet
-      
-#### Nachbedingung
-Es existiert ein Eintrag in der DB Benutzer Tabelle für den neu erstellten Benutzer. (Dieser kann sich anschließend in der Anwendung anmelden)
+- Given: Der Nutzer gibt eine ungültige E-Mail oder ein falsches Passwort ein
+- When: Er klickt auf „Anmelden“
+- Then: Erhält er eine Fehlermeldung „Ungültige Anmeldedaten“
 
-#### Akteure
-* Admin
+- Given: Der Nutzer wählt den Gastmodus
+- When: Er beendet und erneut öffnet die App
+- Then: Bleibt seine Sitzung aktiv, solange sie nicht manuell beendet wird
 
-#### Fehlersituationen
-Admin bricht die Aktion ab
+- Given: Ein neuer Nutzer registriert sich
+- When: Er bestätigt die Registrierung
+- Then: Wird ein neuer Firestore-Eintrag unter users erstellt
 
-#### Systemzustand im Fehlerfall
-Benutzer wird nicht angelegt und wird verworfen
+### Conversation Points
+- Gastmodus temporär oder persistent speichern?
+- E-Mail-Verifizierung notwendig?
+- Passwort-Richtlinien?
+
+\newpage
+
+### Karte & Standort
+
+#### Kurzbeschreibung
+Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufgaben sehen um zu wissen, wohin ich als Nächstes gehen soll. -> Die Kartenansicht zeigt die aktuelle Position des Spielers und Aufgaben in der Umgebung.
+
+#### Akzeptanzkriterien
+- Given: Der Nutzer hat Standortfreigabe erteilt
+- When: Er öffnet die Karte
+- Then: Wird seine Position korrekt mit einem Marker angezeigt
+
+- Given: Aufgaben befinden sich in der Nähe
+- When: Die Karte geladen wird
+- Then: Werden Marker für Aufgaben innerhalb eines 500 m Radius angezeigt
+
+- Given: Der Nutzer lehnt die Standortfreigabe ab
+- When: Er öffnet die Karte
+- Then: Wird eine Hinweismeldung angezeigt („Standortzugriff erforderlich“)
+
+- Given: Der Nutzer bewegt sich
+- When: Seine Position ändert sich
+- Then: Aktualisiert sich der Positionsmarker in Echtzeit
+
+### Conversation Points
+- Echtzeit-Updates über location-Package oder periodische Abfrage?
+- Filter für Aufgabenradius?
+- Map-Styling (Standard, Satellit, Dark Mode)?
+
+\newpage
+
+### Standortbasierte Aufgaben
+
+#### Kurzbeschreibung
+Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem Checkpoint nähere um ohne QR-Codes interaktiv und visuell an der Schnitzeljagd teilnehmen zu können. -> Ein Checkpoint löst eine Aufgabe aus, sobald der Spieler den vordefinierten Radius betritt.
+
+#### Akzeptanzkriterien
+- Given: Der Spieler befindet sich in einer aktiven Schnitzeljagd
+- When: Er betritt den definierten Umkreis eines Checkpoints
+- Then: Wird die zugehörige Aufgabe automatisch auf dem Bildschirm angezeigt
+
+- Given: Ein Spieler hat eine Aufgabe bereits erledigt
+- When: Er betritt erneut den Checkpoint-Radius
+- Then: Erscheint keine neue Aufgabe – stattdessen optional ein Hinweis „Checkpoint bereits abgeschlossen“
+
+- Given: Eine Aufgabe wird ausgelöst
+- When: Sie öffnet sich
+- Then: Wird sie in einem rein visuellen Format angezeigt (z. B.: Bild, Animation, Icons, Slider, Buttons etc.)
+
+- Given: Der Spieler hat der App keine Standortberechtigung erteilt
+- When: Er startet die Runde
+- Then: Er erhält einen klaren Hinweis, dass der Standort benötigt wird, inkl. Button zum Erlauben
+
+- Given: Der Standort ist ungenau (GPS-Jitter)
+- When: Der Spieler bewegt sich in der Nähe des Radius
+- Then: Wird die Aufgabe nur einmal ausgelöst und der Radius wird gedrosselt (Debounce-Schutz)
+
+### Conversation Points
+- Optimale Radiusgröße (10–25 m je nach Genauigkeit?)
+- GPS-Update-Intervall (z. B. alle 1–2 Sekunden)
+- Schutz vor mehrfacher Auslösung durch "cooldown" oder "completed flag"
+- Visuelle UI-Komponenten für Aufgaben
+- Speicherung: „aufgabe_abgeschlossen = true“ in Firestore oder Local Cache
+- Latenz durch Standortabfragen (Mobile OS Optimierung)
+
+\newpage
+
+### Aufgaben & Fortschritt
+
+#### Kurzbeschreibung
+Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen um meine Leistung im Spiel nachvollziehen zu können. -> Spieler sollen sehen, welche Aufgaben erledigt und welche noch offen sind, inklusive Punkteübersicht.
+
+#### Akzeptanzkriterien
+- Given: Spieler hat mindestens eine Aufgabe abgeschlossen
+- When: Er öffnet die Fortschrittsseite
+- Then: Sieht er erledigte und offene Aufgaben getrennt aufgelistet
+
+- Given: Aufgaben besitzen unterschiedliche Punktwerte
+- When: Spieler erledigt mehrere Aufgaben
+- Then: Wird die Gesamtsumme korrekt berechnet
+
+- Given: Der Spieler aktualisiert die Seite
+- When: Neue Aufgaben als erledigt markiert wurden
+- Then: Aktualisiert sich der Fortschrittsbalken dynamisch
+
+- Given: Der Spieler hat alle Aufgaben abgeschlossen
+- When: Er öffnet die Fortschrittsseite
+- Then: Sieht er „Schnitzeljagd abgeschlossen“ und die Gesamtsumme
+
+### Conversation Points
+- Punktesystem fix oder pro Aufgabe definierbar?
+- Darstellung als Liste, Karte oder Fortschrittsbalken?
+- Speicherung des Fortschritts in Echtzeit oder beim Abschluss?
+
+\newpage
+
+### Teams & Wettbewerb
+
+#### Kurzbeschreibung
+Als **Lehrer** möchte ich Teams erstellen und Teilnehmer zuordnen um die Ergebnisse am Ende vergleichen zu können. -> Teams sind Sammlungen von Spielern, deren Punkte gemeinsam gezählt werden.
+
+#### Akzeptanzkriterien
+- Given: Organisator erstellt ein Team
+- When: Er gibt Teamname und Teilnehmer ein
+- Then: Wird das Team in Firestore gespeichert
+
+- Given: Spieler tritt einem Team bei
+- When: Er wählt den Teamcode oder Namen aus
+- Then: Wird er als Mitglied hinzugefügt
+
+- Given: Mehrere Teams existieren
+- When: Spielerpunkte aktualisiert werden
+- Then: Wird der Gesamtpunktestand automatisch neu berechnet
+
+- Given: Organisator löscht ein Team
+- When: Das Team entfernt wird
+- Then: Werden dessen Punkte ebenfalls entfernt
+
+### Conversation Points
+- Beitritt via Code, QR oder Auswahlmenü?
+- Adminrechte für Lehrer in der App oder extern über Firebase?
+- Maximale Teamgröße?
+
+\newpage
+
+### Spielende & Auswertung
+
+#### Kurzbeschreibung
+Als **Lehrer** möchte ich am Ende der Schnitzeljagd ein Ranking der Teams sehen um die Gewinner zu ermitteln. -> Nach Ende des Spiels werden alle Punktestände zusammengefasst und in einem Ranking dargestellt.
+
+#### Akzeptanzkriterien
+- Given: Alle Teams haben Aufgaben abgeschlossen
+- When: Das Spiel wird beendet
+- Then: Wird ein Ranking nach Punktestand angezeigt
+
+- Given: Zwei Teams haben denselben Punktestand
+- When: Ranking wird generiert
+- Then: Wird ein Gleichstand entsprechend markiert
+
+- Given: Ein Team verlässt das Spiel vorzeitig
+- When: Spielende eintritt
+- Then: Wird es als „nicht abgeschlossen“ markiert
+
+- Given: Das Spiel wird manuell beendet
+- When: Der Organisator klickt „Schnitzeljagd beenden“
+- Then: Wird kein weiterer Fortschritt mehr gespeichert
+
+### Conversation Points
+- Sortierlogik (Punkte, Zeit, Bonusaufgaben)?
+- Exportmöglichkeit als CSV oder Screenshot?
+- Automatisches vs. manuelles Beenden?
 
 #### Standardablauf:
 
