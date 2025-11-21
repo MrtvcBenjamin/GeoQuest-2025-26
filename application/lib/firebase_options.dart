@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
-///
+///flutter pub add flutter_map
 /// Example:
 /// ```dart
 /// import 'firebase_options.dart';
@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDJRgudwaN4o6Ldml_VfHl-fsxOm8KLtos',
-    appId: '1:844288326609:android:f6ef20b81e26fc8facbef0',
-    messagingSenderId: '844288326609',
-    projectId: 'geoquest-36484',
-    storageBucket: 'geoquest-36484.firebasestorage.app',
+    apiKey: 'AIzaSyAh1VHVfpCCy-C0HMJopFCnWb3GYYWecZY',
+    appId: '1:260428473003:android:008ee1fc750489b85d8dee',
+    messagingSenderId: '260428473003',
+    projectId: 'geoquest-4b7e1',
+    storageBucket: 'geoquest-4b7e1.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCBrfxtgJuCcg8qoeF5yU_g1I5eMsnkYc8',
-    appId: '1:844288326609:ios:458eeb0feadadd4cacbef0',
-    messagingSenderId: '844288326609',
-    projectId: 'geoquest-36484',
-    storageBucket: 'geoquest-36484.firebasestorage.app',
+    apiKey: 'AIzaSyBUKbA0_kVJ_POWh4Ah0gl_4au_lPaC3I0',
+    appId: '1:260428473003:ios:75e63ea37c4f87295d8dee',
+    messagingSenderId: '260428473003',
+    projectId: 'geoquest-4b7e1',
+    storageBucket: 'geoquest-4b7e1.firebasestorage.app',
     iosBundleId: 'htl.le.application',
   );
+
 }
