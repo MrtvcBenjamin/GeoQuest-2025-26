@@ -264,7 +264,7 @@ Als **Spieler** möchte ich mich per E-Mail oder Gastzugang anmelden können um 
 - When: Er bestätigt die Registrierung
 - Then: Wird ein neuer Firestore-Eintrag unter users erstellt
 
-### Conversation Points
+#### Conversation Points
 - Gastmodus temporär oder persistent speichern?
 - E-Mail-Verifizierung notwendig?
 - Passwort-Richtlinien?
@@ -293,7 +293,7 @@ Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufg
 - When: Seine Position ändert sich
 - Then: Aktualisiert sich der Positionsmarker in Echtzeit
 
-### Conversation Points
+#### Conversation Points
 - Echtzeit-Updates über location-Package oder periodische Abfrage?
 - Filter für Aufgabenradius?
 - Map-Styling (Standard, Satellit, Dark Mode)?
@@ -326,7 +326,7 @@ Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem
 - When: Der Spieler bewegt sich in der Nähe des Radius
 - Then: Wird die Aufgabe nur einmal ausgelöst und der Radius wird gedrosselt (Debounce-Schutz)
 
-### Conversation Points
+#### Conversation Points
 - Optimale Radiusgröße (10–25 m je nach Genauigkeit?)
 - GPS-Update-Intervall (z. B. alle 1–2 Sekunden)
 - Schutz vor mehrfacher Auslösung durch "cooldown" oder "completed flag"
@@ -358,7 +358,7 @@ Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen
 - When: Er öffnet die Fortschrittsseite
 - Then: Sieht er „Schnitzeljagd abgeschlossen“ und die Gesamtsumme
 
-### Conversation Points
+#### Conversation Points
 - Punktesystem fix oder pro Aufgabe definierbar?
 - Darstellung als Liste, Karte oder Fortschrittsbalken?
 - Speicherung des Fortschritts in Echtzeit oder beim Abschluss?
@@ -387,7 +387,7 @@ Als **Lehrer** möchte ich Teams erstellen und Teilnehmer zuordnen um die Ergebn
 - When: Das Team entfernt wird
 - Then: Werden dessen Punkte ebenfalls entfernt
 
-### Conversation Points
+#### Conversation Points
 - Beitritt via Code, QR oder Auswahlmenü?
 - Adminrechte für Lehrer in der App oder extern über Firebase?
 - Maximale Teamgröße?
@@ -416,7 +416,7 @@ Als **Lehrer** möchte ich am Ende der Schnitzeljagd ein Ranking der Teams sehen
 - When: Der Organisator klickt „Schnitzeljagd beenden“
 - Then: Wird kein weiterer Fortschritt mehr gespeichert
 
-### Conversation Points
+#### Conversation Points
 - Sortierlogik (Punkte, Zeit, Bonusaufgaben)?
 - Exportmöglichkeit als CSV oder Screenshot?
 - Automatisches vs. manuelles Beenden?
