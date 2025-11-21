@@ -408,9 +408,9 @@ Als **Lehrer** möchte ich am Ende der Schnitzeljagd ein Ranking der Teams sehen
 - When: Ranking wird generiert
 - Then: Wird ein Gleichstand entsprechend markiert
 
-- Given: Ein Team verlässt das Spiel vorzeitig
-- When: Spielende eintritt
-- Then: Wird es als „nicht abgeschlossen“ markiert
++ Given: Ein Team verlässt das Spiel vorzeitig
++ When: Spielende eintritt
++ Then: Wird es als „nicht abgeschlossen“ markiert
 
 - Given: Das Spiel wird manuell beendet
 - When: Der Organisator klickt „Schnitzeljagd beenden“
