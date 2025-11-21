@@ -212,7 +212,7 @@ Damit man auch versteht wer mit welchem Anwendungsfall agiert bietet es sich an 
 
 \newpage
 
-### Anwendungsfallname
+### Anwendungsfallname - Just in case, gonna keep it here
 Anwendungsfälle haben einen eindeutigen Namen aus dem man auf den Inhalt des Anwendungsfalls schließen kann. Wenn Sie agil arbeiten dann stellt ein Anwendungsfall eine UserStory dar welche im Backlog liegt und im Laufe des Projekts (in einem Sprint) abgearbeitet wird.
 
 #### Kurzbeschreibung
@@ -420,12 +420,3 @@ Als **Lehrer** möchte ich am Ende der Schnitzeljagd ein Ranking der Teams sehen
 - Sortierlogik (Punkte, Zeit, Bonusaufgaben)?
 - Exportmöglichkeit als CSV oder Screenshot?
 - Automatisches vs. manuelles Beenden?
-
-#### Standardablauf:
-
-1. Admin drückt Button, um einen neuen Benutzer anzulegen
-2. Es öffnet sich ein Formular, indem die nötigen Benutzer-Informationen eingegeben werden (Name, Adresse, Telephonnummer, E-Mail, Geburtsdatum, Passwort-Hash, Rolle). Der neue Benutzer muss mindestens einer der Rollen "Lehrende" und "Studierende" angehören
-
-#### Alternativabläufe:
-
-* Admin drückt den Button, um die Aktion abzubrechen 
