@@ -51,17 +51,14 @@ Welche Termine sind Fixtermine und was sollte an diesen Terminen stattfinden ? B
 
 | Termin     | Inhalt                          |
 |-----------:|:--------------------------------|
-| 2020-12-24 | Weihnachten                     |
-| 20XX-12-24 | Projektstart                    |
-| 20XX-10-24 | Projektpräsentation             |
-| 20XX-10-24 | Erreichung Meilenstein I        |
-| 20XX-10-24 | Erste Zwischenpräsentation      |
-| 20XX-10-24 | Erreichung Meilenstein II       |
-| 20XX-10-24 | Erreichung Meilenstein III      |
-| 20XX-10-24 | Zweite Zwischenpräsentation     |
-| 20XX-10-24 | Abgabe Endversion an Betreuer   |
-| 20XX-10-24 | Abgabe Gebundene Version        |
-| 20XX-10-24 | ...                             |
+| 2025-10-09 | Einreichung DA in Portal                     |
+| 2025-11-12 | Ertse DA Zwischenpräsentation                    |
+| 2025-12-01 | Zwischenstand an Betreuer präsentieren             |
+| 2026-01-09 | Elek. Erstversion Abgabe an Betreuer        |
+| 2026-02-26 | Zweite DA Zwischenpräsentation      |
+| 2026-03-06 | DA Abgabe       |
+| 2026-04-07 | Biblv. DA Abgabe      |
+| 2026-04-13 | DA Präsentation     |
 
 : Projektterminübersicht
 
