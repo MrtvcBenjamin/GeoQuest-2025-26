@@ -104,8 +104,8 @@ Hier wird definiert wer (welche Personen) an diesem Projekt beteiligt im Prinzip
 | Vorname     | Nachname     | Organisation | Kontaktinfos      |
 |:------------|:-------------|:-------------|:------------------|
 | Benjamin    | Muratovic  | HTL Leoben   | 211witb17@o365.htl-leoben.at  |
-| Frank       | Borland      | Firma XY     | frank@borla.nd    |
-| ...         | ...          | ...          | ...               |
+| Klaus       | Kepplinger      | HTL Leoben     | klaus.kepplinger@htl-leoben.at    |
+| Andreas       | Weichbold      | HTL Leoben     | andreas.weichbold@htl-leoben.at    |
 
 : Projektbeteiligte
 
@@ -118,7 +118,7 @@ Hier werden den Kontakten von oben konkrete Rollen zuewiesen.
 | Projektrolle           | Rollenbeschreibung     | Name              |
 |------------------------|------------------------|-------------------|
 | Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens | Benjamin Muratovic |
-| Auftraggeber | Auftraggeber der internen Diplomarbeit | Klaus Kepplinger |
+| Auftraggeber | Auftraggeber der internen Diplomarbeit | K. Kepplinger |
 | Betreuer | Schulischer Betreuer | A. Weichbold |
 
 : Projektrollen
