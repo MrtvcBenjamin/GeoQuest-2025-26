@@ -15,7 +15,7 @@ Ziel des Projekts ist daher die Entwicklung einer eigenen, vollständig kontroll
 
 - Entwicklung einer funktionsfähigen, stabilen und benutzerfreundlichen Anwendung zur Durchführung der jährlichen Schnitzeljagd.
 - Umsetzung einer modularen Architektur, die zukünftige Erweiterungen (z. B. neue Fragetypen, neue Spielmodi, Statistiken) ermöglicht.
-- Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben(Nice-To-Have).
+- Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben.
 - Integration einer Kartenansicht, um Stationen geographisch darzustellen.
 - Sicherstellung eines zuverlässigen Betriebs ohne Internetverbindung, sofern technisch möglich (z. B. Offline-Caching).
 - Entwicklung einer Lösung, die langfristig unabhängig von externen Softwareanbietern betrieben werden kann.
