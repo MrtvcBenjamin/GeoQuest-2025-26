@@ -2,52 +2,58 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key}); // key hinzugefügt
+class LogInPage extends StatefulWidget {
+  const LogInPage({super.key}); // key hinzugefügt
 
   @override
-  State<SignInPage> createState() => SignInPageState();
+  State<LogInPage> createState() => LogInPagePageState();
 }
 
-class SignInPageState extends State<SignInPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+class LogInPagePageState extends State<LogInPage> {
+  final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _emailController.dispose();
+    _loginController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> createUser() async {
-    final userCredential =
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
+  Future<void> loginUser() async {
+    final input = _loginController.text.trim();
+    final password = _passwordController.text.trim();
 
-    debugPrint(userCredential.toString()); // print entfernt
+    try {
+      String email;
+      // Fall 1 → Benutzer hat eine E-Mail eingegeben
+      if (input.contains("@")) {
+        email = input;
+      }
+      // Fall 2 → Benutzername wurde eingegeben
+      else {
+        final query = await FirebaseFirestore.instance
+            .collection("Users")
+            .where("Username", isEqualTo: input)
+            .limit(1)
+            .get();
+
+        if (query.docs.isEmpty) {
+          throw Exception("Username existiert nicht.");
+        }
+        email = query.docs.first.get("email");
+      }
+      // Login durchführen
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      print(userCredential.toString());
+    } catch (e) {
+      debugPrint("Login error: $e");
+    }
   }
 
-
-// Die Funktion selbst
-  Future<void> saveUserInDatabase(String username) async {
-  final user = FirebaseAuth.instance.currentUser;
-
-  if (user == null) return;
-
-  try {
-  await FirebaseFirestore.instance.collection('Users').doc(user.uid).set({
-  'Username': username, // Verwenden des übergebenen Parameters
-  'totalPoints': 0,
-  });
-  } catch(e) {
-  print(e);
-  }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,20 +82,9 @@ class SignInPageState extends State<SignInPage> {
                 const SizedBox(height: 30),
 
                 TextField(
-                  controller: _usernameController,
+                  controller: _loginController,
                   decoration: InputDecoration(
-                    labelText: 'Username',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'E-Mail',
+                    labelText: 'E-Mail/Username',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -112,8 +107,8 @@ class SignInPageState extends State<SignInPage> {
 
                 ElevatedButton(
                   onPressed: () async {
-                    await createUser();
-                    await saveUserInDatabase(_usernameController.text.trim());
+                    await loginUser();
+
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
@@ -123,11 +118,7 @@ class SignInPageState extends State<SignInPage> {
                   ),
                   child: const Text('Continue'),
                 ),
-                const SizedBox(height: 20),
-
-                TextButton(
-                  onPressed: () {},
-                  child: const Text("Don't have an Account yet?"),
+                const SizedBox(height: 20
                 ),
               ],
             ),
