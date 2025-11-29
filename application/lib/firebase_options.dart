@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -64,6 +55,35 @@ class DefaultFirebaseOptions {
     projectId: 'geoquest-4b7e1',
     storageBucket: 'geoquest-4b7e1.firebasestorage.app',
     iosBundleId: 'htl.le.application',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDkGB5Iqz3zyZN7jKBRMX9TuMFZPQsgNnM',
+    appId: '1:260428473003:web:dd6226542fbad3505d8dee',
+    messagingSenderId: '260428473003',
+    projectId: 'geoquest-4b7e1',
+    authDomain: 'geoquest-4b7e1.firebaseapp.com',
+    storageBucket: 'geoquest-4b7e1.firebasestorage.app',
+    measurementId: 'G-ZHX29J6TDB',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBUKbA0_kVJ_POWh4Ah0gl_4au_lPaC3I0',
+    appId: '1:260428473003:ios:75e63ea37c4f87295d8dee',
+    messagingSenderId: '260428473003',
+    projectId: 'geoquest-4b7e1',
+    storageBucket: 'geoquest-4b7e1.firebasestorage.app',
+    iosBundleId: 'htl.le.application',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDkGB5Iqz3zyZN7jKBRMX9TuMFZPQsgNnM',
+    appId: '1:260428473003:web:f0d6fb966684f1365d8dee',
+    messagingSenderId: '260428473003',
+    projectId: 'geoquest-4b7e1',
+    authDomain: 'geoquest-4b7e1.firebaseapp.com',
+    storageBucket: 'geoquest-4b7e1.firebasestorage.app',
+    measurementId: 'G-VLQ7JS4HNE',
   );
 
 }
