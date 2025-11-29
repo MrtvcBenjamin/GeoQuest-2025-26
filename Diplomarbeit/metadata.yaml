@@ -26,7 +26,9 @@ da-author:
   - name: ChatGPT5.1
     zweck: Boilerplate codegenerierung, Informationsbeschaffung
   - name: Minstral Small 3.2
-    zweck: Boilerplate codegenerierung, Informationsbeschaffung
+    zweck: Boilerplate codegenerierung
+  - name: Gemini Model 3
+    zweck: Boilerplate Firebase codegenerierung 
 
 - vorname: Tobias 
   nachname: Zeismann
