@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -29,6 +30,23 @@ class SignInPageState extends State<SignInPage> {
     );
 
     debugPrint(userCredential.toString()); // print entfernt
+  }
+
+
+// Die Funktion selbst
+  Future<void> saveUserInDatabase(String username) async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) return;
+
+  try {
+  await FirebaseFirestore.instance.collection('Users').doc(user.uid).set({
+  'Username': username, // Verwenden des übergebenen Parameters
+  'totalPoints': 0,
+  });
+  } catch(e) {
+  print(e);
+  }
   }
 
   @override
@@ -95,6 +113,7 @@ class SignInPageState extends State<SignInPage> {
                 ElevatedButton(
                   onPressed: () async {
                     await createUser();
+                    await saveUserInDatabase(_usernameController.text.trim());
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
