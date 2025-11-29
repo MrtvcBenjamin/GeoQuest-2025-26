@@ -1,5 +1,5 @@
-# Teilaufgabe Schüler Barodscheff
-\textauthor{Joltawan Barodscheff}
+# Teilaufgabe Schüler Muratovic
+\textauthor{Benjamin Muratovic}
 
 Dieses Kapitel wird oft auch als _Literaturrecherche_ bezeichnet. Da gehört alles rein was der __normale__ Leser braucht um den praktischen Ansatz zu verstehen. Das bedeutet Sie brauchen einen roten Faden !
 
