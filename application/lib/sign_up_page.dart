@@ -1,4 +1,4 @@
-import 'package:application/log_in_page.dart';
+import 'package:application/screens/log_in_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
