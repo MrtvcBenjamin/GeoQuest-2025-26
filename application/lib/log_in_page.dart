@@ -1,3 +1,4 @@
+import 'package:application/map_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +21,7 @@ class LogInPagePageState extends State<LogInPage> {
     super.dispose();
   }
 
-  Future<void> loginUser() async {
+  Future<bool> loginUser() async {
     final input = _loginController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -49,8 +50,10 @@ class LogInPagePageState extends State<LogInPage> {
         password: password,
       );
       print(userCredential.toString());
+      return true;
     } catch (e) {
       debugPrint("Login error: $e");
+      return false;
     }
   }
 
@@ -107,8 +110,12 @@ class LogInPagePageState extends State<LogInPage> {
 
                 ElevatedButton(
                   onPressed: () async {
-                    await loginUser();
-
+                    if(await loginUser()) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MapPage()),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),

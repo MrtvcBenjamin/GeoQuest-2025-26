@@ -1,3 +1,4 @@
+import 'package:application/map_page.dart';
 import 'package:application/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
