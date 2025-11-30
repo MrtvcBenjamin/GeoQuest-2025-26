@@ -1,5 +1,5 @@
-# Teilaufgabe Schüler Bravo
-\textauthor{Schueler 2}
+# Teilaufgabe Schüler Kovacs
+\textauthor{Christian Kovacs}
 
 ## Theorie
 

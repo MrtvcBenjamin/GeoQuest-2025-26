@@ -15,30 +15,32 @@ da-author:
   klasse: 5BHWIN
   thema: Projekt Management
   ki-tools:
-  - name: ChatGPT3.5
+  - name: ChatGPT5.1
     zweck: Informationsbeschaffung
-  - name: Midjourney
-    zweck: Künstlerische Illustration
 
 - vorname: Christian 
   nachname: Kovacs
   klasse: 5BHWIN
   thema: Entwicklung - Backend
   ki-tools:
-  - name: Github Copilot
-    zweck: Boilerplate codegenerierung, Codedokumentation
+  - name: ChatGPT5.1
+    zweck: Boilerplate codegenerierung, Informationsbeschaffung
+  - name: Minstral Small 3.2
+    zweck: Boilerplate codegenerierung
+  - name: Gemini Model 3
+    zweck: Boilerplate Firebase codegenerierung 
 
 - vorname: Tobias 
   nachname: Zeismann
   klasse: 5AHWIN
   thema: Entwicklung - Frontend
-
+  ki-tools:
+  - name: ChatGPT5.1
+    zweck: Informationsbeschaffung
+    
 da-betreuer:
 - paraffe: wb
   name: DI Andreas Weichbold
-
-- paraffe: kep
-  name: DI (FH) Klaus Kepplinger, MSc
 
 da-kurzfassung-de: Hier kommt eine deutsche Kurzfassung hin.
 

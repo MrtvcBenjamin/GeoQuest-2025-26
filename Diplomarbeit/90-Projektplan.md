@@ -15,7 +15,7 @@ Ziel des Projekts ist daher die Entwicklung einer eigenen, vollständig kontroll
 
 - Entwicklung einer funktionsfähigen, stabilen und benutzerfreundlichen Anwendung zur Durchführung der jährlichen Schnitzeljagd.
 - Umsetzung einer modularen Architektur, die zukünftige Erweiterungen (z. B. neue Fragetypen, neue Spielmodi, Statistiken) ermöglicht.
-- Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben(Nice-To-Have).
+- Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben.
 - Integration einer Kartenansicht, um Stationen geographisch darzustellen.
 - Sicherstellung eines zuverlässigen Betriebs ohne Internetverbindung, sofern technisch möglich (z. B. Offline-Caching).
 - Entwicklung einer Lösung, die langfristig unabhängig von externen Softwareanbietern betrieben werden kann.
@@ -51,17 +51,14 @@ Welche Termine sind Fixtermine und was sollte an diesen Terminen stattfinden ? B
 
 | Termin     | Inhalt                          |
 |-----------:|:--------------------------------|
-| 2020-12-24 | Weihnachten                     |
-| 20XX-12-24 | Projektstart                    |
-| 20XX-10-24 | Projektpräsentation             |
-| 20XX-10-24 | Erreichung Meilenstein I        |
-| 20XX-10-24 | Erste Zwischenpräsentation      |
-| 20XX-10-24 | Erreichung Meilenstein II       |
-| 20XX-10-24 | Erreichung Meilenstein III      |
-| 20XX-10-24 | Zweite Zwischenpräsentation     |
-| 20XX-10-24 | Abgabe Endversion an Betreuer   |
-| 20XX-10-24 | Abgabe Gebundene Version        |
-| 20XX-10-24 | ...                             |
+| 2025-10-09 | Einreichung DA in Portal                     |
+| 2025-11-12 | Ertse DA Zwischenpräsentation                    |
+| 2025-12-01 | Zwischenstand an Betreuer präsentieren             |
+| 2026-01-09 | Elek. Erstversion Abgabe an Betreuer        |
+| 2026-02-26 | Zweite DA Zwischenpräsentation      |
+| 2026-03-06 | DA Abgabe       |
+| 2026-04-07 | Biblv. DA Abgabe      |
+| 2026-04-13 | DA Präsentation     |
 
 : Projektterminübersicht
 
@@ -92,10 +89,18 @@ Eine Übersicht über Risiken finden sie hier: https://projekte-leicht-gemacht.d
 Hier ein Beispiel:
 
 | Risiko         | EW  | Auswirkungen     | Maßnahmen     |
-|:--------------:|:---:| :----------------|:--------------|
-| Überziehen der Kosten | 15% | Erhöhte Kosten für Schüler | Budgetierung |
-| Ungenaue Schätzungen | 30% | Ungenaue Schätzungen führen zu Problem bezüglich Terminen und Budget. | Schätzungen mit Fachkollegen absprechen|
-| Verzögerungen beim Aufbau von Hard- und Software | 10% | Prototyp wird nicht rechtzeitig zur Endpräsentation fertig | Früh genug anfangen |
+|---|---|---|---|
+| Ungenaue Schätzungen (Kosten, Zeit) | 30% | Zeit- oder Budgetplan passt nicht → Deadlines könnten verfehlt werden | Schätzungen im Team absprechen, eher großzügig planen |
+| Unzureichend definierter Projektumfang / Anforderungen | 25% | Wir implementieren falsche oder zu viele Funktionen → Nacharbeiten | Anforderungen klar dokumentieren, Fixpunkt mit Betreuern |
+| Scope Creep (schleichende Erweiterung des Umfangs) | 20% | Projekt wächst über das geplante Maß → Überforderung und Zeitprobleme | Änderungswünsche kontrollieren, nur bei Zustimmung einbauen |
+| Lernkurven / fehlende Erfahrung mit Technologien | 35% | Verzögerungen durch Einarbeitung, mehr Fehler | Zeit für Learning einplanen, Tutorials & Dokumentation nutzen |
+| Ressourcenmangel (Zeit, Team, Hardware) | 20% | Aufgaben können nicht rechtzeitig erledigt werden | Ressourcen früh planen, Zeitpuffer einbauen |
+| Fehlende Kommunikation im Team / mit Stakeholdern | 25% | Missverständnisse, doppelte Arbeit, falsche Features | Regelmäßige Meetings, Aufgaben klar verteilen |
+| Probleme bei technischer Integration / Architektur | 15% | App instabil oder inkompatibel, zusätzliche Arbeit nötig | Architektur früh prüfen, Prototypen & Tests machen |
+| Unzureichende Testphase | 25% | Fehler werden spät entdeckt → schlechte Nutzererfahrung | Testphase fix einplanen, Beta-Test durchführen |
+| Geringe Nutzerakzeptanz (UI/UX zu komplex) | 20% | Anwendung wird nicht verstanden oder falsch genutzt | Nutzerfeedback früh einholen, einfache Bedienung sicherstellen |
+| Verzögerungen beim Hard-/Software-Setup | 10% | Projektstart verzögert → Zeitdruck | Entwicklungsumgebung früh einrichten, Backups & Alternativen planen |
+
 
 : Projektrisiken
 
@@ -107,8 +112,8 @@ Hier wird definiert wer (welche Personen) an diesem Projekt beteiligt im Prinzip
 | Vorname     | Nachname     | Organisation | Kontaktinfos      |
 |:------------|:-------------|:-------------|:------------------|
 | Benjamin    | Muratovic  | HTL Leoben   | 211witb17@o365.htl-leoben.at  |
-| Frank       | Borland      | Firma XY     | frank@borla.nd    |
-| ...         | ...          | ...          | ...               |
+| Klaus       | Kepplinger      | HTL Leoben     | klaus.kepplinger@htl-leoben.at    |
+| Andreas       | Weichbold      | HTL Leoben     | andreas.weichbold@htl-leoben.at    |
 
 : Projektbeteiligte
 
@@ -121,7 +126,7 @@ Hier werden den Kontakten von oben konkrete Rollen zuewiesen.
 | Projektrolle           | Rollenbeschreibung     | Name              |
 |------------------------|------------------------|-------------------|
 | Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens | Benjamin Muratovic |
-| Auftraggeber | Auftraggeber der internen Diplomarbeit | Klaus Kepplinger |
+| Auftraggeber | Auftraggeber der internen Diplomarbeit | K. Kepplinger |
 | Betreuer | Schulischer Betreuer | A. Weichbold |
 
 : Projektrollen
