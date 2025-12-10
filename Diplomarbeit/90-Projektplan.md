@@ -53,7 +53,8 @@ Welche Termine sind Fixtermine und was sollte an diesen Terminen stattfinden ? B
 |-----------:|:--------------------------------|
 | 2025-10-09 | Einreichung DA in Portal                     |
 | 2025-11-12 | Ertse DA Zwischenpräsentation                    |
-| 2025-12-01 | Zwischenstand an Betreuer präsentieren             |
+| 2025-12-01 | 1. Zwischenstand an Betreuer präsentieren             |
+| 2025-12-20 | 2. Zwischenstand an Betreuer präsentieren          |
 | 2026-01-09 | Elek. Erstversion Abgabe an Betreuer        |
 | 2026-02-26 | Zweite DA Zwischenpräsentation      |
 | 2026-03-06 | DA Abgabe       |
