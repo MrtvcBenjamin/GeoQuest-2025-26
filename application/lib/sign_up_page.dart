@@ -30,11 +30,11 @@ class SignUpPageState extends State<SignUpPage> {
       password: _passwordController.text.trim(),
     );
 
-    debugPrint(userCredential.toString()); // print entfernt
+    debugPrint(userCredential.toString());
   }
 
 
-// Die Funktion selbst
+
   Future<void> saveUserInDatabase(String username) async {
   final user = FirebaseAuth.instance.currentUser;
 

@@ -14,7 +14,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  LatLng? myPosition; // wird später geladen
+  LatLng? myPosition;
 
   @override
   void initState() {
@@ -53,14 +53,13 @@ class _MapPageState extends State<MapPage> {
   Future<void> saveLocationInDatabase(LatLng? position) async{
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
-    // Sicherheitsprüfung: Ist der Standort vorhanden UND ist der Benutzer angemeldet?
     if (position != null && userId != null) {
       try {
         final playerLocation = await FirebaseFirestore.instance
             .collection("PlayerLocation")
             .add({
           'location': GeoPoint(position.latitude, position.longitude),
-          'userId': userId // Jetzt verwenden wir die geprüfte Variable
+          'userId': userId
         });
         print('Location successfully saved with ID: ${playerLocation.id}');
       } catch (e) {
@@ -73,7 +72,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Zeige Ladebildschirm solange Position null ist
+
     if (myPosition == null) {
       return const Scaffold(
         body: Center(
