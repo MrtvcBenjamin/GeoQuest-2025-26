@@ -41,13 +41,9 @@ Dies bietet folgende Vorteile:
 
 #### Projektauftraggeber/in
 
-Hier beschreiben Sie wer der Projektauftraggeber ist. Falls es eine externe Firma ist können Sie hier eine kurze Beschreibung des Unternehmens (sofern Projektrelevant) einfügen.
+Projektauftraggeber ist Herr Klaus Kepplinger, der an der HTL Leoben für die Organisation der Schnitzeljagd der 1. Jahrgänge am Ende des Schuljahres verantwortlich ist.
 
 #### Projekttermine
-
-Welche Termine sind Fixtermine und was sollte an diesen Terminen stattfinden ? Beispiele hierfür sind z.B: Präsentationen, Projektende, Zwischenabgaben, fest eingeplante Besprechungen / Reviews (die auch Projektrelevant sind) die auf keinen Fall vergessen werden dürfen
-
-
 
 | Termin     | Inhalt                          |
 |-----------:|:--------------------------------|
@@ -66,28 +62,9 @@ Welche Termine sind Fixtermine und was sollte an diesen Terminen stattfinden ? B
 
 #### Projektkosten
 
-Hier dokumentieren Sie welche Kosten fallen Für Ihr Projekt an und wer kommt für diese Kosten auf ?
-
-| Meilenstein  | Kostenart | Menge  | Preis   | Gesamtkosten | Deckung durch |
-|:-------------|:---------:|:------:|--------:|-------------:|---------------|
-| Prototyp     | Personal  |  10.00 |   15.00 | 150.00      | Schüler       |
-| Prototyp     | Hardware  |  1     |  254.00 | 254.00      | Projektpartner|
-| DA-Schreiben | Druck     |  3     |   26.00 |  53.00      | Schüler       |
--- Platzhalter
- : Geplante Projektkosten
- 
-Am ende sollten Sie eine Projektkostensumme ermitteln und hier angeben damit man sagen kann
-__Das Projekt kostet in Summe so und so viel Euro__. 
-
-
-Am Ende der Diplomarbeit fügen Sie hier noch eine Liste der tatsächlich angefallenen Kosten ein.
+Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte Kosten im Laufe dieser Diplomarbeit an.
 
 #### Projektrisiken
-
-Hier geben Sie an welche Risiken auf Ohr Projekt zutreffen können, und auch wie wahrscheinlich es ist das dieses Risiko eintritt.
-Eine Übersicht über Risiken finden sie hier: https://projekte-leicht-gemacht.de/blog/pm-in-der-praxis/130-projektrisiken-beispiele/
-
-Hier ein Beispiel:
 
 | Risiko         | EW  | Auswirkungen     | Maßnahmen     |
 |---|---|---|---|
@@ -108,7 +85,6 @@ Hier ein Beispiel:
 ### Projektorganisation
 
 #### Projektbeteiligte
-Hier wird definiert wer (welche Personen) an diesem Projekt beteiligt im Prinzip beteiligt ist.
 
 | Vorname     | Nachname     | Organisation | Kontaktinfos      |
 |:------------|:-------------|:-------------|:------------------|
@@ -118,11 +94,7 @@ Hier wird definiert wer (welche Personen) an diesem Projekt beteiligt im Prinzip
 
 : Projektbeteiligte
 
-Unter Kontaktinfos können neben der Emailadresse natürlich auch noch andere Informationen wie Telefonnunmmer, Postanschrift, usw. stehen. ... Im Prinzip alles was notwendig ist um die Person zu erreichen wenn es notwendig ist. 
-
 #### Projektrollen
-
-Hier werden den Kontakten von oben konkrete Rollen zuewiesen.
 
 | Projektrolle           | Rollenbeschreibung     | Name              |
 |------------------------|------------------------|-------------------|
@@ -138,13 +110,10 @@ Gerne können Sie hier auch noch zusätzlich eine Grafik oder ein Organisationsd
 
 ### Vorgehen bei Änderungen
 
-Hier dokumentieren sie betreffend des Meilensteinplans oder der Anwendungsfälle: 
-
-* Wer wird informiert, 
-* wer muss zustimmen, 
-* wo werden die Änderungen wie vermerkt?
-
-Das dient in erster Linie dazu um ein einheitliches Vorgehen definiert zu haben.
+- Änderungen an Anforderungen oder Meilensteinen werden zuerst im Projektteam besprochen.
+- Der Projektleiter dokumentiert die Änderung im Änderungsprotokoll.
+- Die angepassten Inhalte werden im Projekthandbuch und Backlog aktualisiert.
+- Jede Änderung wird in den nächsten Meetings kurz vorgestellt.
 
 ## Meilensteine
 
