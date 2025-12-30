@@ -104,10 +104,6 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 
 : Projektrollen
 
-Gerne können Sie hier auch noch zusätzlich eine Grafik oder ein Organisationsdiagramm einbauen.
-
-![Projektorganisationsdiagramm](img/projektorganisation.png){width=50%}
-
 ### Vorgehen bei Änderungen
 
 - Änderungen an Anforderungen oder Meilensteinen werden zuerst im Projektteam besprochen.
@@ -131,55 +127,62 @@ Meilensteine verlaufen nie über eine Zeitdauer. Nie. Sie sind lediglich Entsche
 
 Hier ein Beispiel wie die Meilensteine im Fall einer aussehen können
 
-### 2020-09-15: Projektmanagement abgeschlossen
+### 2025-09-20: Projektvorbereitung abgeschlossen - Projektstart
 
-- Projekthandbuch ist fertig
-- Serverinfrastruktur ist hergestellt
-- Bestellungen sind abgessendet
+- Projektauftrag, Ziele und Nicht-Ziele sind definiert und dokumentiert
+- Projektorganisation (Rollen, Beteiligte, Betreuer) ist festgelegt
+- Grober Projektplan inklusive Meilensteine liegt vor
 
-### 2020-11-01: Genehmigung der DA
+### 2025-09-30: Anforderungsanalyse & Konzept
 
-- Einreichen des Antrags durch die Schüler/innen
-- DA Dokumentation wurde ausgefüllt und unterschrieben
+- Fachliche und technische Anforderungen sind vollständig erhoben und dokumentiert
+- Grobes System- und Anwendungskonzept (Architektur, Plattform, Technologien) ist erstellt
+- Zentrale Anwendungsfälle (Use Cases) sind definiert
 
-### 2020-11-26: Literaturrecherche abgeschlossen
+### 2025-10-20: UI-Prototyp & Grundstruktur
 
-- Literatur zum Thema XY gesucht und in bibtex vermerkt
-- Aktellen Stand der Forschung erhoben
-- Verschriftlichung des Literaturteils begonnen 
+- UI-Prototyp ist erstellt
+- Grundlegende Projektstruktur (z. B. App-Gerüst, Navigation) ist implementiert
+- Erste Screens (Start, Login, Übersicht) sind sichtbar 
 
-### 2020-12-17: Prototyp ist funktionell
+### 2025-11-11: Zwischenpräsentation
 
-- DB mit Tabelle für Benutzer.
-- DB Kommunikation zur Anwendung (inkl. Dokumentation)
-- Es gibt in der Anwendung einen /Admin/ Benutzer. Dieser Benutzer kann weitere Benutzer in den Rollen /Lehrende/ und bzw. oder /Studierende/ anlegen.
+- Aktueller Projektstand wird präsentiert und erklärt
+- UI-Prototyp und erste Funktionen werden demonstriert
+- Feedback von Betreuern und Auftraggeber wird aufgenommen
       
-### 2021-01-10: Applikation fertiggestellt
+### 2025-11-30: Implementierung GPS- & Aufgabenlogik
 
-- Lehrende sind dazu in der Lage Tests anzulegen.
-- Studenten können einen ihnen zugewiesenen Test absolvieren.
+- GPS-Funktion zur Standortbestimmung ist implementiert
+- Aufgaben/Stationen können ortsabhängig freigeschaltet werden
+- Grundlegende Spiellogik (Reihenfolge, Punkte, Status) funktioniert
 
-### 2021-01-10: Review und Überarbeitung fertig
+### 2025-12-20: Anti-Schummel-System & Erweiterungen
 
-- Der Quellcode ist gemeinsam mit den Projektpartnern reviewt
-- Quellcodedokumentation abgeschlossen (Javadoc)
-- Projekt baut auf eigenem Buildserver (Continous Integration)
+- Maßnahmen gegen Standort-Manipulation sind implementiert (z. B. Plausibilitätsprüfungen)
+- Erweiterungen der Aufgabenlogik (z. B. Zeitlimits, Versuche) sind umgesetzt
+- Fehler- und Sonderfälle werden behandelt
 
-### 2021-02-03: Diploarbeit fertig verschriftlicht 
+### 2026-01-09: Erstversion der App
 
-- Stilfehler sind behoben
-- DA Dokumentationsblatt ist unterschrieben, eingescannt und im Hauptdokument enthalten 
-- Praxisteil ist ebgeschlossen und verschriftlicht
-- Informationen sind im DA Portal eingegeben
-- Unterschriebene DA Betreuungsprotokolle sind in der DA enthalten
-- DA liegt dem Betreuer in ausgedruckter Form vor
-    
+- Alle geplanten Kernfunktionen sind implementiert
+- Die App ist durchgängig nutzbar (von Start bis Ende der Schnitzeljagd)
+- Erste interne Tests wurden durchgeführt
+
+### 2026-02-15: Systemtests & Feinschliff
+
+- Umfassende Tests (Funktion, Usability, Stabilität) sind durchgeführt
+- Gefundene Fehler wurden behoben
+- Benutzerführung und Design wurden optimiert
+
+### 2026-03-06: Endabgabe
+
+- Finale Version der App ist fertiggestellt und stabil
+- Projektdokumentation (Diplomarbeit) ist vollständig und korrekt
+- Abgabekriterien der HTL Leoben sind erfüllt
+
 
 ## Anwendungsfälle
-
-Hier beschreiben Sie die Anwendungsfälle (=UseCases) Ihrer Anwendung / Diplomarbeit. Dabei sollte die Beschreibung auf hohem Niveau (also ohne implementierungsspezifische Details) erfolgen und typischerweise so benannt sein, wie die Ziele aus Sicht der Akteure heißen: Mitglied anmelden, Geld abheben, Auto zurückgeben.
-
-Jeder Anwendungsfall wird im selben Muster beschrieben. In den folgenden Absätzen ist zuerst eine allgemeine Beschreibung eines solchen Anwendungsfalls zu finden und dann ein Beispiel dazu.
 
 Damit man auch versteht wer mit welchem Anwendungsfall agiert bietet es sich an hier eine Übersichtsgrafik zu erstellen:
 
