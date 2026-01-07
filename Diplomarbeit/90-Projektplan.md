@@ -184,12 +184,6 @@ Hier ein Beispiel wie die Meilensteine im Fall einer aussehen können
 
 ## Anwendungsfälle
 
-Damit man auch versteht wer mit welchem Anwendungsfall agiert bietet es sich an hier eine Übersichtsgrafik zu erstellen:
-
-![Übersicht Anwendungsfälle](img/anwendungsfalldiagramm.png){width=60%}
-
-\newpage
-
 ### Anwendungsfallname - Just in case, gonna keep it here
 Anwendungsfälle haben einen eindeutigen Namen aus dem man auf den Inhalt des Anwendungsfalls schließen kann. Wenn Sie agil arbeiten dann stellt ein Anwendungsfall eine UserStory dar welche im Backlog liegt und im Laufe des Projekts (in einem Sprint) abgearbeitet wird.
 
@@ -216,9 +210,6 @@ Dies sind Szenarien, die sich außerhalb des Standardablaufs auch bei der (versu
 
 #### Systemzustand im Fehlerfall
 Der Zustand, der nach einem erfolglosen Durchlauf des Anwendungsfalls erwartet wird.
-
-
-\newpage
 
 ### Registrierung & Login
 
@@ -247,8 +238,6 @@ Als **Spieler** möchte ich mich per E-Mail oder Gastzugang anmelden können um 
 - E-Mail-Verifizierung notwendig?
 - Passwort-Richtlinien?
 
-\newpage
-
 ### Karte & Standort
 
 #### Kurzbeschreibung
@@ -275,8 +264,6 @@ Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufg
 - Echtzeit-Updates über location-Package oder periodische Abfrage?
 - Filter für Aufgabenradius?
 - Map-Styling (Standard, Satellit, Dark Mode)?
-
-\newpage
 
 ### Standortbasierte Aufgaben
 
@@ -312,8 +299,6 @@ Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem
 - Speicherung: „aufgabe_abgeschlossen = true“ in Firestore oder Local Cache
 - Latenz durch Standortabfragen (Mobile OS Optimierung)
 
-\newpage
-
 ### Aufgaben & Fortschritt
 
 #### Kurzbeschreibung
@@ -340,8 +325,6 @@ Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen
 - Punktesystem fix oder pro Aufgabe definierbar?
 - Darstellung als Liste, Karte oder Fortschrittsbalken?
 - Speicherung des Fortschritts in Echtzeit oder beim Abschluss?
-
-\newpage
 
 ### Teams & Wettbewerb
 
@@ -370,8 +353,6 @@ Als **Lehrer** möchte ich Teams erstellen und Teilnehmer zuordnen um die Ergebn
 - Adminrechte für Lehrer in der App oder extern über Firebase?
 - Maximale Teamgröße?
 
-\newpage
-
 ### Spielende & Auswertung
 
 #### Kurzbeschreibung
@@ -398,3 +379,5 @@ Als **Lehrer** möchte ich am Ende der Schnitzeljagd ein Ranking der Teams sehen
 - Sortierlogik (Punkte, Zeit, Bonusaufgaben)?
 - Exportmöglichkeit als CSV oder Screenshot?
 - Automatisches vs. manuelles Beenden?
+
+/newpage
