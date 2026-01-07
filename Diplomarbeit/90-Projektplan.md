@@ -67,7 +67,7 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 #### Projektrisiken
 
 | Risiko         | EW  | Auswirkungen     | Maßnahmen     |
-|---|---|---|---|
+|:--------------:|:---:| :----------------|:--------------|
 | Ungenaue Schätzungen (Kosten, Zeit) | 30% | Zeit- oder Budgetplan passt nicht → Deadlines könnten verfehlt werden | Schätzungen im Team absprechen, eher großzügig planen |
 | Unzureichend definierter Projektumfang / Anforderungen | 25% | Wir implementieren falsche oder zu viele Funktionen → Nacharbeiten | Anforderungen klar dokumentieren, Fixpunkt mit Betreuern |
 | Scope Creep (schleichende Erweiterung des Umfangs) | 20% | Projekt wächst über das geplante Maß → Überforderung und Zeitprobleme | Änderungswünsche kontrollieren, nur bei Zustimmung einbauen |
