@@ -1,7 +1,9 @@
 # Aufgabenstellung 
 
 ## Auftraggeber
-Wer ist der Auftraggeber, wie ist es zu dieser Arbeit gekommen, was verspricht sich der Auftraggeber davon
+Auftraggeber dieser Diplomarbeit ist Herr Klaus Kepplinger von der HTL Leoben, der für die Organisation der Schnitzeljagd der ersten Jahrgänge am Ende des Schuljahres verantwortlich ist. Die Idee zur Diplomarbeit entstand aus dem Bedarf, die bisher verwendete externe Lösung durch eine eigens entwickelte Anwendung zu ersetzen, um unabhängiger von Drittanbietern zu sein und die Durchführung der Schnitzeljagd flexibler zu gestalten.
+
+Der Auftraggeber verspricht sich von dieser Arbeit eine langfristig einsetzbare, an die schulischen Anforderungen angepasste Anwendung, die organisatorische Abläufe vereinfacht, technische Probleme reduziert und zukünftig problemlos erweitert oder angepasst werden kann.
 
 ## Ausgangssituation
 
