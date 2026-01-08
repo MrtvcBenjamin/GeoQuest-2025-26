@@ -16,7 +16,7 @@ da-author:
   thema: Projekt Management
   ki-tools:
   - name: ChatGPT5.1
-    zweck: Informationsbeschaffung, Rehtschreibüberprüfung
+    zweck: Rehtschreibüberprüfung, Formatierungshilfe
 
 - vorname: Christian 
   nachname: Kovacs
@@ -34,7 +34,7 @@ da-author:
   thema: Entwicklung - Frontend
   ki-tools:
   - name: ChatGPT5.1
-    zweck: Informationsbeschaffung, Coding-Hilfe
+    zweck: Informationsbeschaffung, Boilerplate Flutter Codegenerierung 
     
 da-betreuer:
 - paraffe: wb
