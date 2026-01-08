@@ -1,25 +1,6 @@
 \newpage
 ## Dokumentation
 
-Im Abschnitt Projektdokumentation können Sie mit Hilfe eines Projektmanagementwerkzeuges Ihrer Wahl die Projektumsetzung dokumentieren. (Also ein fortlaufender Projektfortschrittsbericht)
-
-Normalerweise werden Sie die UserStories in mehrere SubTasks zerreissen und dann in einem agilen verfahen (Scrum, Kanban, was auch immer ihnen am geeignetsten erscheint) abarbeiten. Dazu können Sie natürlich eine Softwahre Ihrer Wahl verwenden.
-
-Am Ende sollten sie aber für jeden Projektabschnitt (Das ist die Zeit zwischen den Meilensteinen) eine Dokumentation entstehen aus der ersichtlich ist
-
-* Berichtszeitraum
-* Durchgeführte Arbeiten im Berichtszeitraum sowie die Aufwände der einzelnen Personen
-* Projektstatus (Im Plan, Schwierigkeiten, Risiko)
-* Gesamtstatus sowie die möglicherweise notwendigen Maßnahmen für
-    - Leistungsziele
-    - Terminziele
-    - Kostenziele
-    - Teamarbeit
-* Nächste Schritte und notwendige Entscheidungen
-
-Im folgenden Abschnitt ist ein solcher Fortschritt illustriert. 
-
-\newpage
 ### Projektfortschritt 01. Juni bis 20. September 2025
 
 #### Gesamtstatus
