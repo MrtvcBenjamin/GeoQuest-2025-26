@@ -113,20 +113,6 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 
 ## Meilensteine
 
-Der Begriff taucht im Projektmanagement sehr häufig auf. Meilensteine sind wichtige Punkte im Projektverlauf. Oft werden sie auch als Prüfpunkte bezeichnet.
-
-Generell kann ein Meilenstein ein Ereignis sein, an dem
-
-* etwas abgeschlossen ist,
-* etwas begonnen wird oder
-* über die weitere Vorgehensweise entschieden wird
-
-Meilensteine werden meist am Ende von Projektphasen definiert. Auch innerhalb von Phasen kann es zusätzliche Meilensteine geben.
-
-Meilensteine verlaufen nie über eine Zeitdauer. Nie. Sie sind lediglich Entscheidungspunkte
-
-Hier ein Beispiel wie die Meilensteine im Fall einer aussehen können
-
 ### 2025-09-20: Projektvorbereitung abgeschlossen - Projektstart
 
 - Projektauftrag, Ziele und Nicht-Ziele sind definiert und dokumentiert
@@ -184,200 +170,206 @@ Hier ein Beispiel wie die Meilensteine im Fall einer aussehen können
 
 ## Anwendungsfälle
 
-### Anwendungsfallname - Just in case, gonna keep it here
-Anwendungsfälle haben einen eindeutigen Namen aus dem man auf den Inhalt des Anwendungsfalls schließen kann. Wenn Sie agil arbeiten dann stellt ein Anwendungsfall eine UserStory dar welche im Backlog liegt und im Laufe des Projekts (in einem Sprint) abgearbeitet wird.
+## Registrierung & Login
 
-#### Kurzbeschreibung
-Hier erfolgt eine kurze Beschreibung, was im Anwendungsfall passiert. Kurz bedeutet, dass es zwei oder drei Zeilen sind, selten mehr.
-      
-#### Trigger
-Der fachliche Grund bzw. die Gründe dafür, dass dieser Anwendungsfall ausgeführt 
+### Kurzbeschreibung  
+Als **Spieler** möchte ich mich mit meiner schulischen E-Mail-Adresse registrieren und anmelden können, um an einer Schnitzeljagd teilnehmen zu können.
 
-#### Vorbedingung
-Alle Bedingungen, die erfüllt sein müssen, damit dieser Anwendungsfall ausgeführt werden kann. Gibt es keine Vorbedingungen, so steht hier "keine".
-      
-#### Nachbedingung
-Der Zustand, der nach einem erfolgreichen Durchlauf des Anwendungsfalls erwartet wird.
+### Trigger  
+Der Spieler möchte an einer Schnitzeljagd teilnehmen und öffnet die App.
 
-#### Akteure
-Akteure sind beteiligte Personen oder Systeme außerhalb (!) des beschriebenen Systems. Z. B. Anwender, angemeldeter Anwender, Kunde, System, Abrechnungsprozess.
+### Vorbedingung  
+- Die App ist installiert  
+- Eine Internetverbindung ist vorhanden  
+- Der Spieler besitzt eine gültige schulische E-Mail-Adresse  
 
-#### Standardablauf
-Hier wird das typische Szenario dargestellt, das leicht zu verstehen oder der am häufigsten vorkommende Fall ist. An seinem Ende steht die Zielerreichung des Primärakteurs. Die Ablaufschritte werden nummeriert und meist in strukturierter Sprache beschrieben. Ablaufpläne können jedoch ebenfalls benutzt werden, wenn es angebracht erscheint. Mittels der UML können diese Ablaufschritte in Aktivitätsdiagrammen oder Anwendungsfall-orientierten Sequenzdiagrammen dargestellt werden.
+### Nachbedingung  
+Der Spieler ist erfolgreich angemeldet und befindet sich auf der Startseite der App.
 
-#### Fehlersituationen
-Dies sind Szenarien, die sich außerhalb des Standardablaufs auch bei der (versuchten) Zielerreichung des Anwendungsfalls ereignen können. Sie werden meistens als konditionale Verzweigungen der normalen Ablaufschritte dargestellt. An ihrem Ende steht ein Misserfolg, die Zielerreichung des Primärakteurs oder eine Rückkehr zum Standardablauf.
+### Akteure  
+- Spieler  
 
-#### Systemzustand im Fehlerfall
-Der Zustand, der nach einem erfolglosen Durchlauf des Anwendungsfalls erwartet wird.
+### Standardablauf  
+Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Registrierung & Login
+### Akzeptanzkriterien  
+- **Given:** Ein Nutzer öffnet die App  
+  **When:** Er klickt auf „Login“  
+  **Then:** Wird er eingeloggt und zur Startseite weitergeleitet  
 
-#### Kurzbeschreibung
-Als **Spieler** möchte ich mich per E-Mail oder Gastzugang anmelden können um an einer Schnitzeljagd teilnehmen zu können. -> Nutzer sollen sich registrieren oder als Gast schnell beitreten können, um sofort loszulegen.
+- **Given:** Der Nutzer gibt eine ungültige E-Mail oder ein falsches Passwort ein  
+  **When:** Er klickt auf „Anmelden“  
+  **Then:** Erhält er eine Fehlermeldung „Ungültige Anmeldedaten“  
 
-#### Akzeptanzkriterien
-- Given: Ein Nutzer öffnet die App
-- When: Er klickt auf „Login“ oder „Als Gast fortfahren“
-- Then: Wird er eingeloggt und zur Startseite weitergeleitet
+- **Given:** Ein neuer Nutzer registriert sich  
+  **When:** Er bestätigt die Registrierung  
+  **Then:** Wird ein neuer Firestore-Eintrag unter `users` erstellt  
 
-+ Given: Der Nutzer gibt eine ungültige E-Mail oder ein falsches Passwort ein
-+ When: Er klickt auf „Anmelden“
-+ Then: Erhält er eine Fehlermeldung „Ungültige Anmeldedaten“
+### Fehlersituationen  
+- Ungültige Anmeldedaten  
+- Abbruch des Login-Vorgangs  
 
-- Given: Der Nutzer wählt den Gastmodus
-- When: Er beendet und erneut öffnet die App
-- Then: Bleibt seine Sitzung aktiv, solange sie nicht manuell beendet wird
+### Systemzustand im Fehlerfall  
+Der Nutzer bleibt ausgeloggt, es wird kein Benutzerkonto erstellt oder verändert.
 
-+ Given: Ein neuer Nutzer registriert sich
-+ When: Er bestätigt die Registrierung
-+ Then: Wird ein neuer Firestore-Eintrag unter users erstellt
+### Conversation Points  
+- E-Mail-Verifizierung notwendig?  
+- Passwort-Richtlinien?  
 
-#### Conversation Points
-- Gastmodus temporär oder persistent speichern?
-- E-Mail-Verifizierung notwendig?
-- Passwort-Richtlinien?
+---
 
-### Karte & Standort
+## Karte & Standort
 
-#### Kurzbeschreibung
-Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufgaben sehen um zu wissen, wohin ich als Nächstes gehen soll. -> Die Kartenansicht zeigt die aktuelle Position des Spielers und Aufgaben in der Umgebung.
+### Kurzbeschreibung  
+Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufgaben sehen, um zu wissen, wohin ich als Nächstes gehen soll.
 
-#### Akzeptanzkriterien
-+ Given: Der Nutzer hat Standortfreigabe erteilt
-+ When: Er öffnet die Karte
-+ Then: Wird seine Position korrekt mit einem Marker angezeigt
+### Trigger  
+Der Spieler öffnet die Kartenansicht.
 
-- Given: Aufgaben befinden sich in der Nähe
-- When: Die Karte geladen wird
-- Then: Werden Marker für Aufgaben innerhalb eines 500 m Radius angezeigt
+### Vorbedingung  
+- Der Spieler ist angemeldet  
+- Die Standortfreigabe ist erteilt  
 
-+ Given: Der Nutzer lehnt die Standortfreigabe ab
-+ When: Er öffnet die Karte
-+ Then: Wird eine Hinweismeldung angezeigt („Standortzugriff erforderlich“)
+### Nachbedingung  
+Die aktuelle Position sowie Aufgaben in der Umgebung werden auf der Karte angezeigt.
 
-- Given: Der Nutzer bewegt sich
-- When: Seine Position ändert sich
-- Then: Aktualisiert sich der Positionsmarker in Echtzeit
+### Akteure  
+- Spieler  
+- Standortdienst des mobilen Endgeräts  
 
-#### Conversation Points
-- Echtzeit-Updates über location-Package oder periodische Abfrage?
-- Filter für Aufgabenradius?
-- Map-Styling (Standard, Satellit, Dark Mode)?
+### Standardablauf  
+Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Standortbasierte Aufgaben
+### Akzeptanzkriterien  
+- **Given:** Der Nutzer hat Standortfreigabe erteilt  
+  **When:** Er öffnet die Karte  
+  **Then:** Wird seine Position korrekt mit einem Marker angezeigt  
 
-#### Kurzbeschreibung
-Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem Checkpoint nähere um ohne QR-Codes interaktiv und visuell an der Schnitzeljagd teilnehmen zu können. -> Ein Checkpoint löst eine Aufgabe aus, sobald der Spieler den vordefinierten Radius betritt.
+- **Given:** Aufgaben befinden sich in der Nähe  
+  **When:** Die Karte geladen wird  
+  **Then:** Werden Marker für Aufgaben innerhalb eines 500 m Radius angezeigt  
 
-#### Akzeptanzkriterien
-- Given: Der Spieler befindet sich in einer aktiven Schnitzeljagd
-- When: Er betritt den definierten Umkreis eines Checkpoints
-- Then: Wird die zugehörige Aufgabe automatisch auf dem Bildschirm angezeigt
+- **Given:** Der Nutzer lehnt die Standortfreigabe ab  
+  **When:** Er öffnet die Karte  
+  **Then:** Wird eine Hinweismeldung angezeigt („Standortzugriff erforderlich“)  
 
-+ Given: Ein Spieler hat eine Aufgabe bereits erledigt
-+ When: Er betritt erneut den Checkpoint-Radius
-+ Then: Erscheint keine neue Aufgabe – stattdessen optional ein Hinweis „Checkpoint bereits abgeschlossen“
+- **Given:** Der Nutzer bewegt sich  
+  **When:** Seine Position ändert sich  
+  **Then:** Aktualisiert sich der Positionsmarker in Echtzeit  
 
-- Given: Eine Aufgabe wird ausgelöst
-- When: Sie öffnet sich
-- Then: Wird sie in einem rein visuellen Format angezeigt (z. B.: Bild, Animation, Icons, Slider, Buttons etc.)
+### Fehlersituationen  
+- Standortzugriff verweigert  
+- Ungenaue oder fehlende Standortdaten  
 
-+ Given: Der Spieler hat der App keine Standortberechtigung erteilt
-+ When: Er startet die Runde
-+ Then: Er erhält einen klaren Hinweis, dass der Standort benötigt wird, inkl. Button zum Erlauben
+### Systemzustand im Fehlerfall  
+Die Karte wird ohne Positionsdaten angezeigt, Aufgabenmarker werden nicht geladen.
 
-- Given: Der Standort ist ungenau (GPS-Jitter)
-- When: Der Spieler bewegt sich in der Nähe des Radius
-- Then: Wird die Aufgabe nur einmal ausgelöst und der Radius wird gedrosselt (Debounce-Schutz)
+### Conversation Points  
+- Echtzeit-Updates oder periodische Standortabfrage?  
+- Filter für Aufgabenradius?  
+- Karten-Styling (Standard, Dark Mode)?  
 
-#### Conversation Points
-- Optimale Radiusgröße (10–25 m je nach Genauigkeit?)
-- GPS-Update-Intervall (z. B. alle 1–2 Sekunden)
-- Schutz vor mehrfacher Auslösung durch "cooldown" oder "completed flag"
-- Visuelle UI-Komponenten für Aufgaben
-- Speicherung: „aufgabe_abgeschlossen = true“ in Firestore oder Local Cache
-- Latenz durch Standortabfragen (Mobile OS Optimierung)
+---
 
-### Aufgaben & Fortschritt
+## Standortbasierte Aufgaben
 
-#### Kurzbeschreibung
-Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen um meine Leistung im Spiel nachvollziehen zu können. -> Spieler sollen sehen, welche Aufgaben erledigt und welche noch offen sind, inklusive Punkteübersicht.
+### Kurzbeschreibung  
+Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem Checkpoint nähere, um interaktiv an der Schnitzeljagd teilnehmen zu können.
 
-#### Akzeptanzkriterien
-+ Given: Spieler hat mindestens eine Aufgabe abgeschlossen
-+ When: Er öffnet die Fortschrittsseite
-+ Then: Sieht er erledigte und offene Aufgaben getrennt aufgelistet
+### Trigger  
+Der Spieler betritt den definierten Umkreis eines Checkpoints.
 
-- Given: Aufgaben besitzen unterschiedliche Punktwerte
-- When: Spieler erledigt mehrere Aufgaben
-- Then: Wird die Gesamtsumme korrekt berechnet
+### Vorbedingung  
+- Der Spieler ist angemeldet  
+- Eine aktive Schnitzeljagd ist gestartet  
+- Standortberechtigung ist erteilt  
 
-+ Given: Der Spieler aktualisiert die Seite
-+ When: Neue Aufgaben als erledigt markiert wurden
-+ Then: Aktualisiert sich der Fortschrittsbalken dynamisch
+### Nachbedingung  
+Die Aufgabe wird angezeigt und kann bearbeitet werden.
 
-- Given: Der Spieler hat alle Aufgaben abgeschlossen
-- When: Er öffnet die Fortschrittsseite
-- Then: Sieht er „Schnitzeljagd abgeschlossen“ und die Gesamtsumme
+### Akteure  
+- Spieler  
+- GPS-/Standortsystem  
 
-#### Conversation Points
-- Punktesystem fix oder pro Aufgabe definierbar?
-- Darstellung als Liste, Karte oder Fortschrittsbalken?
-- Speicherung des Fortschritts in Echtzeit oder beim Abschluss?
+### Standardablauf  
+Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Teams & Wettbewerb
+### Akzeptanzkriterien  
+- **Given:** Der Spieler befindet sich in einer aktiven Schnitzeljagd  
+  **When:** Er betritt den definierten Umkreis eines Checkpoints  
+  **Then:** Wird die zugehörige Aufgabe automatisch angezeigt  
 
-#### Kurzbeschreibung
-Als **Lehrer** möchte ich Teams erstellen und Teilnehmer zuordnen um die Ergebnisse am Ende vergleichen zu können. -> Teams sind Sammlungen von Spielern, deren Punkte gemeinsam gezählt werden.
+- **Given:** Ein Spieler hat eine Aufgabe bereits erledigt  
+  **When:** Er betritt erneut den Checkpoint-Radius  
+  **Then:** Erscheint keine neue Aufgabe, optional ein Hinweis „Checkpoint bereits abgeschlossen“  
 
-#### Akzeptanzkriterien
-+ Given: Organisator erstellt ein Team
-+ When: Er gibt Teamname und Teilnehmer ein
-+ Then: Wird das Team in Firestore gespeichert
+- **Given:** Eine Aufgabe wird ausgelöst  
+  **When:** Sie öffnet sich  
+  **Then:** Wird sie in einem rein visuellen Format angezeigt  
 
-- Given: Spieler tritt einem Team bei
-- When: Er wählt den Teamcode oder Namen aus
-- Then: Wird er als Mitglied hinzugefügt
+- **Given:** Der Spieler hat keine Standortberechtigung erteilt  
+  **When:** Er startet die Runde  
+  **Then:** Er erhält einen klaren Hinweis inklusive Möglichkeit zur Freigabe  
 
-+ Given: Mehrere Teams existieren
-+ When: Spielerpunkte aktualisiert werden
-+ Then: Wird der Gesamtpunktestand automatisch neu berechnet
+- **Given:** Der Standort ist ungenau  
+  **When:** Der Spieler bewegt sich nahe des Radius  
+  **Then:** Wird die Aufgabe nur einmal ausgelöst  
 
-- Given: Organisator löscht ein Team
-- When: Das Team entfernt wird
-- Then: Werden dessen Punkte ebenfalls entfernt
+### Fehlersituationen  
+- Ungenaue Standortdaten  
+- Mehrfache Standortupdates  
 
-#### Conversation Points
-- Beitritt via Code, QR oder Auswahlmenü?
-- Adminrechte für Lehrer in der App oder extern über Firebase?
-- Maximale Teamgröße?
+### Systemzustand im Fehlerfall  
+Der Aufgabenstatus bleibt unverändert, keine doppelte Auslösung erfolgt.
 
-### Spielende & Auswertung
+### Conversation Points  
+- Optimale Radiusgröße  
+- GPS-Update-Intervall  
+- Speicherung des Aufgabenstatus  
 
-#### Kurzbeschreibung
-Als **Lehrer** möchte ich am Ende der Schnitzeljagd ein Ranking der Teams sehen um die Gewinner zu ermitteln. -> Nach Ende des Spiels werden alle Punktestände zusammengefasst und in einem Ranking dargestellt.
+---
 
-#### Akzeptanzkriterien
-+ Given: Alle Teams haben Aufgaben abgeschlossen
-+ When: Das Spiel wird beendet
-+ Then: Wird ein Ranking nach Punktestand angezeigt
+## Aufgaben & Fortschritt
 
-- Given: Zwei Teams haben denselben Punktestand
-- When: Ranking wird generiert
-- Then: Wird ein Gleichstand entsprechend markiert
+### Kurzbeschreibung  
+Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen, um meine Leistung nachvollziehen zu können.
 
-+ Given: Ein Team verlässt das Spiel vorzeitig
-+ When: Spielende eintritt
-+ Then: Wird es als „nicht abgeschlossen“ markiert
+### Trigger  
+Der Spieler öffnet die Fortschrittsansicht.
 
-- Given: Das Spiel wird manuell beendet
-- When: Der Organisator klickt „Schnitzeljagd beenden“
-- Then: Wird kein weiterer Fortschritt mehr gespeichert
+### Vorbedingung  
+- Der Spieler ist angemeldet  
 
-#### Conversation Points
-- Sortierlogik (Punkte, Zeit, Bonusaufgaben)?
-- Exportmöglichkeit als CSV oder Screenshot?
-- Automatisches vs. manuelles Beenden?
+### Nachbedingung  
+Der aktuelle Fortschritt und die Gesamtpunkte werden angezeigt.
+
+### Akteure  
+- Spieler  
+
+### Standardablauf  
+Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
+
+### Akzeptanzkriterien  
+- **Given:** Der Spieler hat mindestens eine Aufgabe abgeschlossen  
+  **When:** Er öffnet die Fortschrittsseite  
+  **Then:** Sieht er erledigte und offene Aufgaben getrennt  
+
+- **Given:** Aufgaben besitzen unterschiedliche Punktwerte  
+  **When:** Aufgaben abgeschlossen werden  
+  **Then:** Wird die Gesamtsumme korrekt berechnet  
+
+- **Given:** Der Spieler aktualisiert die Seite  
+  **When:** Neue Aufgaben erledigt wurden  
+  **Then:** Aktualisiert sich der Fortschrittsbalken  
+
+- **Given:** Alle Aufgaben wurden erledigt  
+  **When:** Die Fortschrittsseite geöffnet wird  
+  **Then:** Wird „Schnitzeljagd abgeschlossen“ angezeigt  
+
+### Fehlersituationen  
+- Fortschrittsdaten nicht verfügbar  
+
+### Systemzustand im Fehlerfall  
+Der letzte bekannte Fortschritt bleibt erhalten.
 
 /newpage
