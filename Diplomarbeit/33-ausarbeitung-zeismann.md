@@ -152,11 +152,3 @@ Dabei kommen grundlegende Konzepte der Versionsverwaltung zum Einsatz:
 - Merges zum Zusammenführen paralleler Arbeiten  
 
 Konflikte, die durch gleichzeitige Änderungen entstehen, werden bewusst gelöst, um die Stabilität des Projekts zu gewährleisten.
-
----
-
-## 12. Aktueller Entwicklungsstand
-
-Zum aktuellen Zeitpunkt ist das Frontend technisch vollständig funktionsfähig. Die grundlegende Benutzerführung, Authentifizierung, Standortabfrage, Kartenanzeige sowie die Integration mit Firebase sind umgesetzt.
-
-Damit ist eine stabile Basis geschaffen, auf der die eigentliche Spielmechanik der Schnitzeljagd weiter aufgebaut werden kann.
