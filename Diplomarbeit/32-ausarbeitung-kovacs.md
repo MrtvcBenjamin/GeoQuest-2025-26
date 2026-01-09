@@ -1,206 +1,127 @@
 # Teilaufgabe Schüler Kovacs
+
 \textauthor{Christian Kovacs}
+
+---
 
 ## Theorie
 
-Dieses Kapitel wird oft auch als _Literaturrecherche_ bezeichnet. Da gehört alles rein was der __normale__ Leser braucht um den praktischen Ansatz zu verstehen. Das bedeutet Sie brauchen einen roten Faden !
+### Zielsetzung der Anwendung
 
-Das sind z.B: allgemeine Definitionen, Beschreibung von fachspezifischen Vorgehensweisen, Frameworks, Theorie zu verwendeten Algorithmen, besondere Umstände, ...
+Im Rahmen dieser Diplomarbeit wird die Entwicklung einer mobilen, standortbasierten Schnitzeljagd-Applikation beschrieben, die speziell auf die Anforderungen der HTL Leoben zugeschnitten ist. Ziel ist es, eine schulinterne Lösung zu schaffen, welche die bisher eingesetzte externe Anwendung ersetzt und eine vollständige Kontrolle über Funktionalität, Datenhaltung und Weiterentwicklung ermöglicht.
+
+Die Anwendung soll eine intuitive Teilnahme an der Schnitzeljagd ermöglichen, indem Benutzer authentifiziert werden, Aufgaben standortabhängig freigeschaltet werden und der Fortschritt transparent dargestellt wird. Gleichzeitig sollen Lehrpersonen die Möglichkeit erhalten, Stationen kontrolliert freizugeben und den Spielablauf zu überwachen.
+
+---
+
+### Theoretische Grundlagen
+
+#### Mobile Applikationen und plattformübergreifende Entwicklung
+
+Moderne mobile Anwendungen werden zunehmend plattformübergreifend entwickelt, um Entwicklungsaufwand und Wartungskosten zu reduzieren. Frameworks wie **Flutter** ermöglichen es, mit einer einzigen Codebasis Anwendungen für Android und iOS zu erstellen. Die Programmiersprache **Dart** bietet dabei native Unterstützung für asynchrone Programmierung, welche insbesondere für Netzwerkzugriffe, Standortermittlung und Cloud-Dienste erforderlich ist.
+
+---
+
+#### Standortbasierte Dienste
+
+Standortbasierte Anwendungen nutzen GPS-Daten mobiler Endgeräte, um kontextabhängige Funktionen bereitzustellen. Typische Anwendungsfälle sind Kartenansichten, Navigation oder – wie in diesem Projekt – das automatische Auslösen von Aufgaben beim Betreten eines definierten geografischen Bereichs.
+
+Wesentliche Herausforderungen standortbasierter Systeme sind:
+
+- Ungenauigkeiten bei GPS-Messungen  
+- Energieverbrauch durch häufige Standortupdates  
+- Datenschutz und Zugriffsbeschränkungen  
+
+---
+
+#### NoSQL-Datenbanken und Firestore
+
+Cloud Firestore ist eine dokumentenbasierte NoSQL-Datenbank, welche sich besonders für mobile Anwendungen eignet. Im Gegensatz zu relationalen Datenbanken basiert Firestore auf Collections und Dokumenten und verzichtet auf komplexe Joins.
+
+Ein zentrales Prinzip bei Firestore ist:
+
+> **Daten werden nach den späteren Abfragen strukturiert (Query-Driven Design).**
+
+Daraus ergeben sich die Konzepte der **Query Patterns** und **Access Patterns**, welche bereits in der Entwurfsphase definiert werden müssen.
+
+---
+
+### Query- und Access-Patterns
+
+#### Access-Patterns
+
+Access-Patterns beschreiben, **wer welche Daten lesen oder schreiben darf**.  
+Für die entwickelte Schnitzeljagd-Applikation wurden folgende Zugriffsmuster definiert:
+
+- Benutzer dürfen ausschließlich auf **ihr eigenes Benutzerprofil** zugreifen  
+- Schreibzugriffe sind nur nach **erfolgreicher Authentifizierung** erlaubt  
+- Standortdaten dürfen nur von angemeldeten Benutzern gespeichert werden  
+- Lehrerspezifische Aktionen (z. B. Stationsfreigabe) erfolgen kontrolliert  
+
+Diese Access-Patterns bilden die Grundlage für:
+
+- die Wahl der Dokumenten-IDs  
+- die Trennung der Collections  
+- die Definition der Firestore Security Rules  
+
+---
+
+#### Query-Patterns
+
+Query-Patterns beschreiben, **welche Abfragen regelmäßig durchgeführt werden**:
+
+- Direktzugriff auf ein Benutzerprofil über die UID  
+- Schreiben neuer Standortdatensätze  
+- Lesen des aktuellen Fortschritts eines Spielers  
+- Anzeige aller Aufgaben in der Nähe eines Standorts  
+
+Da Firestore keine Joins unterstützt, wurde auf eine flache, klar strukturierte Datenhaltung gesetzt, um performante und einfache Abfragen zu ermöglichen.
+
+---
 
 ## Praktische Arbeit
 
-Hier beschreiben Sie ihren praktischen Teil. Es geht darum seine Implementierung / Versuche so darzustellen dass anhand dieser dre Leser erkennen kann was sie wie gemacht haben.
+### Systemarchitektur und eingesetzte Technologien
 
-Die Frage nach der Detailgenauigkeit lässt sich wie folgt beantworten: So, dass man Ihre Aufgabenstellung vollständig  nachvollziehen kann wenn man nur diese Diplomarbeit in Händen hat!
+#### Flutter
 
-### Erzeugen von Java Quellcode
+Flutter wurde als Entwicklungsframework gewählt, da es eine plattformübergreifende Entwicklung ermöglicht und eine moderne UI-Gestaltung unterstützt. Die modulare Widget-Struktur erleichtert die Umsetzung der unterschiedlichen Anwendungsfälle (Login, Karte, Aufgaben, Fortschritt).
 
-Unter einem Array in Java versteht man ein Feld oder Container, das in der Lage ist, mehrere Objekte vom gleichen Typ aufzunehmen und zu verwalten. Dabei wird in Java das Array als eine spezielle Klasse repräsentiert, was unter anderem mit sich bringt, dass man auf spezielle Methoden und Operationen bei Arrays zurückgreifen kann. Der Umgang mit Arrays mag gerade am Anfang etwas schwerer sein und birgt viele Fehlerquellen, nach und nach wird man das System das hinter den Arrays steht aber gut nachvollziehen können. 
+---
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Initialisieren eines Arrays" .java}
-Typ[] Name = new Typ[Anzahl];
-Typ Name[] = new Typ[Anzahl];
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Firebase Authentication
 
-Etwas erfahrenere Programmierer werden jetzt schon erkennen, worauf es beim Zugriff auf Elemente im Array meist hinausläuft: Auf Schleifen!
-Schleifen sind ein komfortables Mittel um alle Elemente eines Arrays durchzugehen und auf Wunsch auszugeben oder andere Operationen darauf anzuwenden. Allerdings muss man nicht nur hier aufpassen, dass man die länge des Arrays in der Schleife nicht überschreitet und so auf Felder zugreift die gar nicht existieren. Damit so etwas erst gar nicht passiert, kann man in der Abbruchbedingung der for-Schleife direkt die Länge des Arrays ausgeben mit: array.length.
+Firebase Authentication übernimmt die Registrierung und Anmeldung der Benutzer. Jeder Benutzer erhält eine eindeutige UID, welche als Schlüssel für alle weiteren Datenbankoperationen verwendet wird. Dadurch ist eine eindeutige Zuordnung zwischen Authentifizierung und gespeicherten Daten gewährleistet.
 
-Möchte man nun also alle 5 Elemente unseres Beispiels-Arrays mit einer Schleife ausgeben lassen, dann würde das so gehen:
+---
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Examples of array manipulations" .java}
-// (c) by Mike Scott
+#### Cloud Firestore
 
-public class ArrayExamples
-{	public static void main(String[] args)
-	{	int[] list = {1, 2, 3, 4, 1, 2, 3};
-		findAndPrintPairs(list, 5);
-		bubblesort(list);
-		showList(list);
+Cloud Firestore dient als zentrale Datenbank zur Speicherung von:
 
-		list = new int[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-		bubblesort(list);
-		showList(list);
+- Benutzerprofilen  
+- Standortdaten  
+- Aufgaben- und Fortschrittsinformationen  
 
-		list = new int[]{11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2};
-		bubblesort(list);
-		showList(list);
+Die Verwendung einer NoSQL-Datenbank erlaubt eine flexible Erweiterung des Datenmodells, etwa für zusätzliche Spielmodi oder Statistiken.
 
-		list = new int[]{1};
-		bubblesort(list);
-		showList(list);
-	}
+---
 
+### Benutzerverwaltung
 
-	// pre: list != null, list.length > 0
-	// post: return index of minimum element of array
-	public static int findMin(int[] list)
-	{	assert list != null && list.length > 0 : "failed precondition";
+Nach erfolgreicher Registrierung wird für jeden Benutzer ein eigenes Dokument in der _Users_-Collection angelegt. Die UID aus Firebase Authentication wird dabei als Dokumenten-ID verwendet.
 
-		int indexOfMin = 0;
-		for(int i = 1; i < list.length; i++)
-		{	if(list[i] < list[indexOfMin])
-			{	indexOfMin = i;
-			}
-		}
+```dart
+Future<void> saveUserInDatabase(String username) async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return;
 
-		return indexOfMin;
-	}
+  await FirebaseFirestore.instance
+      .collection('Users')
+      .doc(user.uid)
+      .set({
+        'username': username,
+        'totalPoints': 0,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Obwohl hier nur java gezeigt ist, unterstützt das Template auch scala, java, javascript, css, html5 und xml
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Ein einfaches XML" .xml}
-<?xml version="1.0" standalone="yes"?>
-<!DOCTYPE module [
-    <!ELEMENT module (module|property|metadata|message)*>
-    <!ATTLIST module name NMTOKEN #REQUIRED>
-    <!ELEMENT property EMPTY>
-    <!ATTLIST property
-        name NMTOKEN #REQUIRED
-        value CDATA #REQUIRED
-        default CDATA #IMPLIED
-    >
-    <!ELEMENT metadata EMPTY>
-    <!ATTLIST metadata
-        name NMTOKEN #REQUIRED
-        value CDATA #REQUIRED
-    >
-    <!ELEMENT message EMPTY>
-    <!ATTLIST message
-        key NMTOKEN #REQUIRED
-        value CDATA #REQUIRED
-    >
-]>
-
-<!--
-    Checkstyle configuration that checks if the braces are set correctly
- -->
-
-<module name = "Checker">
-    <property name="charset" value="UTF-8"/>
-    <property name="severity" value="warning"/>
-
-    <property name="fileExtensions" value="java"/>
-    <!-- Checks for whitespace                               -->
-    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
-
-    <module name="TreeWalker">
-        
-        <module name="NeedBraces"/>
-        <module name="LeftCurly">
-        	<property name="option" value="nl"/>
-        </module>
-
-        <module name="RightCurly">
-            <property name="id" value="RightCurlyAlone"/>
-            <property name="option" value="alone"/>
-            <property name="tokens"
-             value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT,
-                    INSTANCE_INIT,LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE,
-                    LITERAL_DO"/>
-        </module>
-    </module>
-</module>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Hier etwas in kotlin
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Ein einfaches Kotlin Beispiel" .kotlin}
-// this is a simple code listing:
-println("hello kotlin from latex")
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-Und noch ein Beispiel in vba
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Ein einfaches Visual Basic for Applications Beispiel" .vba}
-Private Sub ExitSub()
- 
-    Dim i As Integer
- 
-    For i = 1 To 10      
-        If i = 5 Then
-            Exit Sub
-            MsgBox "The value of i is" & i
-        End If
-    Next i 
- 
-End Sub
- 
- 
-Private Sub CallExitSub()
-    Call ExitSub
-    MsgBox "Exit Sub"  
-End Sub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-und noch was in Dart (im Markdown direkt als Latex Quellcode eingefügt - damit funktionieren jegliche Sprachen welche als langdef vorliegen) 
-
-\begin{lstlisting}[language=Dart, caption={Ein Beispiel für Dart}]
-library hallo;
-
-void main() {
-  String x;
-  print('Hello, World!');
-  x = 'hallo';
-}
-\end{lstlisting}
-
-
-### Auswertung der Ergebnisse
-
-Anhand von XY kann man folgende Tabelle ableiten:
-
-| Right | Left | Default | Center |
-|------:|:-----|---------|:------:|
-|   12  |  12  |    12   |    12  |
-|  123  |  123 |   123   |   123  |
-|    1  |    1 |     1   |     1  |
-
-: Eine Tolle tabelle
-
-#### Eine Überschrift 4ter Ordnung
-
-Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext.
-
-
-#### Noch ein Überschrift 4ter Ordnung
-
-Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext.
-
-Und mit einer Aufzählung:
-
-* Alpha
-* Bravo
-* Charlie
-    * Charlie 1
-    * Charlie 2
-    * Charlie 3
-    * Charlie 4
-* Delta
-* Epsilon
-
- Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext.
-
