@@ -2,8 +2,6 @@
 
 \textauthor{Christian Kovacs}
 
----
-
 ## Theorie
 
 ### Zielsetzung der Anwendung
