@@ -9,198 +9,137 @@ Das sind z.B: allgemeine Definitionen, Beschreibung von fachspezifischen Vorgehe
 
 ## Praktische Arbeit
 
-Hier beschreiben Sie ihren praktischen Teil. Es geht darum seine Implementierung / Versuche so darzustellen dass anhand dieser dre Leser erkennen kann was sie wie gemacht haben.
+1. Einordnung des Frontends im Gesamtprojekt
 
-Die Frage nach der Detailgenauigkeit lässt sich wie folgt beantworten: So, dass man Ihre Aufgabenstellung vollständig  nachvollziehen kann wenn man nur diese Diplomarbeit in Händen hat!
+Im Rahmen der Diplomarbeit wird eine mobile Schnitzeljagd-App mit dem Namen GeoQuest entwickelt. Ziel der Anwendung ist es, Nutzerinnen und Nutzer spielerisch durch die Stadt Leoben zu führen. Dabei werden reale Orte besucht, an denen Aufgaben gelöst und Informationen abgerufen werden.
+Das Projekt wird im Team umgesetzt und besteht aus mehreren technischen Komponenten. Meine Aufgabe innerhalb des Projekts ist die Konzeption und Umsetzung des Frontends der Anwendung.
 
-### Erzeugen von Java Quellcode
+Das Frontend bildet die Schnittstelle zwischen Benutzer und System. Es ist verantwortlich für die Darstellung der Inhalte, die Benutzerführung sowie für die Interaktion mit Backend-Diensten wie Authentifizierung, Standortabfragen und Datenbankzugriffen.
 
-Unter einem Array in Java versteht man ein Feld oder Container, das in der Lage ist, mehrere Objekte vom gleichen Typ aufzunehmen und zu verwalten. Dabei wird in Java das Array als eine spezielle Klasse repräsentiert, was unter anderem mit sich bringt, dass man auf spezielle Methoden und Operationen bei Arrays zurückgreifen kann. Der Umgang mit Arrays mag gerade am Anfang etwas schwerer sein und birgt viele Fehlerquellen, nach und nach wird man das System das hinter den Arrays steht aber gut nachvollziehen können. 
+2. Wahl der Technologien für das Frontend
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Initialisieren eines Arrays" .java}
-Typ[] Name = new Typ[Anzahl];
-Typ Name[] = new Typ[Anzahl];
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Für die Umsetzung des Frontends wurde das Framework Flutter gewählt. Flutter ermöglicht die Entwicklung plattformübergreifender mobiler Anwendungen auf Basis einer einzigen Codebasis. Dadurch kann die App sowohl auf Android- als auch auf iOS-Geräten betrieben werden, ohne den Code doppelt schreiben zu müssen.
 
-Etwas erfahrenere Programmierer werden jetzt schon erkennen, worauf es beim Zugriff auf Elemente im Array meist hinausläuft: Auf Schleifen!
-Schleifen sind ein komfortables Mittel um alle Elemente eines Arrays durchzugehen und auf Wunsch auszugeben oder andere Operationen darauf anzuwenden. Allerdings muss man nicht nur hier aufpassen, dass man die länge des Arrays in der Schleife nicht überschreitet und so auf Felder zugreift die gar nicht existieren. Damit so etwas erst gar nicht passiert, kann man in der Abbruchbedingung der for-Schleife direkt die Länge des Arrays ausgeben mit: array.length.
+Die Programmiersprache Dart, die von Flutter verwendet wird, eignet sich besonders gut für reaktive Benutzeroberflächen. Änderungen am Zustand der Anwendung führen automatisch zu einer Aktualisierung der Benutzeroberfläche, was für interaktive Apps wie GeoQuest essenziell ist.
 
-Möchte man nun also alle 5 Elemente unseres Beispiels-Arrays mit einer Schleife ausgeben lassen, dann würde das so gehen:
+Als Entwicklungsumgebung wird Android Studio eingesetzt, da dieses eine sehr gute Integration für Flutter, Emulatoren und Debugging bietet.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Examples of array manipulations" .java}
-// (c) by Mike Scott
+3. Architektur und Struktur des Frontends
 
-public class ArrayExamples
-{	public static void main(String[] args)
-	{	int[] list = {1, 2, 3, 4, 1, 2, 3};
-		findAndPrintPairs(list, 5);
-		bubblesort(list);
-		showList(list);
+Eine klare Projektstruktur ist besonders wichtig, um den Code übersichtlich, wartbar und teamfähig zu halten. Daher wurde das Frontend in mehrere logisch getrennte Bereiche unterteilt.
 
-		list = new int[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-		bubblesort(list);
-		showList(list);
+Der zentrale Einstiegspunkt der App befindet sich in der Datei main.dart. Von dort aus wird die gesamte Anwendung gestartet und die Navigation zwischen den einzelnen Screens gesteuert.
 
-		list = new int[]{11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2};
-		bubblesort(list);
-		showList(list);
+Die Benutzeroberfläche ist in sogenannte Screens gegliedert, wobei jeder Screen eine eigenständige Ansicht der App darstellt, z. B. Ladebildschirm, Onboarding, Login oder Kartenansicht. Wiederverwendbare UI-Elemente werden in eigene Widgets ausgelagert, um Redundanzen zu vermeiden und ein einheitliches Design zu gewährleisten.
 
-		list = new int[]{1};
-		bubblesort(list);
-		showList(list);
-	}
+Diese modulare Struktur erleichtert sowohl die Zusammenarbeit im Team als auch spätere Erweiterungen der App.
 
+4. Benutzerführung und App-Ablauf
 
-	// pre: list != null, list.length > 0
-	// post: return index of minimum element of array
-	public static int findMin(int[] list)
-	{	assert list != null && list.length > 0 : "failed precondition";
+Ein zentrales Ziel bei der Entwicklung des Frontends ist eine klare und verständliche Benutzerführung. Die App folgt daher einer fest definierten Reihenfolge beim Start:
 
-		int indexOfMin = 0;
-		for(int i = 1; i < list.length; i++)
-		{	if(list[i] < list[indexOfMin])
-			{	indexOfMin = i;
-			}
-		}
+Lade- bzw. Splash-Screen
 
-		return indexOfMin;
-	}
-}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Onboarding-Screens
 
-Obwohl hier nur java gezeigt ist, unterstützt das Template auch scala, java, javascript, css, html5 und xml
+Berechtigungsabfragen
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Ein einfaches XML" .xml}
-<?xml version="1.0" standalone="yes"?>
-<!DOCTYPE module [
-    <!ELEMENT module (module|property|metadata|message)*>
-    <!ATTLIST module name NMTOKEN #REQUIRED>
-    <!ELEMENT property EMPTY>
-    <!ATTLIST property
-        name NMTOKEN #REQUIRED
-        value CDATA #REQUIRED
-        default CDATA #IMPLIED
-    >
-    <!ELEMENT metadata EMPTY>
-    <!ATTLIST metadata
-        name NMTOKEN #REQUIRED
-        value CDATA #REQUIRED
-    >
-    <!ELEMENT message EMPTY>
-    <!ATTLIST message
-        key NMTOKEN #REQUIRED
-        value CDATA #REQUIRED
-    >
-]>
+Anmelde-Screen
 
-<!--
-    Checkstyle configuration that checks if the braces are set correctly
- -->
+Hauptfunktionalitäten der App
 
-<module name = "Checker">
-    <property name="charset" value="UTF-8"/>
-    <property name="severity" value="warning"/>
+Durch diese Abfolge wird sichergestellt, dass neue Benutzer zuerst verstehen, wie die App funktioniert, bevor sie sich anmelden oder spielen können.
 
-    <property name="fileExtensions" value="java"/>
-    <!-- Checks for whitespace                               -->
-    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+5. Lade- und Startbildschirm
 
-    <module name="TreeWalker">
-        
-        <module name="NeedBraces"/>
-        <module name="LeftCurly">
-        	<property name="option" value="nl"/>
-        </module>
+Beim Start der Anwendung wird ein Ladebildschirm angezeigt. Dieser erfüllt mehrere Aufgaben:
 
-        <module name="RightCurly">
-            <property name="id" value="RightCurlyAlone"/>
-            <property name="option" value="alone"/>
-            <property name="tokens"
-             value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT,
-                    INSTANCE_INIT,LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE,
-                    LITERAL_DO"/>
-        </module>
-    </module>
-</module>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+visuelle Rückmeldung beim App-Start
 
-Hier etwas in kotlin
+professioneller erster Eindruck
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Ein einfaches Kotlin Beispiel" .kotlin}
-// this is a simple code listing:
-println("hello kotlin from latex")
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Vorbereitung von Initialisierungen im Hintergrund
 
+Der Ladeindikator wurde bewusst angepasst und nicht als Standard-Flutter-Element belassen. Statt eines einfachen Kreises wird ein gepunkteter Ladeindikator verwendet, der farblich neutral (schwarz) gestaltet ist. Zusätzlich wird das Logo der App eingeblendet, um den Wiedererkennungswert zu erhöhen.
 
-Und noch ein Beispiel in vba
+6. Onboarding-Konzept
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{caption="Ein einfaches Visual Basic for Applications Beispiel" .vba}
-Private Sub ExitSub()
- 
-    Dim i As Integer
- 
-    For i = 1 To 10      
-        If i = 5 Then
-            Exit Sub
-            MsgBox "The value of i is" & i
-        End If
-    Next i 
- 
-End Sub
- 
- 
-Private Sub CallExitSub()
-    Call ExitSub
-    MsgBox "Exit Sub"  
-End Sub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Die Onboarding-Screens dienen dazu, neue Benutzer schrittweise an die App heranzuführen. Sie erklären:
 
+den Zweck der App
 
-und noch was in Dart (im Markdown direkt als Latex Quellcode eingefügt - damit funktionieren jegliche Sprachen welche als langdef vorliegen) 
+den Ablauf der Schnitzeljagd
 
-\begin{lstlisting}[language=Dart, caption={Ein Beispiel für Dart}]
-library hallo;
+die Bedeutung von Standort und Benachrichtigungen
 
-void main() {
-  String x;
-  print('Hello, World!');
-  x = 'hallo';
-}
-\end{lstlisting}
+Gestalterisch wurden die Inhalte bewusst zentriert und mit größerer Schrift umgesetzt, um einen leeren oder überladenen Eindruck zu vermeiden.
+Die Onboarding-Phase findet vor dem Login statt, damit Benutzer die App kennenlernen können, ohne sich sofort registrieren zu müssen.
 
+7. Authentifizierung und Benutzerkonten
 
-### Auswertung der Ergebnisse
+Nach dem Onboarding erfolgt die Anmeldung. Für die Authentifizierung wird Firebase Authentication verwendet. Firebase bietet eine sichere und skalierbare Lösung zur Benutzerverwaltung und ist besonders gut in mobile Anwendungen integrierbar.
 
-Anhand von XY kann man folgende Tabelle ableiten:
+Im Frontend wurden folgende Anmeldearten vorgesehen:
 
-| Right | Left | Default | Center |
-|------:|:-----|---------|:------:|
-|   12  |  12  |    12   |    12  |
-|  123  |  123 |   123   |   123  |
-|    1  |    1 |     1   |     1  |
+Anmeldung mit Google-Konto
 
-: Eine Tolle tabelle
+Anmeldung mit E-Mail und Passwort
 
-#### Eine Überschrift 4ter Ordnung
+Diese Varianten decken einen Großteil der Zielgruppe ab und ermöglichen einen einfachen Einstieg in die App. Weitere Anmeldeoptionen können später problemlos ergänzt werden.
 
-Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext.
+Ohne Anmeldung ist der Zugriff auf spielrelevante Funktionen nicht möglich, da Fortschritte, Standorte und Spielstände benutzerbezogen gespeichert werden müssen.
 
+8. Berechtigungsmanagement (Standort und Benachrichtigungen)
 
-#### Noch ein Überschrift 4ter Ordnung
+Da GeoQuest eine ortsbasierte Anwendung ist, spielt der Zugriff auf Standortdaten eine zentrale Rolle. Aus diesem Grund wurde ein verpflichtender Berechtigungsprozess implementiert.
 
-Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext.
+Standortberechtigung
 
-Und mit einer Aufzählung:
+Die App überprüft zunächst, ob Standortdienste am Gerät aktiviert sind. Falls nicht, wird der Benutzer aufgefordert, diese zu aktivieren. Anschließend wird die Standortberechtigung abgefragt. Ohne erteilte Standortfreigabe kann die App nicht verwendet werden.
 
-* Alpha
-* Bravo
-* Charlie
-    * Charlie 1
-    * Charlie 2
-    * Charlie 3
-    * Charlie 4
-* Delta
-* Epsilon
+Benachrichtigungen
+
+Benachrichtigungen werden benötigt, um Benutzer über Spielereignisse oder Hinweise zu informieren. Insbesondere auf neueren Android-Versionen ist dafür eine explizite Freigabe notwendig. Auch diese Berechtigung wird aktiv abgefragt und ist Teil des App-Flows.
+
+Das Berechtigungsmanagement stellt sicher, dass alle für das Spiel notwendigen Funktionen technisch verfügbar sind.
+
+9. Kartenintegration und Standortdarstellung
+
+Zur Darstellung der Spielstationen wird OpenStreetMap verwendet. Die Kartenintegration erfolgt über das Flutter-Paket flutter_map. Dieses erlaubt eine flexible Darstellung von Kartenkacheln sowie das Platzieren von Markern.
+
+Im Frontend werden:
+
+eine interaktive Karte angezeigt
+
+feste Marker (z. B. Stationen) dargestellt
+
+der aktuelle Standort des Benutzers visualisiert
+
+Sobald der Standort ermittelt wurde, wird die Karte entsprechend aktualisiert. Dies schafft eine direkte Verbindung zwischen realer Umgebung und digitalem Spiel.
+
+10. Speicherung von Standortdaten
+
+Um spielrelevante Daten langfristig nutzen zu können, werden Standortinformationen in einer Cloud-Datenbank gespeichert. Dafür wird Firebase Firestore verwendet.
+
+Im Frontend wird der Standort nur dann gespeichert, wenn:
+
+ein Benutzer angemeldet ist
+
+gültige Standortdaten vorliegen
+
+Die Koordinaten werden in einem geeigneten Datenformat abgelegt, sodass sie später für Spielmechaniken, Auswertungen oder Statistiken genutzt werden können.
+
+11. Versionsverwaltung und Teamarbeit
+
+Die Zusammenarbeit im Team erfolgt über GitHub. Änderungen am Frontend werden regelmäßig versioniert und in das gemeinsame Repository übertragen. Dabei kommen grundlegende Konzepte der Versionsverwaltung zum Einsatz:
+
+Commits zur Dokumentation von Änderungen
+
+Push und Pull zur Synchronisation
+
+Merges zum Zusammenführen paralleler Arbeiten
+
+Konflikte, die durch gleichzeitige Änderungen entstehen, werden bewusst gelöst, um die Stabilität des Projekts zu gewährleisten.
 
  Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext. Mit etwas Fließtext.
 
