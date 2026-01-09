@@ -329,6 +329,67 @@ Der Aufgabenstatus bleibt unverändert, keine doppelte Auslösung erfolgt.
 
 ---
 
+## Stationsfreigabe durch Lehrer
+
+### Kurzbeschreibung  
+Als **Lehrer** möchte ich eine Aufgabe an einer Station manuell freigeben, indem ich ein Kürzel eingebe, um sicherzustellen, dass ein Team die Aufgabe korrekt erledigt hat und erst danach Punkte erhält.
+
+### Trigger  
+Ein Schüler-Team erreicht eine Station und das Aufgaben-Pop-up wird automatisch angezeigt.
+
+### Vorbedingung  
+- Eine aktive Schnitzeljagd läuft  
+- Das Team befindet sich im definierten Radius einer Station  
+- Der Lehrer ist im Besitz eines gültigen Stationskürzels  
+- Das Team hat die Aufgabe an dieser Station noch nicht abgeschlossen  
+
+### Nachbedingung  
+Die Aufgabe wird als erfolgreich abgeschlossen markiert und die zugehörigen Punkte werden dem Team gutgeschrieben.
+
+### Akteure  
+- Lehrer  
+- Spieler (Team)  
+
+### Standardablauf  
+Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
+
+### Akzeptanzkriterien  
+- **Given:** Ein Team erreicht den Radius einer Station  
+  **When:** Das Aufgaben-Pop-up wird angezeigt  
+  **Then:** Sieht der Lehrer ein Eingabefeld für das Stationskürzel  
+
+- **Given:** Der Lehrer gibt ein korrektes Stationskürzel ein  
+  **When:** Er bestätigt die Eingabe  
+  **Then:** Wird die Aufgabe als abgeschlossen markiert  
+
+- **Given:** Die Aufgabe wurde erfolgreich freigegeben  
+  **When:** Der Abschluss bestätigt wird  
+  **Then:** Werden dem Team automatisch Punkte zugewiesen  
+
+- **Given:** Der Lehrer gibt ein falsches Stationskürzel ein  
+  **When:** Er bestätigt die Eingabe  
+  **Then:** Erscheint eine Fehlermeldung („Ungültiges Kürzel“)  
+
+- **Given:** Ein Team hat die Station bereits abgeschlossen  
+  **When:** Es betritt erneut den Stationsradius  
+  **Then:** Wird kein erneutes Pop-up zur Freigabe angezeigt  
+
+### Fehlersituationen  
+- Falsches oder ungültiges Stationskürzel  
+- Abbruch der Kürzeleingabe  
+- Netzwerkprobleme bei der Punktezuweisung  
+
+### Systemzustand im Fehlerfall  
+Die Aufgabe bleibt als nicht abgeschlossen markiert und es werden keine Punkte vergeben.
+
+### Conversation Points  
+- Länge und Format des Stationskürzels (z. B. 4–6 Zeichen)  
+- Einmal- oder mehrfach verwendbares Kürzel pro Station  
+- Sichtbarkeit der Kürzeleingabe (z. B. verdeckte Eingabe)  
+- Speicherung der Freigabe in Firestore (Team + Station + Zeitstempel)  
+
+---
+
 ## Aufgaben & Fortschritt
 
 ### Kurzbeschreibung  
