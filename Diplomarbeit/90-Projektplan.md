@@ -165,34 +165,32 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 
 - Finale Version der App ist fertiggestellt und stabil
 - Projektdokumentation (Diplomarbeit) ist vollständig und korrekt
-- Abgabekriterien der HTL Leoben sind erfüllt
-
 
 ## Anwendungsfälle
 
-## Registrierung & Login
+### Registrierung & Login
 
-### Kurzbeschreibung  
+#### Kurzbeschreibung  
 Als **Spieler** möchte ich mich mit meiner schulischen E-Mail-Adresse registrieren und anmelden können, um an einer Schnitzeljagd teilnehmen zu können.
 
-### Trigger  
+#### Trigger  
 Der Spieler möchte an einer Schnitzeljagd teilnehmen und öffnet die App.
 
-### Vorbedingung  
+#### Vorbedingung  
 - Die App ist installiert  
 - Eine Internetverbindung ist vorhanden  
 - Der Spieler besitzt eine gültige schulische E-Mail-Adresse  
 
-### Nachbedingung  
+#### Nachbedingung  
 Der Spieler ist erfolgreich angemeldet und befindet sich auf der Startseite der App.
 
-### Akteure  
+#### Akteure  
 - Spieler  
 
-### Standardablauf  
+#### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Akzeptanzkriterien  
+#### Akzeptanzkriterien  
 - **Given:** Ein Nutzer öffnet die App  
   **When:** Er klickt auf „Login“  
   **Then:** Wird er eingeloggt und zur Startseite weitergeleitet  
@@ -205,42 +203,42 @@ Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
   **When:** Er bestätigt die Registrierung  
   **Then:** Wird ein neuer Firestore-Eintrag unter `users` erstellt  
 
-### Fehlersituationen  
+#### Fehlersituationen  
 - Ungültige Anmeldedaten  
 - Abbruch des Login-Vorgangs  
 
-### Systemzustand im Fehlerfall  
+#### Systemzustand im Fehlerfall  
 Der Nutzer bleibt ausgeloggt, es wird kein Benutzerkonto erstellt oder verändert.
 
-### Conversation Points  
+#### Conversation Points  
 - E-Mail-Verifizierung notwendig?  
 - Passwort-Richtlinien?  
 
 ---
 
-## Karte & Standort
+### Karte & Standort
 
-### Kurzbeschreibung  
+#### Kurzbeschreibung  
 Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufgaben sehen, um zu wissen, wohin ich als Nächstes gehen soll.
 
-### Trigger  
+#### Trigger  
 Der Spieler öffnet die Kartenansicht.
 
-### Vorbedingung  
+#### Vorbedingung  
 - Der Spieler ist angemeldet  
 - Die Standortfreigabe ist erteilt  
 
-### Nachbedingung  
+#### Nachbedingung  
 Die aktuelle Position sowie Aufgaben in der Umgebung werden auf der Karte angezeigt.
 
-### Akteure  
+#### Akteure  
 - Spieler  
 - Standortdienst des mobilen Endgeräts  
 
-### Standardablauf  
+#### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Akzeptanzkriterien  
+#### Akzeptanzkriterien  
 - **Given:** Der Nutzer hat Standortfreigabe erteilt  
   **When:** Er öffnet die Karte  
   **Then:** Wird seine Position korrekt mit einem Marker angezeigt  
@@ -257,44 +255,44 @@ Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
   **When:** Seine Position ändert sich  
   **Then:** Aktualisiert sich der Positionsmarker in Echtzeit  
 
-### Fehlersituationen  
+#### Fehlersituationen  
 - Standortzugriff verweigert  
 - Ungenaue oder fehlende Standortdaten  
 
-### Systemzustand im Fehlerfall  
+#### Systemzustand im Fehlerfall  
 Die Karte wird ohne Positionsdaten angezeigt, Aufgabenmarker werden nicht geladen.
 
-### Conversation Points  
+#### Conversation Points  
 - Echtzeit-Updates oder periodische Standortabfrage?  
 - Filter für Aufgabenradius?  
 - Karten-Styling (Standard, Dark Mode)?  
 
 ---
 
-## Standortbasierte Aufgaben
+### Standortbasierte Aufgaben
 
-### Kurzbeschreibung  
+#### Kurzbeschreibung  
 Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem Checkpoint nähere, um interaktiv an der Schnitzeljagd teilnehmen zu können.
 
-### Trigger  
+#### Trigger  
 Der Spieler betritt den definierten Umkreis eines Checkpoints.
 
-### Vorbedingung  
+#### Vorbedingung  
 - Der Spieler ist angemeldet  
 - Eine aktive Schnitzeljagd ist gestartet  
 - Standortberechtigung ist erteilt  
 
-### Nachbedingung  
+#### Nachbedingung  
 Die Aufgabe wird angezeigt und kann bearbeitet werden.
 
-### Akteure  
+#### Akteure  
 - Spieler  
 - GPS-/Standortsystem  
 
-### Standardablauf  
+#### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Akzeptanzkriterien  
+#### Akzeptanzkriterien  
 - **Given:** Der Spieler befindet sich in einer aktiven Schnitzeljagd  
   **When:** Er betritt den definierten Umkreis eines Checkpoints  
   **Then:** Wird die zugehörige Aufgabe automatisch angezeigt  
@@ -315,45 +313,45 @@ Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
   **When:** Der Spieler bewegt sich nahe des Radius  
   **Then:** Wird die Aufgabe nur einmal ausgelöst  
 
-### Fehlersituationen  
+#### Fehlersituationen  
 - Ungenaue Standortdaten  
 - Mehrfache Standortupdates  
 
-### Systemzustand im Fehlerfall  
+#### Systemzustand im Fehlerfall  
 Der Aufgabenstatus bleibt unverändert, keine doppelte Auslösung erfolgt.
 
-### Conversation Points  
+#### Conversation Points  
 - Optimale Radiusgröße  
 - GPS-Update-Intervall  
 - Speicherung des Aufgabenstatus  
 
 ---
 
-## Stationsfreigabe durch Lehrer
+### Stationsfreigabe durch Lehrer
 
-### Kurzbeschreibung  
+#### Kurzbeschreibung  
 Als **Lehrer** möchte ich eine Aufgabe an einer Station manuell freigeben, indem ich ein Kürzel eingebe, um sicherzustellen, dass ein Team die Aufgabe korrekt erledigt hat und erst danach Punkte erhält.
 
-### Trigger  
+#### Trigger  
 Ein Schüler-Team erreicht eine Station und das Aufgaben-Pop-up wird automatisch angezeigt.
 
-### Vorbedingung  
+#### Vorbedingung  
 - Eine aktive Schnitzeljagd läuft  
 - Das Team befindet sich im definierten Radius einer Station  
 - Der Lehrer ist im Besitz eines gültigen Stationskürzels  
 - Das Team hat die Aufgabe an dieser Station noch nicht abgeschlossen  
 
-### Nachbedingung  
+#### Nachbedingung  
 Die Aufgabe wird als erfolgreich abgeschlossen markiert und die zugehörigen Punkte werden dem Team gutgeschrieben.
 
-### Akteure  
+#### Akteure  
 - Lehrer  
 - Spieler (Team)  
 
-### Standardablauf  
+#### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Akzeptanzkriterien  
+#### Akzeptanzkriterien  
 - **Given:** Ein Team erreicht den Radius einer Station  
   **When:** Das Aufgaben-Pop-up wird angezeigt  
   **Then:** Sieht der Lehrer ein Eingabefeld für das Stationskürzel  
@@ -374,15 +372,15 @@ Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
   **When:** Es betritt erneut den Stationsradius  
   **Then:** Wird kein erneutes Pop-up zur Freigabe angezeigt  
 
-### Fehlersituationen  
+#### Fehlersituationen  
 - Falsches oder ungültiges Stationskürzel  
 - Abbruch der Kürzeleingabe  
 - Netzwerkprobleme bei der Punktezuweisung  
 
-### Systemzustand im Fehlerfall  
+#### Systemzustand im Fehlerfall  
 Die Aufgabe bleibt als nicht abgeschlossen markiert und es werden keine Punkte vergeben.
 
-### Conversation Points  
+#### Conversation Points  
 - Länge und Format des Stationskürzels (z. B. 4–6 Zeichen)  
 - Einmal- oder mehrfach verwendbares Kürzel pro Station  
 - Sichtbarkeit der Kürzeleingabe (z. B. verdeckte Eingabe)  
@@ -390,27 +388,27 @@ Die Aufgabe bleibt als nicht abgeschlossen markiert und es werden keine Punkte v
 
 ---
 
-## Aufgaben & Fortschritt
+### Aufgaben & Fortschritt
 
-### Kurzbeschreibung  
+#### Kurzbeschreibung  
 Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen, um meine Leistung nachvollziehen zu können.
 
-### Trigger  
+#### Trigger  
 Der Spieler öffnet die Fortschrittsansicht.
 
-### Vorbedingung  
+#### Vorbedingung  
 - Der Spieler ist angemeldet  
 
-### Nachbedingung  
+#### Nachbedingung  
 Der aktuelle Fortschritt und die Gesamtpunkte werden angezeigt.
 
-### Akteure  
+#### Akteure  
 - Spieler  
 
-### Standardablauf  
+#### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
-### Akzeptanzkriterien  
+#### Akzeptanzkriterien  
 - **Given:** Der Spieler hat mindestens eine Aufgabe abgeschlossen  
   **When:** Er öffnet die Fortschrittsseite  
   **Then:** Sieht er erledigte und offene Aufgaben getrennt  
@@ -427,10 +425,10 @@ Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
   **When:** Die Fortschrittsseite geöffnet wird  
   **Then:** Wird „Schnitzeljagd abgeschlossen“ angezeigt  
 
-### Fehlersituationen  
+#### Fehlersituationen  
 - Fortschrittsdaten nicht verfügbar  
 
-### Systemzustand im Fehlerfall  
+#### Systemzustand im Fehlerfall  
 Der letzte bekannte Fortschritt bleibt erhalten.
 
 /newpage
