@@ -2,17 +2,15 @@
 
 \textauthor{Christian Kovacs}
 
+---
+
 ## Theorie
 
 ### Zielsetzung der Anwendung
 
-Im Rahmen dieser Diplomarbeit wird die Entwicklung einer mobilen, standortbasierten Schnitzeljagd-Applikation beschrieben, die speziell für den Einsatz an der HTL Leoben konzipiert ist. Die Anwendung dient als schulinterne Alternative zu einer bisher eingesetzten externen Lösung und verfolgt das Ziel, vollständige Kontrolle über den Funktionsumfang, die Datenhaltung sowie zukünftige Erweiterungen zu ermöglichen.
+Im Rahmen dieser Diplomarbeit wird die Entwicklung einer mobilen, standortbasierten Schnitzeljagd-Applikation beschrieben, die speziell für den Einsatz an der HTL Leoben konzipiert wurde. Ziel ist es, eine bisher eingesetzte externe Anwendung vollständig abzulösen und durch eine schulinterne Lösung zu ersetzen, die den organisatorischen, technischen und datenschutzrechtlichen Anforderungen des Schulbetriebs gerecht wird.
 
-Ein zentrales Ziel der Anwendung besteht darin, organisatorische Abläufe der jährlich stattfindenden Schnitzeljagd für die ersten Klassen digital zu unterstützen und zu vereinfachen. Die Applikation soll dabei keine klassische Spiel- oder Rätsellogik enthalten, sondern primär als technisches Hilfsmittel zur Verwaltung von Stationen, Aufgabenfreigaben und Punktevergaben dienen.
-
-Schülerinnen und Schüler nehmen in Teams an der Schnitzeljagd teil und bewegen sich physisch zwischen vordefinierten Stationen. Beim Erreichen einer Station wird in der Anwendung eine entsprechende Aufgabe sichtbar. Die erfolgreiche Absolvierung der Aufgabe wird jedoch nicht automatisch durch die App bewertet, sondern durch eine autorisierte Lehrperson bestätigt. Erst nach dieser Bestätigung wird der Fortschritt aktualisiert und die Punktevergabe durchgeführt.
-
-Lehrpersonen übernehmen somit eine zentrale Kontrollfunktion im Ablauf der Schnitzeljagd. Sie haben die Möglichkeit, Stationen freizugeben, Aufgaben als erledigt zu markieren und den aktuellen Stand aller Teams einzusehen. Durch dieses Konzept wird ein realistischer, kontrollierbarer und pädagogisch sinnvoller Ablauf gewährleistet, ohne unnötige technische Komplexität in der App selbst zu erzeugen.
+Die Anwendung verfolgt das Ziel, den Ablauf der Schnitzeljagd technisch zu unterstützen, ohne den pädagogischen Charakter der Veranstaltung zu verfälschen. Aus diesem Grund wurde bewusst auf eine komplexe spielmechanische Logik verzichtet. Stattdessen basiert das System auf einer kontrollierten Freigabe von Stationen, bei der Lehrpersonen vor Ort den erfolgreichen Abschluss einer Aufgabe bestätigen. Dadurch bleibt die Verantwortung für Bewertung und Interaktion beim Lehrpersonal, während die Anwendung primär organisatorische und dokumentierende Aufgaben übernimmt.
 
 ---
 
@@ -20,50 +18,36 @@ Lehrpersonen übernehmen somit eine zentrale Kontrollfunktion im Ablauf der Schn
 
 #### Mobile Applikationen und plattformübergreifende Entwicklung
 
-Die Entwicklung moderner mobiler Anwendungen erfolgt zunehmend plattformübergreifend. Ziel ist es, mit einer einzigen Codebasis Anwendungen für mehrere Betriebssysteme bereitzustellen, um Entwicklungszeit, Wartungsaufwand und Fehlerquellen zu reduzieren.
+Die Entwicklung moderner mobiler Anwendungen erfolgt zunehmend plattformübergreifend, um redundante Implementierungen für unterschiedliche Betriebssysteme zu vermeiden. Ziel dieser Vorgehensweise ist es, Entwicklungsaufwand, Wartungskosten sowie Fehleranfälligkeit zu reduzieren und gleichzeitig eine konsistente Benutzererfahrung sicherzustellen.
 
-Für diese Diplomarbeit wurde das Framework **Flutter** gewählt, welches die Erstellung nativer Benutzeroberflächen für Android und iOS ermöglicht. Flutter basiert auf der Programmiersprache **Dart**, die speziell für performante UI-Anwendungen konzipiert wurde. Ein wesentlicher Vorteil von Dart ist die native Unterstützung asynchroner Programmierung, welche für mobile Anwendungen unerlässlich ist.
-
-Asynchrone Abläufe sind insbesondere bei folgenden Komponenten notwendig:
-
-- Kommunikation mit Cloud-Diensten (z. B. Firestore)
-- Authentifizierungsvorgänge
-- Standortermittlung über GPS
-- Aktualisierung von Benutzer- und Fortschrittsdaten
-
-Durch den Einsatz von Flutter kann zudem eine einheitliche Benutzererfahrung auf unterschiedlichen Endgeräten sichergestellt werden, was insbesondere bei schulischen Anwendungen mit heterogener Geräteausstattung von Vorteil ist.
+Für dieses Projekt wurde das Framework **Flutter** eingesetzt, welches die Erstellung nativer Anwendungen für Android und iOS auf Basis einer gemeinsamen Codebasis ermöglicht. Flutter basiert auf der Programmiersprache **Dart**, welche insbesondere durch ihre konsequente Unterstützung asynchroner Programmierung für mobile Anwendungen geeignet ist. Da Vorgänge wie Standortabfragen, Netzwerkkommunikation und Datenbankzugriffe inhärent asynchron sind, stellt Dart eine stabile Grundlage für eine reaktive und performante Benutzeroberfläche dar.
 
 ---
 
 #### Standortbasierte Dienste
 
-Standortbasierte Dienste (Location-Based Services) nutzen Positionsdaten mobiler Endgeräte, die in der Regel über GPS, WLAN oder Mobilfunknetze ermittelt werden. Diese Daten ermöglichen es, Anwendungen kontextabhängig zu steuern und bestimmte Funktionen nur an festgelegten Orten bereitzustellen.
+Standortbasierte Dienste stellen eine zentrale funktionale Grundlage der entwickelten Anwendung dar. Sie ermöglichen es, Aktionen in Abhängigkeit von der aktuellen Position eines mobilen Endgeräts auszulösen. Die Positionsbestimmung erfolgt dabei primär über GPS-Daten, ergänzt durch weitere Sensoren und Netzwerkinformationen.
 
-In der entwickelten Schnitzeljagd-Applikation dienen standortbasierte Dienste ausschließlich dazu, festzustellen, ob sich ein Team in der Nähe einer definierten Station befindet. Erst wenn diese Bedingung erfüllt ist, wird die zugehörige Aufgabe in der Anwendung sichtbar.
+Im Kontext der Schnitzeljagd-Applikation werden Standortdaten verwendet, um festzustellen, ob sich ein Team im räumlichen Umfeld einer Station befindet. Die eigentliche Freigabe der Aufgabe erfolgt jedoch nicht automatisch, sondern ausschließlich durch eine Lehrperson. Diese bewusste Entkopplung von Standorterkennung und Aufgabenbewertung stellt sicher, dass technische Ungenauigkeiten keinen Einfluss auf den Spielverlauf haben.
 
-Eine automatische Bewertung oder Lösungserkennung findet bewusst nicht statt. Die Standortermittlung fungiert lediglich als Voraussetzung für die Aufgabenfreigabe und stellt sicher, dass Stationen physisch erreicht werden müssen.
+Bei der Konzeption wurden insbesondere folgende Herausforderungen berücksichtigt:
 
-Bei der Nutzung standortbasierter Dienste ergeben sich mehrere technische und organisatorische Herausforderungen:
-
-- eingeschränkte Genauigkeit von GPS-Signalen, insbesondere in Gebäuden oder dicht bebauten Bereichen  
-- erhöhter Energieverbrauch bei kontinuierlicher Standortabfrage  
-- datenschutzrechtliche Anforderungen, insbesondere im schulischen Umfeld  
-
-Aus diesen Gründen wird die Standortabfrage gezielt und sparsam eingesetzt und nur dann aktiviert, wenn sie für den Ablauf der Schnitzeljagd erforderlich ist.
+- eingeschränkte Genauigkeit von GPS-Messungen, insbesondere in urbaner Umgebung  
+- erhöhter Energieverbrauch bei kontinuierlichen Standortabfragen  
+- restriktive Berechtigungsmodelle moderner Betriebssysteme  
+- datenschutzrechtliche Anforderungen im schulischen Umfeld  
 
 ---
 
 #### NoSQL-Datenbanken und Cloud Firestore
 
-Cloud Firestore ist eine dokumentenbasierte NoSQL-Datenbank, die speziell für den Einsatz in Cloud- und Mobile-Anwendungen entwickelt wurde. Im Gegensatz zu relationalen Datenbanksystemen basiert Firestore nicht auf Tabellen und Beziehungen, sondern auf **Collections** und **Dokumenten**, die hierarchisch organisiert sind.
+Für die persistente Speicherung der Anwendungsdaten wurde **Cloud Firestore** als dokumentenbasierte NoSQL-Datenbank eingesetzt. Firestore verzichtet auf relationale Tabellenstrukturen und speichert Daten stattdessen in Collections und Dokumenten. Diese Architektur eignet sich besonders für mobile Anwendungen, bei denen flexible Datenmodelle und geringe Latenzen erforderlich sind.
 
-Ein grundlegendes Entwurfsprinzip von Firestore lautet:
+Ein zentrales Entwurfsprinzip von Firestore lautet:
 
-> **Die Struktur der Daten orientiert sich an den späteren Abfragen und nicht an einer formalen Normalisierung.**
+> **Die Datenstruktur folgt den Abfragen, nicht umgekehrt.**
 
-Da Firestore keine komplexen Joins unterstützt, müssen Datenmodelle bereits in der Planungsphase so entworfen werden, dass alle relevanten Informationen effizient abgefragt werden können. Dieses Vorgehen wird als **Query-Driven Design** bezeichnet.
-
-Im Rahmen dieses Projekts war es daher notwendig, typische Zugriffs- und Abfragemuster frühzeitig zu definieren, um eine performante und skalierbare Datenhaltung sicherzustellen.
+Da Firestore keine komplexen Joins unterstützt, müssen Datenstrukturen bereits in der Entwurfsphase anhand der späteren Zugriffs- und Abfragemuster geplant werden. Dieses sogenannte *Query-Driven Design* bildet die Grundlage für performante und skalierbare Anwendungen.
 
 ---
 
@@ -71,29 +55,33 @@ Im Rahmen dieses Projekts war es daher notwendig, typische Zugriffs- und Abfrage
 
 #### Access-Patterns
 
-Access-Patterns definieren, welche Benutzergruppen unter welchen Bedingungen auf bestimmte Daten zugreifen dürfen. Sie bilden die Grundlage für Sicherheitskonzepte und Firestore Security Rules.
+Access-Patterns definieren die zulässigen Zugriffe auf gespeicherte Daten und bilden die Grundlage für die Umsetzung von Sicherheitsmechanismen. Für die Schnitzeljagd-Applikation wurden folgende Zugriffsmuster festgelegt:
 
-Für die Schnitzeljagd-Applikation wurden folgende Access-Patterns festgelegt:
-
-- Schülerinnen und Schüler dürfen ausschließlich auf Daten ihres eigenen Teams zugreifen  
+- Benutzer dürfen ausschließlich auf ihr eigenes Benutzerprofil zugreifen  
 - Schreibzugriffe sind nur nach erfolgreicher Authentifizierung erlaubt  
-- Standortdaten dürfen nur temporär und zweckgebunden verarbeitet werden  
-- Lehrpersonen verfügen über erweiterte Rechte zur Stations- und Fortschrittsverwaltung  
+- Standortdaten dürfen nur von angemeldeten Benutzern erfasst werden  
+- Lehrerspezifische Aktionen sind logisch und strukturell vom Benutzerzugriff getrennt  
 
-Diese Zugriffsbeschränkungen verhindern unautorisierte Datenmanipulation und stellen sicher, dass sensible Informationen geschützt bleiben.
+Diese Access-Patterns beeinflussen unmittelbar:
+
+- die Wahl der Dokumenten-IDs  
+- die Struktur der Collections  
+- die Definition der Firestore Security Rules  
+
+Durch diese klare Trennung wird verhindert, dass Benutzer unautorisierte Änderungen am Spielverlauf oder an fremden Daten vornehmen können.
 
 ---
 
 #### Query-Patterns
 
-Query-Patterns beschreiben die regelmäßig benötigten Datenbankabfragen innerhalb der Anwendung. Für die entwickelte Applikation sind insbesondere folgende Abfragen relevant:
+Query-Patterns beschreiben die regelmäßig ausgeführten Abfragen innerhalb der Anwendung. Für das vorliegende Projekt wurden unter anderem folgende Abfragen identifiziert:
 
-- direkter Zugriff auf ein Benutzer- oder Teamdokument anhand der UID  
-- Aktualisierung des Punktestands nach Bestätigung einer Station  
-- Abfrage des aktuellen Fortschritts aller Teams durch Lehrpersonen  
-- Laden stationsbezogener Informationen abhängig vom Standort  
+- direkter Zugriff auf Benutzerprofile über die eindeutige UID  
+- Speicherung und Aktualisierung von Standortinformationen  
+- Abfrage des aktuellen Spielfortschritts eines Teams  
+- Ermittlung der einer Station zugeordneten Aufgaben  
 
-Da Cloud Firestore keine relationalen Verknüpfungen unterstützt, wurde eine bewusst flache Datenstruktur gewählt. Redundante Daten werden in Kauf genommen, um einfache und performante Abfragen zu ermöglichen, was insbesondere für mobile Endgeräte entscheidend ist.
+Um diese Abfragen effizient ausführen zu können, wurde eine flache und redundanzarme Datenstruktur gewählt. Diese Entscheidung reduziert die Anzahl notwendiger Lesezugriffe und trägt maßgeblich zur Performance der Anwendung bei.
 
 ---
 
@@ -103,37 +91,35 @@ Da Cloud Firestore keine relationalen Verknüpfungen unterstützt, wurde eine be
 
 #### Flutter
 
-Flutter bildet die Basis der gesamten Applikation. Die Anwendung ist in logisch getrennte Funktionsbereiche untergliedert, darunter Benutzeranmeldung, Kartenansicht, Stationsübersicht und Fortschrittsdarstellung. Jeder dieser Bereiche wird durch eigenständige Widgets repräsentiert.
+Flutter bildet die technische Grundlage der Benutzeroberfläche. Die Anwendung ist in klar abgegrenzte Widgets unterteilt, die jeweils einen spezifischen Funktionsbereich abbilden. Dazu zählen unter anderem die Benutzeranmeldung, die Kartenansicht, die Anzeige des Fortschritts sowie administrative Funktionen für Lehrpersonen.
 
-Diese modulare Struktur erhöht die Wartbarkeit des Codes und erleichtert zukünftige Erweiterungen, etwa die Ergänzung zusätzlicher Stationstypen oder Auswertungsfunktionen.
+Diese modulare Struktur ermöglicht eine saubere Trennung von Zuständigkeiten und erleichtert sowohl die Wartung als auch zukünftige Erweiterungen der Anwendung.
 
 ---
 
 #### Firebase Authentication
 
-Firebase Authentication wird zur sicheren Registrierung und Anmeldung der Benutzer eingesetzt. Nach erfolgreicher Authentifizierung wird jedem Benutzer eine eindeutige **User-ID (UID)** zugewiesen, die innerhalb des gesamten Systems als primärer Identifikator dient.
-
-Diese UID wird konsequent für alle Datenbankoperationen verwendet und ermöglicht eine eindeutige Zuordnung zwischen Benutzerkonto und gespeicherten Daten. Dadurch kann die Zugriffskontrolle vollständig serverseitig durchgesetzt werden.
+Die Benutzerverwaltung erfolgt über **Firebase Authentication**. Jeder Benutzer erhält nach erfolgreicher Registrierung eine eindeutige User-ID (UID), die systemweit als primärer Identifikator verwendet wird. Diese UID dient als verbindendes Element zwischen Authentifizierungsdienst und Datenbank und stellt sicher, dass sämtliche gespeicherten Daten eindeutig einem Benutzer zugeordnet sind.
 
 ---
 
 #### Cloud Firestore
 
-Cloud Firestore dient als zentrale Datenbank der Anwendung. Gespeichert werden unter anderem:
+Cloud Firestore dient als zentrale Datenhaltung der Anwendung. Gespeichert werden unter anderem:
 
-- Benutzer- und Teaminformationen  
-- Stations- und Aufgabenmetadaten  
-- Fortschritts- und Punktedaten  
+- Benutzerprofile  
+- standortbezogene Informationen  
+- Aufgaben- und Fortschrittsdaten  
 
-Durch den Einsatz einer NoSQL-Datenbank kann das Datenmodell flexibel erweitert werden, ohne bestehende Strukturen grundlegend anpassen zu müssen. Dies ist insbesondere im Hinblick auf zukünftige Erweiterungen der Schnitzeljagd von Bedeutung.
+Die gewählte Datenbanklösung ermöglicht eine flexible Anpassung des Datenmodells und unterstützt die langfristige Wartbarkeit der Anwendung.
 
 ---
 
 ### Benutzerverwaltung
 
-Nach erfolgreicher Registrierung wird für jeden Benutzer ein eigenes Dokument in der **Users-Collection** angelegt. Als Dokumenten-ID wird die von Firebase Authentication vergebene UID verwendet, wodurch eine konsistente Verknüpfung zwischen Authentifizierung und Datenhaltung entsteht.
+Nach erfolgreicher Registrierung wird automatisch ein Benutzerprofil in der **Users-Collection** angelegt. Die UID aus Firebase Authentication wird dabei als Dokumenten-ID verwendet, wodurch eine direkte und eindeutige Zuordnung gewährleistet ist.
 
-Neben dem Benutzernamen werden initiale Werte wie der Punktestand sowie ein serverseitiger Zeitstempel gespeichert. Diese Daten bilden die Grundlage für die Fortschrittsverfolgung innerhalb der Schnitzeljagd.
+Neben dem Benutzernamen werden initiale Werte wie der Punktestand sowie ein serverseitiger Zeitstempel gespeichert, um spätere Auswertungen und Erweiterungen zu ermöglichen.
 
 ```dart
 Future<void> saveUserInDatabase(String username) async {
