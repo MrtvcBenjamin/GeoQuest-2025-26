@@ -5,10 +5,11 @@
 
 ### Projektauftrag
 
-Die HTL Leoben organisiert am Ende jedes Schuljahres eine Schnitzeljagd für die ersten Klassen. Bislang wurde dafür eine externe App eingesetzt, die jedoch nur eingeschränkte Anpassungsmöglichkeiten bietet und eine starke Abhängigkeit von Drittanbietern erzeugt.
-Dies führt regelmäßig zu organisatorischen Problemen, eingeschränkter Flexibilität sowie einem fehlenden Einfluss auf technische Weiterentwicklungen.
+Am Ende jedes Schuljahres organisiert die HTL Leoben eine Schnitzeljagd für die ersten Klassen. Bislang wurde hierfür eine externe Anwendung eingesetzt, welche jedoch nur eingeschränkte Anpassungsmöglichkeiten bietet und eine starke Abhängigkeit von Drittanbietern mit sich bringt. Diese Abhängigkeit führt regelmäßig zu organisatorischen Problemen, eingeschränkter Flexibilität sowie zu fehlenden Einflussmöglichkeiten auf technische Weiterentwicklungen.
 
-Ziel des Projekts ist daher die Entwicklung einer eigenen, vollständig kontrollierbaren Anwendung, die speziell auf die Anforderungen der Schule zugeschnitten ist. Die App soll langfristig einsetzbar, flexibel erweiterbar und intuitiv bedienbar sein. Dadurch werden externe Abhängigkeiten reduziert, der Funktionsumfang kann jederzeit erweitert werden, und die Schule erhält eine nachhaltige Lösung für zukünftige Jahrgänge.
+Ziel dieses Projekts ist daher die Entwicklung einer schuleigenen Anwendung, die vollständig unter eigener Kontrolle steht und gezielt auf die Anforderungen der HTL Leoben zugeschnitten ist. Die App soll langfristig einsetzbar, flexibel erweiterbar und intuitiv bedienbar sein. Dadurch werden externe Abhängigkeiten reduziert, der Funktionsumfang kann jederzeit angepasst oder erweitert werden, und der Schule steht eine nachhaltige Lösung für zukünftige Jahrgänge zur Verfügung.
+
+Darüber hinaus unterstützt die Anwendung einen pädagogisch sinnvollen Ablauf der Schnitzeljagd, da Lehrkräfte aktiv in die Aufgabenfreigabe eingebunden sind und die direkte Interaktion zwischen Schüler:innen und Lehrpersonen gefördert wird.
 
 
 #### Projektziele
