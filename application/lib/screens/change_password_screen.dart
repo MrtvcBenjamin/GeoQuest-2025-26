@@ -1,4 +1,4 @@
-// lib/screens/change_password_screen.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -9,117 +9,119 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  final _usernameController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _repeatPasswordController = TextEditingController();
-  bool _obscureNew = true;
-  bool _obscureRepeat = true;
+  final _emailC = TextEditingController();
+  bool _loading = false;
+  String? _msg;
+  String? _err;
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _newPasswordController.dispose();
-    _repeatPasswordController.dispose();
+    _emailC.dispose();
     super.dispose();
   }
 
-  void _onContinue() {
-    // TODO: später echte Passwort-Änderung (Firebase).
-    // Jetzt nur zurück zum Login:
-    Navigator.pop(context);
+  Future<void> _sendReset() async {
+    final email = _emailC.text.trim();
+
+    setState(() {
+      _loading = true;
+      _msg = null;
+      _err = null;
+    });
+
+    if (email.isEmpty || !email.contains('@')) {
+      setState(() {
+        _loading = false;
+        _err = 'Bitte gültige Email eingeben';
+      });
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      setState(() => _msg = 'Reset-Link wurde gesendet.');
+    } on FirebaseAuthException catch (e) {
+      setState(() => _err = e.message ?? 'Fehler beim Senden');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final canTap = !_loading;
+
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 32),
-              const Icon(Icons.location_on, size: 64, color: Colors.black),
-              const SizedBox(height: 8),
-              const Text(
-                'GeoQuest',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Change Password\nEnter your Username and new Password',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  labelText: 'Username',
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              TextField(
-                controller: _newPasswordController,
-                obscureText: _obscureNew,
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  border: const OutlineInputBorder(),
-                  isDense: true,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureNew ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() => _obscureNew = !_obscureNew);
-                    },
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  Image.asset('assets/logo.png', width: 120),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'GeoQuest',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
                   ),
-                ),
-              ),
-              const SizedBox(height: 12),
+                  const SizedBox(height: 34),
 
-              TextField(
-                controller: _repeatPasswordController,
-                obscureText: _obscureRepeat,
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  border: const OutlineInputBorder(),
-                  isDense: true,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureRepeat ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() => _obscureRepeat = !_obscureRepeat);
-                    },
+                  const Text(
+                    'Change Password',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                   ),
-                ),
-              ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Enter your email to receive a reset link',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 14),
 
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
+                  TextField(
+                    controller: _emailC,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      filled: true,
+                      fillColor: const Color(0xFFF5F5F5),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
-                  onPressed: _onContinue,
-                  child: const Text('Continue'),
-                ),
+
+                  const SizedBox(height: 10),
+                  if (_err != null)
+                    Text(_err!, style: const TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.w700)),
+                  if (_msg != null)
+                    Text(_msg!, style: const TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 10),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton(
+                      onPressed: canTap ? _sendReset : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: _loading
+                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Text('Continue', style: TextStyle(fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -3,17 +3,25 @@ import 'package:application/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+<<<<<<< HEAD
+=======
+import 'screens/splash_screen.dart';
+>>>>>>> 33dc411 (Frontend: auth screens + splash loader + app icon)
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+<<<<<<< HEAD
   runApp(const MyApp());
+=======
+  runApp(const GeoQuestApp());
+>>>>>>> 33dc411 (Frontend: auth screens + splash loader + app icon)
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class GeoQuestApp extends StatelessWidget {
+  const GeoQuestApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -21,6 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+<<<<<<< HEAD
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -128,6 +137,13 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+=======
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      home: const SplashScreen(),
+>>>>>>> 33dc411 (Frontend: auth screens + splash loader + app icon)
     );
   }
 }

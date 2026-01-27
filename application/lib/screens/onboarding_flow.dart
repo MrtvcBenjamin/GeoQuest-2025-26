@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_screen.dart';
 
 class OnboardingFlow extends StatefulWidget {
   const OnboardingFlow({super.key});
@@ -9,140 +10,127 @@ class OnboardingFlow extends StatefulWidget {
 
 class _OnboardingFlowState extends State<OnboardingFlow> {
   final PageController _controller = PageController();
-  int _pageIndex = 0;
+  int _index = 0;
 
-  final List<_OnboardingPageData> _pages = const [
-    _OnboardingPageData(
+  static const _pages = [
+    _OnboardingPage(
       title: 'Willkommen\nbei deiner Schnitzeljagd!',
-      text:
-      'Erkunde spannende Orte,\n'
-          'löse Rätsel und sammle Punkte.\n'
-          'Jede Station bringt dich\n'
-          'ein Stück näher ans Ziel.',
+      body:
+      'Erkunde spannende Orte,\nlöse Rätsel und sammle\nPunkte. Jede Station bringt\ndich ein Stück näher ans\nZiel!',
+      button: 'Continue',
     ),
-    _OnboardingPageData(
+    _OnboardingPage(
       title: 'Deine Route ist einzigartig',
-      text:
-      'Du bekommst eine zufällige\n'
-          'Reihenfolge der Stationen.\n'
-          'So vermeiden wir\n'
-          'Massensammlungen und\n'
-          'halten das Spiel fair.',
+      body:
+      'Du bekommst eine zufällige\nReihenfolge der Stationen.\nSo vermeiden wir\nMassenansammlungen\nund halten das Spiel fair.',
+      button: 'Continue',
     ),
-    _OnboardingPageData(
+    _OnboardingPage(
       title: 'Löse Aufgaben vor Ort',
-      text:
-      'Texfragen, Multiple Choice\n'
-          'oder kleine Bilderrätsel warten auf dich.\n'
-          'Richtig gelöst = Punkte.\n'
-          'Überspringen kostet Punkte.',
+      body:
+      'Textfragen, Multiple Choice\noder kleine Bilderrätsel\nwarten auf dich.\nRichtig gelöst = Punkte!\nÜberspringen kostet Punkte.',
+      button: 'Continue',
     ),
-    _OnboardingPageData(
+    _OnboardingPage(
       title: 'Bleib ehrlich und sicher',
-      text:
-      'Aufgaben funktionieren nur\n'
-          'in der Nähe der Station.\n'
-          'Bei zu hoher Geschwindigkeit\n'
-          'wird das Spiel kurz gesperrt.',
+      body:
+      'Aufgaben funktionieren nur\nin der Nähe der Station.\nBei zu hoher\nGeschwindigkeit wird das\nSpiel kurz gesperrt.',
+      button: 'Get started!',
+      last: true,
     ),
   ];
 
   void _next() {
-    if (_pageIndex < _pages.length - 1) {
-      _controller.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+    if (_pages[_index].last) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
     } else {
-      // Nach dem letzten Onboarding-Screen -> Berechtigungen
-      Navigator.of(context).pushReplacementNamed('/permissions');
+      _controller.nextPage(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final page = _pages[_index];
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
+            const SizedBox(height: 16),
+            const Text(
+              'Spielregeln',
+              style: TextStyle(
+                color: Color(0xFFBDBDBD),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
             Expanded(
               child: PageView.builder(
                 controller: _controller,
                 itemCount: _pages.length,
-                onPageChanged: (i) => setState(() => _pageIndex = i),
-                itemBuilder: (context, index) {
-                  final page = _pages[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Spielregeln',
-                          style: theme.textTheme.labelLarge,
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          page.title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
+                onPageChanged: (i) => setState(() => _index = i),
+                itemBuilder: (_, i) {
+                  final p = _pages[i];
+                  return Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 360),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            p.title,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              height: 1.15,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 32),
-                        Text(
-                          page.text,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          const SizedBox(height: 28),
+                          Text(
+                            p.body,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              height: 1.3,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 8),
-            // kleine Punkte unten
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_pages.length, (i) {
-                final selected = i == _pageIndex;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: selected ? 10 : 8,
-                  height: selected ? 10 : 8,
-                  decoration: BoxDecoration(
-                    color: selected ? Colors.black : Colors.grey.shade400,
-                    shape: BoxShape.circle,
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 16),
             Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
               child: SizedBox(
                 width: double.infinity,
-                height: 48,
+                height: 52,
                 child: ElevatedButton(
                   onPressed: _next,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 0,
                   ),
                   child: Text(
-                    _pageIndex == _pages.length - 1
-                        ? 'Get started!'
-                        : 'Continue',
+                    page.button,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -154,12 +142,16 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   }
 }
 
-class _OnboardingPageData {
+class _OnboardingPage {
   final String title;
-  final String text;
+  final String body;
+  final String button;
+  final bool last;
 
-  const _OnboardingPageData({
+  const _OnboardingPage({
     required this.title,
-    required this.text,
+    required this.body,
+    required this.button,
+    this.last = false,
   });
 }

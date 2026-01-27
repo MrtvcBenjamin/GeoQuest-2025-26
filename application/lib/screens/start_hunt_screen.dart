@@ -1,128 +1,149 @@
-// lib/screens/start_hunt_screen.dart
 import 'package:flutter/material.dart';
 
 class StartHuntScreen extends StatefulWidget {
-  const StartHuntScreen({super.key});
+  final VoidCallback onStartRoute;
+
+  const StartHuntScreen({super.key, required this.onStartRoute});
 
   @override
   State<StartHuntScreen> createState() => _StartHuntScreenState();
 }
 
 class _StartHuntScreenState extends State<StartHuntScreen> {
-  int _currentIndex = 0; // 0 = Dashboard
+  bool _huntStarted = false;
 
   @override
   Widget build(BuildContext context) {
-    const userName = 'Name'; // TODO: später echten Namen verwenden.
+    const userName = 'Name';
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              Row(
-                children: const [
-                  Icon(Icons.location_on, size: 40, color: Colors.black),
-                  SizedBox(width: 8),
-                  Text(
-                    'GeoQuest',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 24),
+            const FlutterLogo(size: 80),
+            const SizedBox(height: 8),
+            const Text(
+              'GeoQuest',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 32),
-              Text(
+            ),
+            const SizedBox(height: 32),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
                 'Hello, "$userName"',
                 style: const TextStyle(
-                  fontSize: 26,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Nachdem du "Start Hunt"\n'
-                    'klickst startet das Spiel\n'
-                    'und somit auch die Zeit!',
-                style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade400),
               ),
-              const SizedBox(height: 24),
-
-              Container(
-                width: double.infinity,
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: const Text(
-                  'Info: Hier können später zusätzliche\n'
-                      'Details zur aktuellen Jagd stehen.',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  onPressed: () {
-                    // TODO: hier später die eigentliche Schnitzeljagd starten
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Start Hunt pressed (coming soon)'),
-                      ),
-                    );
-                  },
-                  child: const Text('Start Hunt'),
-                ),
-              ),
-            ],
-          ),
+              child: _huntStarted
+                  ? _buildStartRouteCard()
+                  : _buildStartHuntCard(),
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
-          // TODO: später auf andere Screens navigieren (Map, Progress, Menu)
-        },
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            label: 'Dashboard',
+    );
+  }
+
+  Widget _buildStartHuntCard() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Nachdem du "Start Hunt"\nklickst startet das Spiel\nund somit auch die Zeit!',
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              setState(() {
+                _huntStarted = true;
+              });
+            },
+            child: const Text(
+              'Start Hunt',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map_outlined),
-            label: 'Map',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStartRouteCard() {
+    const nextStation = 'Station 1';
+    const distance = 250;
+    const points = 10;
+    const remainingTime = '15:00';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Next Station:',
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
+        Text(
+          nextStation,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flag_outlined),
-            label: 'Progress',
+        ),
+        const SizedBox(height: 8),
+        Text('Distance: ${distance}m   Points: $points p'),
+        const SizedBox(height: 16),
+        Row(
+          children: const [
+            Icon(Icons.circle, size: 10, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('remaining Time: $remainingTime'),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: widget.onStartRoute,
+            child: const Text(
+              'Start',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menu',
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

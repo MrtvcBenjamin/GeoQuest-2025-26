@@ -31,6 +31,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+<<<<<<< HEAD
+=======
+  # --- Firebase ---
+>>>>>>> 33dc411 (Frontend: auth screens + splash loader + app icon)
   firebase_core: ^4.2.1
   firebase_auth: ^6.1.2
 
@@ -49,7 +53,24 @@ dependencies:
   cloud_firestore: ^6.1.0
   cloud_functions: ^6.0.4
   firebase_storage: ^13.0.4
+<<<<<<< HEAD
   flutter_map: ^8.2.2
+=======
+
+  # Login
+  google_sign_in: ^6.2.1
+
+  # Location / Berechtigungen
+  geolocator: ^14.0.2
+  permission_handler: ^11.3.1
+
+  # UI
+  flutter_spinkit: ^5.2.1
+  cupertino_icons: ^1.0.8
+
+  # Karten
+  flutter_map: ^7.0.2
+>>>>>>> 33dc411 (Frontend: auth screens + splash loader + app icon)
   latlong2: ^0.9.1
   flutter_map_cancellable_tile_provider: ^3.0.2
   geolocator: ^14.0.2
@@ -64,6 +85,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -82,6 +104,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/logo.png
+<<<<<<< HEAD
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -108,3 +131,13 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
+=======
+    - assets/logo_icon.png
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: assets/logo_icon.png
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: assets/logo_icon.png
+>>>>>>> 33dc411 (Frontend: auth screens + splash loader + app icon)
