@@ -1,0 +1,74 @@
+---
+da-titel: GeoQuest - Die Schnitzeljagd App
+
+da-jahr: 2025/26 
+
+da-keywords: HTLLE, Schnitzeljagd, App,
+
+#lang: english
+
+bibliography: [literatur.bib]
+
+da-author:
+- vorname: Benjamin 
+  nachname: Muratovic
+  klasse: 5BHWIN
+  thema: Projekt Management
+  ki-tools:
+  - name: ChatGPT5.1
+    zweck: Rehtschreibüberprüfung, Formatierungshilfe
+
+- vorname: Christian 
+  nachname: Kovacs
+  klasse: 5BHWIN
+  thema: Entwicklung - Backend
+  ki-tools:
+  - name: ChatGPT5.1
+    zweck: Boilerplate Codegenerierung, Informationsbeschaffung
+  - name: Gemini Model 3
+    zweck: Boilerplate Firebase Codegenerierung 
+
+- vorname: Tobias 
+  nachname: Zeismann
+  klasse: 5AHWIN
+  thema: Entwicklung - Frontend
+  ki-tools:
+  - name: ChatGPT5.1
+    zweck: Informationsbeschaffung, Boilerplate Flutter Codegenerierung 
+    
+da-betreuer:
+- paraffe: wb
+  name: DI Andreas Weichbold
+
+da-kurzfassung-de: Die Diplomarbeit befasst sich mit der Entwicklung der mobilen App „GeoQuest“, einer digitalen Schnitzeljagd für schulische Veranstaltungen. Die Anwendung führt Nutzer mithilfe von GPS zu realen Stationen, an denen Aufgaben gelöst werden müssen. Um einen fairen Ablauf zu gewährleisten, werden Mechanismen wie Standortprüfung, Zeitlimits und Geschwindigkeitsüberwachung eingesetzt. Ziel ist eine flexible, nachhaltige und an die Anforderungen der Schule angepasste Lösung, die langfristig eingesetzt und erweitert werden kann.
+
+da-kurzfassung-en: This diploma thesis focuses on the development of the mobile application “GeoQuest”, a digital scavenger hunt designed for school events. The app guides users to real-world locations using GPS, where tasks must be completed on-site. To ensure fair gameplay, mechanisms such as location validation, time limits, and speed monitoring are implemented. The goal is a flexible and sustainable solution tailored to the specific needs of the school and suitable for long-term use.
+
+
+da-kiquellen:
+- ki: ChatGPT5.1
+  short-prompt: Erklärung Pandoc
+  pdf-file: gpt-pandoc.pdf
+
+- ki: ChatGPT3.5
+  short-prompt: Aufbau eines Atoms
+  pdf-file: gpt-atom.pdf
+
+
+da-appendix:
+- abschnitt: Technische Dokumentation
+  pdf-file: pandoc-manual.pdf
+  seiten: 53-73
+
+- abschnitt: Betreuungsprotokolle
+  pdf-file: betreuungsprotokolle.pdf    
+
+# Diplomarbeitsvereinbarungen müssen zum Schluss sein 
+
+- abschnitt: Diplomatbeitsvereinbarung Englisch
+  pdf-file: HTL-DA-Doku-EN.pdf
+
+- abschnitt: Diplomatbeitsvereinbarung Deutsch
+  pdf-file: HTL-DA-Doku-DE.pdf
+  
+---
