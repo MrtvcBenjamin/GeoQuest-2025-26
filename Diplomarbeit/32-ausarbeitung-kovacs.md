@@ -7,8 +7,6 @@ Dieses Kapitel dient als theoretische Grundlage für die im weiteren Verlauf bes
 
 Die vorgestellten Inhalte bilden den notwendigen Kontext, um die praktischen Implementierungen nachvollziehen und bewerten zu können.
 
----
-
 ### 1. Grundlagen mobiler Applikationen
 
 Mobile Applikationen sind Softwareprogramme, die speziell für den Einsatz auf mobilen Endgeräten wie Smartphones oder Tablets entwickelt werden. Sie unterscheiden sich von klassischen Desktop-Anwendungen insbesondere durch:
@@ -20,8 +18,6 @@ Mobile Applikationen sind Softwareprogramme, die speziell für den Einsatz auf m
 - asynchrone Abläufe
 
 Insbesondere standortbasierte Anwendungen stellen hohe Anforderungen an Performance, Genauigkeit und Sicherheit, da sie kontinuierlich Sensordaten verarbeiten und oft personenbezogene Informationen speichern.
-
----
 
 ### 2. Flutter als Entwicklungsframework
 
@@ -37,15 +33,11 @@ Flutter ist ein von Google entwickeltes Open-Source-Framework zur plattformüber
 
 Die Programmiersprache Dart unterstützt asynchrone Programmierung durch `Future`, `async` und `await`, was für Netzwerk- und Standortabfragen essenziell ist.
 
----
-
 ### 3. Firebase als Backend-Plattform
 
 Firebase ist eine Backend-as-a-Service-Plattform (BaaS), die eine Vielzahl von Diensten für mobile Anwendungen bereitstellt. In dieser Diplomarbeit werden insbesondere Firebase Authentication und Cloud Firestore verwendet.
 
----
-
-### 3.1 Firebase Authentication
+#### 3.1 Firebase Authentication
 
 Firebase Authentication ermöglicht eine sichere Benutzerregistrierung und -anmeldung. Nach erfolgreicher Authentifizierung erhält jeder Benutzer eine eindeutige Kennung (UID).
 
@@ -54,18 +46,16 @@ Diese UID dient als zentrales Referenzelement für:
 - Standortdaten
 - Spielfortschritt
 
-Vorteile:
+**Vorteile:**
 - Keine eigene Passwortverwaltung notwendig
 - Sichere Token-basierte Authentifizierung
 - Unterstützung mehrerer Login-Methoden
 
----
-
-### 3.2 Cloud Firestore
+#### 3.2 Cloud Firestore
 
 Cloud Firestore ist eine skalierbare NoSQL-Datenbank, die Daten in Form von Collections und Documents speichert.
 
-#### Eigenschaften von Firestore:
+**Eigenschaften von Firestore:**
 - Dokumentenbasiertes Datenmodell
 - Echtzeit-Synchronisation
 - Offline-Unterstützung
@@ -74,17 +64,14 @@ Cloud Firestore ist eine skalierbare NoSQL-Datenbank, die Daten in Form von Coll
 
 Firestore eignet sich besonders für mobile Anwendungen, da gezielte Datenabfragen mit geringer Latenz möglich sind.
 
----
-
 ### 4. NoSQL-Datenmodellierung
 
 Im Gegensatz zu relationalen Datenbanken verwendet Firestore kein Tabellenmodell mit festen Beziehungen, sondern ein dokumentenorientiertes Schema.
 
-#### Zentrale Konzepte:
+**Zentrale Konzepte:**
 - **Collection:** Sammlung von Dokumenten
 - **Document:** JSON-ähnliche Datenstruktur
-- **Subcollection:** Verschachtelte Collection inner
-
+- **Subcollection:** Verschachtelte Collection innerhalb eines Documents
 
 ## Praktische Arbeit
 
@@ -92,24 +79,15 @@ In diesem Kapitel wird die praktische Umsetzung der standortbasierten Schnitzelj
 
 Der praktische Teil orientiert sich an den im Projekthandbuch definierten Anforderungen und baut direkt auf den im Theorieteil beschriebenen Grundlagen auf.
 
----
-
 ### 1. Gesamtarchitektur der Anwendung
 
 Die Anwendung folgt einer klaren Trennung der Verantwortlichkeiten und ist modular aufgebaut. Die wichtigsten Komponenten sind:
 
-- **UI-Schicht (Flutter Widgets)**  
-  Darstellung der Benutzeroberfläche, Kartenansicht und Dialoge
-
-- **Logik-Schicht**  
-  Standortermittlung, Proximity-Erkennung, Spielfortschritt
-
-- **Datenzugriffsschicht**  
-  Firebase Authentication und Cloud Firestore
+- **UI-Schicht (Flutter Widgets):** Darstellung der Benutzeroberfläche, Kartenansicht und Dialoge
+- **Logik-Schicht:** Standortermittlung, Proximity-Erkennung, Spielfortschritt
+- **Datenzugriffsschicht:** Firebase Authentication und Cloud Firestore
 
 Diese Trennung erleichtert Wartung, Erweiterung und Fehlersuche.
-
----
 
 ### 2. Benutzerverwaltung
 
@@ -119,23 +97,19 @@ Die Benutzerregistrierung erfolgt über Firebase Authentication. Jeder Benutzer 
 
 Diese UID wird in der gesamten Anwendung als primärer Identifikator verwendet.
 
----
-
 #### 2.2 Speicherung des Benutzerprofils
 
 Nach der Registrierung wird ein Benutzerprofil in der Firestore-Collection `Users` gespeichert.
 
-**Datenmodell Users:**
-
-- Collection: `Users`
-- Dokument-ID: `UID`
-- Felder:
+**Datenmodell `Users`:**
+- **Collection:** `Users`
+- **Dokument-ID:** `UID`
+- **Felder:**
   - `username`
   - `totalPoints`
   - `createdAt`
 
 **Implementierung:**
-
 ```dart
 Future<void> saveUserInDatabase(String username) async {
   final user = FirebaseAuth.instance.currentUser;
@@ -152,42 +126,31 @@ Future<void> saveUserInDatabase(String username) async {
 }
 ```
 
----
-
-### 2.3 Query- und Access-Pattern der Benutzerverwaltung
+#### 2.3 Query- und Access-Pattern der Benutzerverwaltung
 
 Für die Benutzerverwaltung wurden bewusst einfache und effiziente Zugriffsstrukturen gewählt, um sowohl Performance als auch Sicherheit zu gewährleisten.
 
-#### Query Pattern
-
-- Direkter Zugriff auf ein einzelnes Dokument über  
-  `Users/{uid}`  
+**Query Pattern**
+- Direkter Zugriff auf ein einzelnes Dokument über `Users/{uid}`
 - Es handelt sich um einen sogenannten *Point Read*, der in Firestore besonders performant ist.
 
 Dieses Query Pattern wird verwendet, sobald ein Benutzer nach der Anmeldung seine eigenen Profildaten lädt.
 
-#### Access Pattern
-
-- **Schreiben:**  
-  Nur der authentifizierte Benutzer darf sein eigenes Dokument ändern.
-- **Lesen:**  
-  Das Lesen von Benutzerinformationen ist erlaubt, da beispielsweise Benutzernamen für Spielanzeigen benötigt werden.
+**Access Pattern**
+- **Schreiben:** Nur der authentifizierte Benutzer darf sein eigenes Dokument ändern.
+- **Lesen:** Das Lesen von Benutzerinformationen ist erlaubt, da beispielsweise Benutzernamen für Spielanzeigen benötigt werden.
 
 Dieses Access Pattern wird durch Firestore Security Rules abgesichert.
 
----
+### 3. Standortermittlung
 
-## 3. Standortermittlung
-
-### 3.1 Motivation und technische Umsetzung
+#### 3.1 Motivation und technische Umsetzung
 
 Für eine standortbasierte Schnitzeljagd ist eine kontinuierliche Standortüberwachung erforderlich. Ein einmaliger Standortabruf wäre unzureichend, da Bewegungen in Echtzeit erkannt werden müssen, um das Erreichen von Stationen korrekt zu erfassen.
 
 Aus diesem Grund wird ein Standort-Stream verwendet, der regelmäßig aktualisierte Positionsdaten liefert.
 
----
-
-### 3.2 Starten des Standort-Streams
+#### 3.2 Starten des Standort-Streams
 
 Der Standort-Stream wird mit speziell abgestimmten Parametern gestartet, um eine hohe Genauigkeit bei gleichzeitig kontrolliertem Ressourcenverbrauch zu gewährleisten.
 
@@ -198,24 +161,24 @@ const locationSettings = LocationSettings(
 );
 ```
 
-Bedeutung der Einstellungen:
+**Bedeutung der Einstellungen:**
+- **accuracy: `bestForNavigation`**  
+  Maximale Genauigkeit für Bewegungen im Außenbereich.
+- **distanceFilter: `2`**  
+  Standort-Updates erfolgen erst nach einer Bewegung von mindestens zwei Metern.
 
-accuracy: bestForNavigation
-Maximale Genauigkeit für Bewegungen im Außenbereich.
+#### 3.3 Verwaltung des Standort-Streams
 
-distanceFilter: 2
-Standort-Updates erfolgen erst nach einer Bewegung von mindestens zwei Metern.
+Zur sauberen Verwaltung des Standort-Streams wird eine StreamSubscription verwendet:
 
-### 3.3 Verwaltung des Standort-Streams
-
-Zur sauberen Verwaltung des Standort-Streams wird eine StreamSubscription verwendet.
-
+```dart
 StreamSubscription<Position>? _positionStream;
-
+```
 
 Beim Verlassen der Kartenansicht wird der Stream ordnungsgemäß beendet:
 
-``` @override
+```dart
+@override
 void dispose() {
   _positionStream?.cancel();
   super.dispose();
@@ -224,59 +187,50 @@ void dispose() {
 
 Dies verhindert unnötigen Akkuverbrauch sowie Speicherlecks.
 
----
+### 4. Kartenintegration
 
-## 4. Kartenintegration
-### 4.1 Darstellung mit OpenStreetMap
+#### 4.1 Darstellung mit OpenStreetMap
 
-Die Kartenansicht wird mit dem Paket flutter_map umgesetzt. Als Kartenquelle wird OpenStreetMap verwendet, da keine Lizenzkosten entstehen und keine Abhängigkeit von kommerziellen Anbietern besteht.
+Die Kartenansicht wird mit dem Paket `flutter_map` umgesetzt. Als Kartenquelle wird OpenStreetMap verwendet, da keine Lizenzkosten entstehen und keine Abhängigkeit von kommerziellen Anbietern besteht.
 
-``` TileLayer(
+```dart
+TileLayer(
   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   userAgentPackageName: 'com.example.app',
   tileProvider: NetworkTileProvider(),
 )
 ```
 
-### 4.2 Marker-Darstellung
+#### 4.2 Marker-Darstellung
 
 Zur besseren Orientierung werden unterschiedliche Markerfarben verwendet:
 
-Blauer Marker: Aktuelle Position des Spielers
-
-Roter Marker: Aktive, noch nicht abgeschlossene Station
-
-Grüner Marker: Bereits abgeschlossene Stationen
+- **Blauer Marker:** Aktuelle Position des Spielers
+- **Roter Marker:** Aktive, noch nicht abgeschlossene Station
+- **Grüner Marker:** Bereits abgeschlossene Stationen
 
 Diese visuelle Codierung verbessert die Benutzerfreundlichkeit erheblich.
 
-## 5. Datenmodell und Firestore-Struktur
-### 5.1 Users
+### 5. Datenmodell und Firestore-Struktur
 
-Collection: Users
-Dokument-ID: UID des Benutzers
+#### 5.1 `Users`
 
-Felder:
+- **Collection:** `Users`
+- **Dokument-ID:** UID des Benutzers
+- **Felder:**
+  - `username`
+  - `totalPoints`
+  - `createdAt`
 
-username
+#### 5.2 `Hunts` und `Stadions`
 
-totalPoints
+- **Pfad:** `Hunts/{huntId}/Stadions`
+- **Felder:**
+  - `stadionIndex`
+  - `title`
+  - `stadionLocation` (GeoPoint)
 
-createdAt
-
-### 5.2 Hunts und Stadions
-
-Pfad: Hunts/{huntId}/Stadions
-
-Felder:
-
-stadionIndex
-
-title
-
-stadionLocation (GeoPoint)
-
-```
+```dart
 Future<void> getAllStadionData(String huntId) async {
   final snapshot = await FirebaseFirestore.instance
       .collection("Hunts")
@@ -291,20 +245,18 @@ Future<void> getAllStadionData(String huntId) async {
 }
 ```
 
-Query Pattern
-
-Zugriff auf eine Subcollection
-
-Sortierung nach stadionIndex
+**Query Pattern**
+- Zugriff auf eine Subcollection
+- Sortierung nach `stadionIndex`
 
 Dieses Pattern ermöglicht eine sequentielle Freischaltung der Stationen.
 
-### 5.3 PlayerLocation
+#### 5.3 `PlayerLocation`
 
-Collection: PlayerLocation
-Dokument-ID: UID des Benutzers
+- **Collection:** `PlayerLocation`
+- **Dokument-ID:** UID des Benutzers
 
-```
+```dart
 Future<void> saveLocationInDatabase(LatLng? position) async {
   final user = FirebaseAuth.instance.currentUser;
   if (position == null || user == null) return;
@@ -319,15 +271,15 @@ Future<void> saveLocationInDatabase(LatLng? position) async {
 }
 ```
 
-Access Pattern
+**Access Pattern**
+- **Schreiben:** nur für authentifizierte Benutzer
+- **Lesen:** optional für andere Spieler (Mehrspieler-Szenario)
 
-Schreiben nur für authentifizierte Benutzer
+### 6. Proximity-Erkennung (Stationslogik)
 
-Lesen optional für andere Spieler (Mehrspieler-Szenario)
+#### 6.1 Distanzberechnung
 
-## 6. Proximity-Erkennung (Stationslogik)
-### 6.1 Distanzberechnung
-```
+```dart
 double distanceInMeters = Geolocator.distanceBetween(
   myPosition!.latitude,
   myPosition!.longitude,
@@ -336,35 +288,36 @@ double distanceInMeters = Geolocator.distanceBetween(
 );
 ```
 
-### 6.2 Radius-Logik
-```
+#### 6.2 Radius-Logik
+
+```dart
 if (distanceInMeters < 50) {
   _showDiscoveryDialog(aktuellesZiel['title'] ?? "Stadion");
   saveLocationInDatabase(myPosition);
 }
 ```
 
-Der Radius von 50 Metern stellt einen praxisnahen Kompromiss zwischen Genauigkeit und Benutzerfreundlichkeit dar.
+Der Radius von **50 Metern** stellt einen praxisnahen Kompromiss zwischen Genauigkeit und Benutzerfreundlichkeit dar.
 
-## 7. Fortschritt und Benutzerinteraktion
+### 7. Fortschritt und Benutzerinteraktion
 
 Beim Erreichen einer Station wird:
+- ein Dialog angezeigt,
+- der Standort-Stream pausiert,
+- der Fortschritt erhöht,
+- der Stream anschließend fortgesetzt.
 
-ein Dialog angezeigt,
-
-der Standort-Stream pausiert,
-
-der Fortschritt erhöht,
-
-der Stream anschließend fortgesetzt.
-
+```dart
 _positionStream?.pause();
 // Dialog anzeigen
 _positionStream?.resume();
-
-## 8. Sicherheitskonzept
-### 8.1 Firestore Security Rules
 ```
+
+### 8. Sicherheitskonzept
+
+#### 8.1 Firestore Security Rules
+
+```txt
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -384,22 +337,19 @@ service cloud.firestore {
 
 Diese Regeln stellen sicher, dass Benutzer ausschließlich ihre eigenen Daten verändern können und Standortdaten nur für authentifizierte Nutzer zugänglich sind.
 
-## 9. Erweiterte Standortlogik und kontinuierliches Tracking
+### 9. Erweiterte Standortlogik und kontinuierliches Tracking
 
-### 9.1 Motivation für kontinuierliches Tracking
+#### 9.1 Motivation für kontinuierliches Tracking
 
 In klassischen Kartenanwendungen reicht es häufig aus, den Standort eines Benutzers einmalig zu erfassen. Für eine standortbasierte Schnitzeljagd ist dieses Vorgehen jedoch nicht ausreichend. Spieler bewegen sich kontinuierlich im Gelände, und das System muss in der Lage sein, diese Bewegungen zuverlässig und zeitnah zu erkennen.
 
 Ein kontinuierliches Standort-Tracking ermöglicht:
-
 - das automatische Erkennen des Erreichens einer Station
 - die Vermeidung manueller Aktionen durch den Benutzer
 - eine realistische und immersive Spielerfahrung
 - die Grundlage für Anti-Cheat-Mechanismen
 
----
-
-### 9.2 Initialisierung der Standortlogik
+#### 9.2 Initialisierung der Standortlogik
 
 Die Standortlogik wird beim Start der Kartenansicht initialisiert. Dabei ist wichtig, dass zuerst alle notwendigen Spieldaten geladen werden, bevor das Tracking beginnt.
 
@@ -411,9 +361,10 @@ void initState() {
   _initData();
 }
 ```
-Die Methode _initData() übernimmt dabei eine koordinierende Rolle:
 
-```
+Die Methode `_initData()` übernimmt dabei eine koordinierende Rolle:
+
+```dart
 Future<void> _initData() async {
   await getAllStadionData("xISAk6mXjjEpDUHYyxZi");
   await _startLocationTracking();
@@ -423,36 +374,33 @@ Future<void> _initData() async {
   }
 }
 ```
+
 Dieses Vorgehen stellt sicher, dass:
+- alle Zielpunkte bekannt sind
+- Standortdaten nicht ins Leere verarbeitet werden
+- keine unnötigen Berechnungen stattfinden
 
-alle Zielpunkte bekannt sind
+#### 9.3 Starten des Standort-Streams
 
-Standortdaten nicht ins Leere verarbeitet werden
-
-keine unnötigen Berechnungen stattfinden
-
-### 9.3 Starten des Standort-Streams
 Der Standort-Stream wird mit hoher Genauigkeit und kleinem Distanzfilter gestartet, um eine präzise Bewegungserkennung zu ermöglichen.
 
-```
+```dart
 const locationSettings = LocationSettings(
   accuracy: LocationAccuracy.bestForNavigation,
   distanceFilter: 2,
 );
 ```
 
-Begründung der Parameterwahl:
+**Begründung der Parameterwahl:**
+- Hohe Genauigkeit ist notwendig, um kurze Distanzen zuverlässig zu messen
+- Der Distanzfilter reduziert unnötige Updates im Stillstand
+- Der Akkuverbrauch bleibt kontrollierbar
 
-Hohe Genauigkeit ist notwendig, um kurze Distanzen zuverlässig zu messen
+#### 9.4 Verarbeitung von Standort-Updates
 
-Der Distanzfilter reduziert unnötige Updates im Stillstand
-
-Der Akkuverbrauch bleibt kontrollierbar
-
-### 9.4 Verarbeitung von Standort-Updates
 Jede neue Positionsmeldung wird verarbeitet, der interne Zustand aktualisiert und anschließend geprüft, ob eine Station erreicht wurde.
 
-```
+```dart
 _positionStream = Geolocator.getPositionStream(
   locationSettings: locationSettings,
 ).listen((Position pos) {
@@ -466,56 +414,63 @@ _positionStream = Geolocator.getPositionStream(
 ```
 
 Diese Architektur erlaubt eine klare Trennung zwischen:
+- Datenerfassung
+- Zustandsverwaltung
+- Spiellogik
 
-Datenerfassung
+### 10. Proximity-Erkennung und Stationslogik
 
-Zustandsverwaltung
+#### 10.1 Grundprinzip der Proximity-Erkennung
 
-Spiellogik
-
-## 10. Proximity-Erkennung und Stationslogik
-### 10.1 Grundprinzip der Proximity-Erkennung
 Die Proximity-Erkennung basiert auf der Berechnung der Luftlinie zwischen der aktuellen Spielerposition und der Zielstation. Firestore speichert die Koordinaten als GeoPoint, welche zur Laufzeit in Distanzen umgerechnet werden.
 
+```dart
 double distanceInMeters = Geolocator.distanceBetween(
   myPosition!.latitude,
   myPosition!.longitude,
   targetGeo.latitude,
   targetGeo.longitude,
 );
-### 10.2 Radius-basierte Freischaltung
+```
+
+#### 10.2 Radius-basierte Freischaltung
+
 Sobald sich der Spieler innerhalb eines definierten Radius befindet, wird die Station als erreicht gewertet.
 
+```dart
 if (distanceInMeters < 50) {
   _showDiscoveryDialog(aktuellesZiel['title'] ?? "Stadion");
   saveLocationInDatabase(myPosition);
 }
-Der Radius von 50 Metern wurde bewusst gewählt:
+```
 
-GPS-Signale unterliegen natürlichen Schwankungen
+Der Radius von **50 Metern** wurde bewusst gewählt:
+- GPS-Signale unterliegen natürlichen Schwankungen
+- Gebäude und Gelände beeinflussen die Genauigkeit
+- Ein zu kleiner Radius würde zu Frustration führen
 
-Gebäude und Gelände beeinflussen die Genauigkeit
+#### 10.3 Fortschrittsverwaltung
 
-Ein zu kleiner Radius würde zu Frustration führen
-
-### 10.3 Fortschrittsverwaltung
 Der Fortschritt wird sequenziell verwaltet. Nur die nächste Station kann freigeschaltet werden, vorherige gelten als abgeschlossen.
 
+```dart
 setState(() {
   currentStadionIndex++;
 });
+```
+
 Dieses Vorgehen verhindert:
+- das Überspringen von Stationen
+- ungewollte Mehrfachauslösungen
+- inkonsistente Spielzustände
 
-das Überspringen von Stationen
+### 11. Benutzerinteraktion und Dialogsteuerung
 
-ungewollte Mehrfachauslösungen
+#### 11.1 Anzeige des Entdeckungsdialogs
 
-inkonsistente Spielzustände
-
-## 11. Benutzerinteraktion und Dialogsteuerung
-### 11.1 Anzeige des Entdeckungsdialogs
 Beim Erreichen einer Station wird ein Dialog angezeigt, der den Erfolg visuell bestätigt.
 
+```dart
 void _showDiscoveryDialog(String name) {
   _positionStream?.pause();
 
@@ -540,26 +495,36 @@ void _showDiscoveryDialog(String name) {
     ),
   );
 }
-### 11.2 Pausieren und Fortsetzen des Standort-Streams
+```
+
+#### 11.2 Pausieren und Fortsetzen des Standort-Streams
+
 Während der Dialog angezeigt wird, wird der Standort-Stream pausiert:
 
+```dart
 _positionStream?.pause();
+```
+
 Nach Bestätigung wird das Tracking fortgesetzt:
 
+```dart
 _positionStream?.resume();
+```
+
 Dies verhindert Mehrfachauslösungen und reduziert unnötige Rechenlast.
 
-## 12. Speicherung von Standortdaten
-### 12.1 Zweck der Standortpersistenz
+### 12. Speicherung von Standortdaten
+
+#### 12.1 Zweck der Standortpersistenz
+
 Die Speicherung von Standortdaten dient mehreren Zwecken:
+- Debugging während der Entwicklung
+- Analyse von Spielverläufen
+- Grundlage für spätere Erweiterungen (Statistiken, Heatmaps)
 
-Debugging während der Entwicklung
+#### 12.2 Implementierung der Speicherung
 
-Analyse von Spielverläufen
-
-Grundlage für spätere Erweiterungen (Statistiken, Heatmaps)
-
-### 12.2 Implementierung der Speicherung
+```dart
 Future<void> saveLocationInDatabase(LatLng? position) async {
   final user = FirebaseAuth.instance.currentUser;
   if (position == null || user == null) return;
@@ -572,79 +537,71 @@ Future<void> saveLocationInDatabase(LatLng? position) async {
         'timestamp': FieldValue.serverTimestamp(),
       });
 }
+```
+
 Die Speicherung erfolgt ausschließlich:
+- nach erfolgreicher Standortermittlung
+- bei authentifiziertem Benutzer
 
-nach erfolgreicher Standortermittlung
+### 13. Query- und Access-Pattern im Gesamtsystem
 
-bei authentifiziertem Benutzer
+#### 13.1 Benutzerbezogene Zugriffe
 
-##13. Query- und Access-Pattern im Gesamtsystem
-### 13.1 Benutzerbezogene Zugriffe
-Query Pattern:
+**Query Pattern**
+- Direkter Zugriff über `Users/{uid}`
 
-Direkter Zugriff über Users/{uid}
+**Access Pattern**
+- Schreiben nur für den eigenen Benutzer
+- Lesen für Anzeigezwecke erlaubt
 
-Access Pattern:
+#### 13.2 Stationsdaten
 
-Schreiben nur für den eigenen Benutzer
-
-Lesen für Anzeigezwecke erlaubt
-
-### 13.2 Stationsdaten
-Query Pattern:
-
-Subcollection-Zugriff
-
-Sortierung nach stadionIndex
+**Query Pattern**
+- Subcollection-Zugriff
+- Sortierung nach `stadionIndex`
 
 Dieses Pattern ermöglicht eine klare Spielreihenfolge.
 
-### 13.3 Standortdaten
-Query Pattern:
+#### 13.3 Standortdaten
 
-Direkter Zugriff auf PlayerLocation/{uid}
+**Query Pattern**
+- Direkter Zugriff auf `PlayerLocation/{uid}`
 
-Access Pattern:
+**Access Pattern**
+- Schreiben nur für authentifizierte Benutzer
+- Optionales Lesen für Mehrspieler-Ansichten
 
-Schreiben nur für authentifizierte Benutzer
+### 14. Fehlerbehandlung und Robustheit
 
-Optionales Lesen für Mehrspieler-Ansichten
+#### 14.1 Typische Fehlerquellen
 
-## 14. Fehlerbehandlung und Robustheit
-### 14.1 Typische Fehlerquellen
-Standortdienst deaktiviert
+- Standortdienst deaktiviert
+- Fehlende Berechtigungen
+- Ungenaue GPS-Daten
+- Netzwerkunterbrechungen
 
-Fehlende Berechtigungen
+#### 14.2 Defensive Programmierung
 
-Ungenaue GPS-Daten
-
-Netzwerkunterbrechungen
-
-### 14.2 Defensive Programmierung
 Das System überprüft konsequent alle kritischen Zustände:
 
+```dart
 if (position == null || user == null) return;
+```
+
 Dadurch werden Laufzeitfehler vermieden und die Stabilität erhöht.
 
-## 15. Wartbarkeit und Erweiterbarkeit
+### 15. Wartbarkeit und Erweiterbarkeit
+
 Die entwickelte Architektur ist modular aufgebaut und erlaubt:
-
-Erweiterung um neue Spielmodi
-
-Integration zusätzlicher Kartenlayer
-
-Erweiterung um Anti-Cheat-Mechanismen
-
-Nutzung historischer Standortdaten
+- Erweiterung um neue Spielmodi
+- Integration zusätzlicher Kartenlayer
+- Erweiterung um Anti-Cheat-Mechanismen
+- Nutzung historischer Standortdaten
 
 Durch die klare Trennung von:
-
-UI
-
-Standortlogik
-
-Datenpersistenz
-
-Sicherheitsregeln
+- UI
+- Standortlogik
+- Datenpersistenz
+- Sicherheitsregeln
 
 bleibt das System auch bei wachsendem Funktionsumfang wartbar.

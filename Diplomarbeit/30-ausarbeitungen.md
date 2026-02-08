@@ -7,48 +7,25 @@ Der Auftraggeber verspricht sich von dieser Arbeit eine langfristig einsetzbare,
 
 ## Ausgangssituation
 
-Eine allgemeine Aufgabenstellung 
+Am Ende jedes Schuljahres organisiert die HTL Leoben eine Schnitzeljagd für die ersten Klassen. Der Ablauf wird derzeit mit einer **externen App** unterstützt, die jedoch **nur eingeschränkt anpassbar** ist und dadurch eine **Abhängigkeit von Drittanbietern** erzeugt. Änderungen am Spielablauf (z. B. Stationen, Aufgaben, Punktevergabe oder Darstellung) sind nur begrenzt möglich und führen immer wieder zu organisatorischen Umwegen. Eine vollständig **schulinterne, dauerhaft wartbare Lösung** existiert bislang nicht.
 
-* Was ist die derzeitige Situation ? 
-* Wie wird derzeit gearbeitet ?
+### Was ist die derzeitige Situation?
+- Die Schnitzeljagd kann zwar digital begleitet werden, jedoch ist die vorhandene Lösung nicht speziell auf die Anforderungen der HTL Leoben zugeschnitten.
+- Durch die externe App entsteht geringe Kontrolle über Funktionsumfang, Weiterentwicklung und Anpassungen.
+- Wiederkehrende organisatorische Probleme entstehen vor allem dann, wenn der gewünschte Ablauf nicht mit den Möglichkeiten der App übereinstimmt.
+- Für zukünftige Jahrgänge gibt es aktuell keine Lösung, die einfach erweitert, angepasst und langfristig betrieben werden kann.
 
+### Wie wird derzeit gearbeitet?
+- Die Schnitzeljagd wird derzeit über eine externe Anwendung abgewickelt.
+- Anpassungen (neue Stationen/Regeln/Aufgaben) sind nur in dem Rahmen möglich, den der Drittanbieter vorgibt.
+- Technische Weiterentwicklungen liegen außerhalb des Einflussbereichs der Schule, wodurch die Planung und Durchführung unnötig eingeschränkt wird.
 
-### So gehen Zitate
+### Wie wir als Team an die Diplomarbeit herangehen
+Um diese Ausgangslage nachhaltig zu verbessern, entwickeln wir im Rahmen der Diplomarbeit eine*eigene mobile, standortbasierte Schnitzeljagd-Anwendung, die vollständig an die Anforderungen der Schule angepasst und langfristig weiterentwickelbar ist. Dabei arbeiten wir strukturiert und arbeitsteilig:
 
-Hier ein einzel Zitat eines Buches das auf der Seite 17 zu finden ist:  
-([@hattie_lernen_2013] S. 17) 
+- **Projektmanagement (Muratovic):** Koordination, Termin- und Qualitätsmanagement, Dokumentation, Abstimmung mit Auftraggeber und Betreuung  
+- **Backend (Kovacs):** Datenhaltung, Schnittstellen/API, Authentifizierung und serverseitige Logik  
+- **Frontend (Zeismann):** UI/UX, App-Ablauf, Kartenansicht und Interaktion mit Backend-Diensten  
 
-Zitatsammlung:  
-(vergleich dazu @heise oder @t3n)  
-[@hattie_lernen_2013, S. 33-35; außerdem @leeb_einfuhrung_2016, S. 6 f.]
+Die Umsetzung erfolgt **iterativ**: Anforderungen werden in Arbeitspakete zerlegt, priorisiert umgesetzt und regelmäßig zusammengeführt. Durch kontinuierliche Abstimmung stellen wir sicher, dass Implementierung und Dokumentation konsistent bleiben und die Anwendung didaktisch sinnvoll einsetzbar ist – insbesondere, indem der Ablauf für Schüler klar, motivierend und nachvollziehbar gestaltet wird.
 
-Zitat ohne Autor  
-Hattie sagte bla bla [-@hattie_lernen_2013]
-
-Name des Autors mit Jahr in Klammern  
-@hattie_lernen_2013 sagte einmal bla bla bla
-
-Auch Videos kann man Zitieren wi Zum Biespiel hier [@Zatko15] in dieser Referenz.
-
-Hier noch ein Zitat mit Seitenangabe [[@Zatko15] Seite 5f.]
-
-Man darf auch ChatGPT oder andere KIs befragen um Wissen zu erlangen. Dazu muss allerdings ein PDF Log des exakten Chats in die Metadata.yaml eingetragen werden und der dort eingetragene `short-prompt` auch in der bib Datei eingefügt werden. Dann könnten indirekte Zitate so aussehen [@gpt-pandoc] oder auch so [@gpt-atomaufbau].
-
-Wichtig ist es, das beim Author die verwendete KI eingetragen wird (mit Versionsnummern - so genau wie möglich), beim title eine kurze Referenz zum Prompt und beim Jahr - das Jahr in dem die Abfrage gemacht wurde. Das hat dem `short-prompt` aus der metadata.yaml zu entsprechen.
-
-~~~~~
-@unpublished{gpt-pandoc,
-  author = {{ChatGPT 4.0}},
-  title  = {Was ist Pandoc ?},
-  year   = {2024},
-  url={https://chat.openai.com/c/ef535195-0e39-4d5c-9c85-cdb7ec18ad03},
-  urldate = {2023-02-29}
-}
-~~~~~ 
-
-Oben sieht man wie ein korrekter Bibtech Eintrag für eine ChatGPT Konversation aussieht. Zusätzlich wurden hier bei URL noch die url des Chats eingetragen - was zwar praktisch ist, uns allerdings nicht von der Pflicht entbindet den Chatverlauf in der DA als PDF einzufügen.
-Anzumerkein ist ebenfalls noch das wir hier ein `unpublished` Tag verwenden weil wir hier eben Quellen verwenden die in dieser Form nicht gepublished wurden.
-
-### Systembeschreibung Y 
-
-### Systembeschreibung Z 

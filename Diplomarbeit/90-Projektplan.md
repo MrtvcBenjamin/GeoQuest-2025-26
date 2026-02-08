@@ -215,8 +215,6 @@ Der Nutzer bleibt ausgeloggt, es wird kein Benutzerkonto erstellt oder veränder
 - E-Mail-Verifizierung notwendig?  
 - Passwort-Richtlinien?  
 
----
-
 ### Karte & Standort
 
 #### Kurzbeschreibung  
@@ -267,8 +265,6 @@ Die Karte wird ohne Positionsdaten angezeigt, Aufgabenmarker werden nicht gelade
 - Echtzeit-Updates oder periodische Standortabfrage?  
 - Filter für Aufgabenradius?  
 - Karten-Styling (Standard, Dark Mode)?  
-
----
 
 ### Standortbasierte Aufgaben
 
@@ -326,68 +322,70 @@ Der Aufgabenstatus bleibt unverändert, keine doppelte Auslösung erfolgt.
 - GPS-Update-Intervall  
 - Speicherung des Aufgabenstatus  
 
----
-
-### Stationsfreigabe durch Lehrer
+### Stationsabschluss (GPS oder QR-Code)
 
 #### Kurzbeschreibung  
-Als **Lehrer** möchte ich eine Aufgabe an einer Station manuell freigeben, indem ich ein Kürzel eingebe, um sicherzustellen, dass ein Team die Aufgabe korrekt erledigt hat und erst danach Punkte erhält.
+Als Spieler (Team) möchte ich eine Station abschließen und Punkte erhalten, entweder automatisch durch das Erreichen der Station (GPS-Radius) oder durch Scannen eines QR-Codes an der Station, damit die Schnitzeljagd flexibel und zuverlässig durchgeführt werden kann.
 
 #### Trigger  
-Ein Schüler-Team erreicht eine Station und das Aufgaben-Pop-up wird automatisch angezeigt.
+- Der Spieler betritt den definierten Radius einer Station (GPS-Trigger)  
+oder
+- der Spieler scannt den QR-Code der Station (QR-Trigger)
 
 #### Vorbedingung  
 - Eine aktive Schnitzeljagd läuft  
-- Das Team befindet sich im definierten Radius einer Station  
-- Der Lehrer ist im Besitz eines gültigen Stationskürzels  
-- Das Team hat die Aufgabe an dieser Station noch nicht abgeschlossen  
+- Der Spieler ist angemeldet  
+- Die Station wurde vom Team noch nicht abgeschlossen  
+- Für GPS-Trigger Standortberechtigung ist erteilt und Standortdienst aktiv  
+- Für QR-Trigger Kameraberechtigung ist erteilt und ein gültiger QR-Code ist an der Station vorhanden  
 
 #### Nachbedingung  
-Die Aufgabe wird als erfolgreich abgeschlossen markiert und die zugehörigen Punkte werden dem Team gutgeschrieben.
+Die Station wird als abgeschlossen markiert und die zugehörigen Punkte werden dem Team gutgeschrieben.
 
 #### Akteure  
-- Lehrer  
 - Spieler (Team)  
+- GPS-/Standortsystem (für GPS-Trigger)  
+- Kamera/QR-Scanner (für QR-Trigger)  
+- System (App + Backend/Firestore)
 
 #### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
 #### Akzeptanzkriterien  
-- **Given:** Ein Team erreicht den Radius einer Station  
-  **When:** Das Aufgaben-Pop-up wird angezeigt  
-  **Then:** Sieht der Lehrer ein Eingabefeld für das Stationskürzel  
+- **Given:** Eine Station ist auf GPS-Trigger konfiguriert  
+  **When:** Das Team betritt den definierten Stationsradius  
+  **Then:** Wird die Station automatisch als abgeschlossen markiert und Punkte werden gutgeschrieben  
 
-- **Given:** Der Lehrer gibt ein korrektes Stationskürzel ein  
-  **When:** Er bestätigt die Eingabe  
-  **Then:** Wird die Aufgabe als abgeschlossen markiert  
+- **Given:** Eine Station ist auf QR-Trigger konfiguriert  
+  **When:** Das Team scannt den QR-Code der Station  
+  **Then:** Wird die Station als abgeschlossen markiert und Punkte werden gutgeschrieben  
 
-- **Given:** Die Aufgabe wurde erfolgreich freigegeben  
-  **When:** Der Abschluss bestätigt wird  
-  **Then:** Werden dem Team automatisch Punkte zugewiesen  
+- **Given:** Eine Station ist auf QR-Trigger konfiguriert  
+  **When:** Ein ungültiger oder nicht passender QR-Code wird gescannt  
+  **Then:** Erscheint eine Fehlermeldung („Ungültiger QR-Code“) und es werden keine Punkte vergeben  
 
-- **Given:** Der Lehrer gibt ein falsches Stationskürzel ein  
-  **When:** Er bestätigt die Eingabe  
-  **Then:** Erscheint eine Fehlermeldung („Ungültiges Kürzel“)  
+- **Given:** Eine Station wurde bereits abgeschlossen  
+  **When:** Das Team betritt erneut den Stationsradius oder scannt erneut den QR-Code  
+  **Then:** Wird keine erneute Punktevergabe ausgelöst, optional erscheint ein Hinweis („Station bereits abgeschlossen“)  
 
-- **Given:** Ein Team hat die Station bereits abgeschlossen  
-  **When:** Es betritt erneut den Stationsradius  
-  **Then:** Wird kein erneutes Pop-up zur Freigabe angezeigt  
+- **Given:** Standortdaten sind ungenau oder es erfolgen viele Updates  
+  **When:** Das Team bewegt sich nahe des Radius  
+  **Then:** Wird der Abschluss nur einmal ausgelöst (Schutz vor Mehrfachauslösung)
 
 #### Fehlersituationen  
-- Falsches oder ungültiges Stationskürzel  
-- Abbruch der Kürzeleingabe  
-- Netzwerkprobleme bei der Punktezuweisung  
+- Standortzugriff verweigert oder Standortdienst deaktiviert (GPS-Trigger nicht möglich)  
+- Kamerazugriff verweigert oder Kamera nicht verfügbar (QR-Trigger nicht möglich)  
+- Netzwerkprobleme bei der Punktezuweisung / Synchronisation  
 
 #### Systemzustand im Fehlerfall  
-Die Aufgabe bleibt als nicht abgeschlossen markiert und es werden keine Punkte vergeben.
+Die Station bleibt als nicht abgeschlossen markiert und es werden keine Punkte vergeben. Der Nutzer erhält eine verständliche Fehlermeldung und kann den Vorgang erneut versuchen.
 
 #### Conversation Points  
-- Länge und Format des Stationskürzels (z. B. 4–6 Zeichen)  
-- Einmal- oder mehrfach verwendbares Kürzel pro Station  
-- Sichtbarkeit der Kürzeleingabe (z. B. verdeckte Eingabe)  
-- Speicherung der Freigabe in Firestore (Team + Station + Zeitstempel)  
+- Konfiguration pro Station: GPS-Trigger, QR-Trigger oder beides?  
+- Radiusgröße und Anti-Cheat-Strategie (z. B. Plausibilitätsprüfungen)  
+- QR-Code-Format/Inhalt (Station-ID, Hunt-ID, Signatur)  
+- Offline-Verhalten: Punkte lokal zwischenspeichern und später synchronisieren?
 
----
 
 ### Aufgaben & Fortschritt
 
