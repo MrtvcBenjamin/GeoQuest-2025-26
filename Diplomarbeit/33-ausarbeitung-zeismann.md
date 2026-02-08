@@ -67,7 +67,7 @@ Diese Reihenfolge verhindert Sackgassen. Wer die App erstmals öffnet, versteht 
 
 ### Splash Screen als technische und visuelle Startphase
 
-Der Splash Screen ist nicht nur grafischer Einstieg, sondern übernimmt praktische Aufgaben. In dieser kurzen Phase werden Basiskonfigurationen geladen, der Authentifizierungsstatus geprüft und erste asynchrone Vorgänge angestossen.
+Der Splash Screen ist nicht nur grafischer Einstieg, sondern übernimmt praktische Aufgaben. In dieser kurzen Phase werden Basiskonfigurationen geladen, der Authentifizierungsstatus geprüft und erste asynchrone Vorgänge angestoßen.
 
 Wichtig war, die Ladephase weder zu lang noch abrupt zu gestalten. Ein kurzes visuelles Signal vermittelt, dass die Anwendung aktiv arbeitet. Gleichzeitig wird verhindert, dass Nutzer in eine halbfertige Oberfläche springen, in der Daten noch fehlen.
 
@@ -95,7 +95,7 @@ Die Anmeldung ist eine Schlüsselstelle, weil sie Sicherheit, Komfort und techni
 - Google Sign-In für schnellen Einstieg.
 - E-Mail/Passwort für Nutzer ohne Google-Konto.
 
-Nach erfolgreichem Login wird eine eindeutige Nutzer-ID verwendet, über die persönliche Daten und Spielstände zugeordnet werden. Die Frontend-Logik prueft den Login-Status beim Start und entscheidet, ob zur Hauptansicht oder zum Login-Screen navigiert wird.
+Nach erfolgreichem Login wird eine eindeutige Nutzer-ID verwendet, über die persönliche Daten und Spielstände zugeordnet werden. Die Frontend-Logik prüft den Login-Status beim Start und entscheidet, ob zur Hauptansicht oder zum Login-Screen navigiert wird.
 
 Für Fehlerfälle, etwa ungültige Zugangsdaten oder Netzwerkprobleme, wurden klare Meldungen implementiert. Statt technischer Rohfehler werden kurze, handlungsorientierte Hinweise angezeigt. Das reduziert Frust und vermeidet unnötige Wiederholversuche.
 
@@ -130,7 +130,7 @@ Die Markerlogik folgt einem einfachen, klaren Farbkonzept, damit auch in Bewegun
 
 ### Standorttracking und Ereignissteuerung
 
-Die Standortermittlung ist als kontinuierlicher Prozess angelegt. Ein einzelner Positionsabruf waere für ein bewegungsbasiertes Spiel unzureichend. Deshalb arbeitet die App mit einem Stream, der in definierten Intervallen bzw. bei Distanzveraenderung aktualisiert wird.
+Die Standortermittlung ist als kontinuierlicher Prozess angelegt. Ein einzelner Positionsabruf wäre für ein bewegungsbasiertes Spiel unzureichend. Deshalb arbeitet die App mit einem Stream, der in definierten Intervallen bzw. bei Distanzveränderung aktualisiert wird.
 
 Beim Eintreffen neuer Positionsdaten werden drei Schritte ausgeführt:
 
@@ -138,11 +138,11 @@ Beim Eintreffen neuer Positionsdaten werden drei Schritte ausgeführt:
 2. Neuberechnung der Distanz zur nächsten Station.
 3. Auslösung spielrelevanter Ereignisse bei Unterschreiten des Radius.
 
-Um Mehrfachausloesungen zu vermeiden, wird die Ereignislogik nach erfolgreichem Trigger gezielt gesperrt bzw. erst nach Nutzerbestaetigung fortgesetzt. Das verhindert, dass ein Dialog mehrfach erscheint, wenn mehrere Standortupdates in kurzer Zeit eintreffen.
+Um Mehrfachauslösungen zu vermeiden, wird die Ereignislogik nach erfolgreichem Trigger gezielt gesperrt bzw. erst nach Nutzerbestätigung fortgesetzt. Das verhindert, dass ein Dialog mehrfach erscheint, wenn mehrere Standortupdates in kurzer Zeit eintreffen.
 
 ### Spielfortschritt und Quiz-Intro im Frontend
 
-Der Fortschritt wird für Nutzer sichtbar und nachvollziehbar gehalten. Eine reine Hintergrundlogik ohne Rückmeldung führt in mobilen Spielszenarien schnell zu Unsicherheit. Deshalb zeigt die App nach relevanten Ereignissen klar an, was erreicht wurde und welcher Schritt als naechstes folgt.
+Der Fortschritt wird für Nutzer sichtbar und nachvollziehbar gehalten. Eine reine Hintergrundlogik ohne Rückmeldung führt in mobilen Spielszenarien schnell zu Unsicherheit. Deshalb zeigt die App nach relevanten Ereignissen klar an, was erreicht wurde und welcher Schritt als nächstes folgt.
 
 Der Bereich **Quiz-Intro** bildet eine wichtige Bruecke zwischen Navigation und inhaltlicher Aufgabe. In dieser Ansicht wird nicht nur auf das Quiz verwiesen, sondern der Kontext der nächsten Station vorbereitet. Der Screen muss deshalb zwei Funktionen gleichzeitig leisten:
 
@@ -153,28 +153,28 @@ Die Ausgestaltung orientiert sich an kurzen Textbloecken, klaren Buttons und ein
 
 ### Fehlerbehandlung und Stabilität im Echtbetrieb
 
-Bei Feldtests zeigte sich schnell, dass robuste Fehlerbehandlung wichtiger ist als visuelle Perfektion. Die App muss auch dann sinnvoll reagieren, wenn externe Faktoren unguenstig sind.
+Bei Feldtests zeigte sich schnell, dass robuste Fehlerbehandlung wichtiger ist als visuelle Perfektion. Die App muss auch dann sinnvoll reagieren, wenn externe Faktoren ungünstig sind.
 
 Typische Störungsbilder:
 
 - GPS nicht aktiv oder ungenau.
 - Unterbrochene Internetverbindung.
-- Zeitverzoegerte Firestore-Antworten.
-- Authentifizierung laeuft ab oder liefert Fehlercodes.
+- Zeitverzögerte Firestore-Antworten.
+- Authentifizierung läuft ab oder liefert Fehlercodes.
 
 Die Frontend-Strategie besteht aus drei Ebenen:
 
 1. Frühes Abfangen erwartbarer Fehler.
-2. Verstaendliche Nutzerhinweise statt technischer Details.
-3. Definierte Rueckfallpfade, z. B. erneuter Abruf oder Navigation zu einem sicheren Ausgangsscreen.
+2. Verständliche Nutzerhinweise statt technischer Details.
+3. Definierte Rückfallpfade, z. B. erneuter Abruf oder Navigation zu einem sicheren Ausgangsscreen.
 
-Diese Vorgehensweise erhoeht die wahrgenommene Zuverlaessigkeit deutlich, auch wenn nicht jeder Fehler sofort vollautomatisch behoben werden kann.
+Diese Vorgehensweise erhoeht die wahrgenommene Zuverlässigkeit deutlich, auch wenn nicht jeder Fehler sofort vollautomatisch behoben werden kann.
 
 ![Beispielhafte Auswertung aus der Entwicklungsphase\label{fig:zeismann_graph}](img/graph.png){width=72%}
 
 ### Performance-Optimierung im mobilen Kontext
 
-Neben Funktionalität war die Laufzeitqualität ein zentrales Thema. Mobile Endgeraete variieren stark in Leistung, Speicher und Akkukapazitaet. Besonders Kartenansichten mit permanenten Standortupdates können Ressourcen belasten.
+Neben Funktionalität war die Laufzeitqualität ein zentrales Thema. Mobile Endgeräte variieren stark in Leistung, Speicher und Akkukapazität. Besonders Kartenansichten mit permanenten Standortupdates können Ressourcen belasten.
 
 Für eine stabile Performance wurden mehrere Maßnahmen kombiniert:
 
@@ -196,29 +196,29 @@ Sicherheitsrelevante Grundprinzipien:
 - Keine unnötige Speicherung sensibler Daten im Klartext auf dem Gerät.
 - Fehlermeldungen ohne Preisgabe interner Sicherheitsdetails formulieren.
 
-Auf Datenbankseite sichern Firestore-Regeln den Zugriff. Das Frontend ergaenzt diese Ebene, indem kritische Aktionen bereits vor dem Request vorgeprüft werden.
+Auf Datenbankseite sichern Firestore-Regeln den Zugriff. Das Frontend ergänzt diese Ebene, indem kritische Aktionen bereits vor dem Request vorgeprüft werden.
 
 ### Zusammenarbeit im Team und Versionskontrolle
 
-Die Frontend-Arbeit stand in enger Abhaengigkeit zu Backend-Struktur und inhaltlicher Spielplanung. Um Reibungsverluste zu reduzieren, wurden klare Arbeitsablaeufe in Git genutzt.
+Die Frontend-Arbeit stand in enger Abhängigkeit zu Backend-Struktur und inhaltlicher Spielplanung. Um Reibungsverluste zu reduzieren, wurden klare Arbeitsablaeufe in Git genutzt.
 
 - Kleine, inhaltlich konsistente Commits.
 - Regelmäßiges Synchronisieren mit dem Hauptbranch.
 - Frühe Konfliktaufloesung bei parallel bearbeiteten Screens.
 
-Gerade bei gemeinsamen Dateien wie Routing oder Theme-Konfiguration führt spaetes Zusammenführen schnell zu Konflikten. Ein enger Rhythmus beim Pull- und Merge-Prozess hat sich als deutlich effizienter erwiesen als seltene, große Integrationsschritte.
+Gerade bei gemeinsamen Dateien wie Routing oder Theme-Konfiguration führt spätes Zusammenführen schnell zu Konflikten. Ein enger Rhythmus beim Pull- und Merge-Prozess hat sich als deutlich effizienter erwiesen als seltene, große Integrationsschritte.
 
 ### Validierung, Testansatz und Lessons Learned
 
-Die Qualitätssicherung erfolgte über eine Kombination aus manuellem Testen auf Emulator und realem Endgeraet sowie gezielten Funktionspruefungen einzelner Flows.
+Die Qualitätssicherung erfolgte über eine Kombination aus manuellem Testen auf Emulator und realem Endgerät sowie gezielten Funktionsprüfungen einzelner Flows.
 
 Getestet wurden unter anderem:
 
-- Vollstaendiger Erststart inklusive Onboarding und Rechteeinholung.
+- Vollständiger Erststart inklusive Onboarding und Rechteeinholung.
 - Login- und Logout-Verhalten.
 - Kartenreaktion bei realer Bewegung.
 - Auslösung von Stationsereignissen im Grenzbereich der Distanz.
-- Rueckkehr in stabile Zustände nach Fehlern.
+- Rückkehr in stabile Zustände nach Fehlern.
 
 Wesentliche Erkenntnisse:
 
@@ -243,7 +243,7 @@ Damit liegt eine belastbare Frontend-Grundlage vor, die nicht nur als Prototyp f
 
 ### Rolle des Frontends in standortbasierten Anwendungen
 
-In vielen Softwareprojekten wird das Frontend auf die sichtbare Oberfläche reduziert. Bei standortbasierten Lern- und Spielanwendungen ist diese Sichtweise zu kurz. Das Frontend ist hier gleichzeitig Kommunikationsschicht, Steuerungseinheit und Sicherheitsfilter. Es vermittelt nicht nur Inhalte, sondern übersetzt komplexe, zeitabhaengige Systemzustaende in konkrete Handlungen.
+In vielen Softwareprojekten wird das Frontend auf die sichtbare Oberfläche reduziert. Bei standortbasierten Lern- und Spielanwendungen ist diese Sichtweise zu kurz. Das Frontend ist hier gleichzeitig Kommunikationsschicht, Steuerungseinheit und Sicherheitsfilter. Es vermittelt nicht nur Inhalte, sondern übersetzt komplexe, zeitabhaengige Systemzustände in konkrete Handlungen.
 
 Bei GeoQuest trifft der Nutzer auf ein System, das laufend auf Umgebung, Position und Anwendungsstatus reagiert. Das Frontend muss daher drei Aufgaben gleichzeitig loesen:
 
@@ -255,9 +255,9 @@ Ein gelungenes Frontend in diesem Kontext ist nicht die Summe einzelner Widgets,
 
 ### Deklarative UI in der Praxis
 
-Flutter folgt einem deklarativen Ansatz. Die Oberfläche wird als Funktion des aktuellen Zustands beschrieben. Aendert sich der Zustand, wird das betroffene UI neu aufgebaut. Theoretisch ist dieses Modell besonders geeignet für Anwendungen mit hoher Dynamik, weil Anzeige und Datenlage eng gekoppelt sind.
+Flutter folgt einem deklarativen Ansatz. Die Oberfläche wird als Funktion des aktuellen Zustands beschrieben. Ändert sich der Zustand, wird das betroffene UI neu aufgebaut. Theoretisch ist dieses Modell besonders geeignet für Anwendungen mit hoher Dynamik, weil Anzeige und Datenlage eng gekoppelt sind.
 
-Für GeoQuest bedeutet das konkret: Wenn ein Standortupdate eintrifft, wird die Karte mit neuer Position dargestellt, ohne imperatives Nachzeichnen einzelner Elemente. Wenn sich der Login-Status aendert, kann der Viewwechsel konsistent über zentrale Navigationsregeln erfolgen.
+Für GeoQuest bedeutet das konkret: Wenn ein Standortupdate eintrifft, wird die Karte mit neuer Position dargestellt, ohne imperatives Nachzeichnen einzelner Elemente. Wenn sich der Login-Status ändert, kann der Viewwechsel konsistent über zentrale Navigationsregeln erfolgen.
 
 Der Vorteil liegt in Nachvollziehbarkeit und Testbarkeit. Statt vieler verstreuter Einzelfaelle entsteht ein reproduzierbarer Zusammenhang zwischen Zustand und Darstellung. Das reduziert Seiteneffekte und erleichtert Fehlersuche.
 
@@ -275,29 +275,29 @@ Theoretisch ist die Trennung dieser Ebenen zentral, weil sie unterschiedliche Le
 
 ### Navigation als klarer Ablauf
 
-Navigation wird oft rein technisch betrachtet, ist in Wahrheit aber ein fachliches Modell des gesamten Produktverhaltens. Jeder Screen entspricht einem Zustand, jeder Button einer erlaubten Transition. Fehler entstehen haeufig dort, wo diese übergaenge nicht explizit gedacht werden.
+Navigation wird oft rein technisch betrachtet, ist in Wahrheit aber ein fachliches Modell des gesamten Produktverhaltens. Jeder Screen entspricht einem Zustand, jeder Button einer erlaubten Transition. Fehler entstehen häufig dort, wo diese übergaenge nicht explizit gedacht werden.
 
 Bei GeoQuest ist der Einstiegspfad bewusst linear aufgebaut, während der Hauptbereich tab-basiert funktioniert. Diese Kombination ist theoretisch sinnvoll:
 
 - Lineare Phase für Onboarding und Initialbedingungen.
 - Nichtlineare Phase für wiederkehrende Nutzung und schnellen Wechsel zwischen Kernfunktionen.
 
-Wichtig ist die Definition gültiger übergaenge. Ein Nutzer ohne Standortfreigabe darf nicht in einen Kartenmodus gelangen, der zwingend GPS benötigt. Eine saubere Navigation verhindert solche ungültigen Zustaende bereits strukturell.
+Wichtig ist die Definition gültiger übergaenge. Ein Nutzer ohne Standortfreigabe darf nicht in einen Kartenmodus gelangen, der zwingend GPS benötigt. Eine saubere Navigation verhindert solche ungültigen Zustände bereits strukturell.
 
 ### Prinzipien guter mobiler Benutzerführung
 
-Für mobile Anwendungen gelten andere Rahmenbedingungen als für Desktop-Systeme. Bildschirmflaeche ist begrenzt, Aufmerksamkeit ist situativ, Eingabe erfolgt haeufig unterwegs. Daraus lassen sich zentrale UX-Prinzipien ableiten:
+Für mobile Anwendungen gelten andere Rahmenbedingungen als für Desktop-Systeme. Bildschirmfläche ist begrenzt, Aufmerksamkeit ist situativ, Eingabe erfolgt häufig unterwegs. Daraus lassen sich zentrale UX-Prinzipien ableiten:
 
 - **Reduktion**: Nur Informationen anzeigen, die für den aktuellen Schritt relevant sind.
 - **Hierarchie**: Wichtige Inhalte klar hervorheben, Nebeninformationen nachordnen.
 - **Rückmeldung**: Jede Aktion braucht sichtbare Konsequenz.
-- **Fehlertoleranz**: Falsche Eingaben oder unguenstige Umstaende muessen abgefangen werden.
+- **Fehlertoleranz**: Falsche Eingaben oder ungünstige Umstände müssen abgefangen werden.
 
 In standortbasierten Szenarien kommt ein weiterer Faktor hinzu: Die Aufmerksamkeit liegt oft teilweise auf der realen Umgebung. Das Frontend muss deshalb schnell erfassbar sein und darf keine komplexen Interaktionsketten erzwingen.
 
 ### Karteninteraktion als Sonderfall der UI-Gestaltung
 
-Kartenoberflaechen stellen besondere Anforderungen. Sie sind gleichzeitig Informationsquelle, Navigationshilfe und Interaktionsflaeche. Im Unterschied zu klassischen Formularansichten veraendert sich der Inhalt dynamisch durch Zoomstufe, Position und externe Datenquellen.
+Kartenoberflaechen stellen besondere Anforderungen. Sie sind gleichzeitig Informationsquelle, Navigationshilfe und Interaktionsflaeche. Im Unterschied zu klassischen Formularansichten verändert sich der Inhalt dynamisch durch Zoomstufe, Position und externe Datenquellen.
 
 Theoretisch ergeben sich daraus mehrere Gestaltungsregeln:
 
@@ -312,20 +312,20 @@ Besonders in Spielszenarien ist die Balance wichtig: Die Karte soll motivieren u
 
 GPS-Daten sind nie absolut praezise. Messwerte schwanken durch Bebauung, Wetter, Bewegungsgeschwindigkeit und Gerätequalität. Aus theoretischer Sicht bedeutet das: Jede Distanzlogik muss mit Unsicherheit umgehen können.
 
-Ein binärer Ansatz nach dem Muster "im Radius" oder "nicht im Radius" ist nur dann robust, wenn der Radius realistisch gewählt wird. Zu kleine Schwellwerte wirken technisch streng, führen in der Praxis aber zu frustrierenden Fehlverhalten. Zu große Schwellwerte machen Aufgaben beliebig.
+Ein binärer Ansatz nach dem Muster "im Radius" oder "nicht im Radius" ist nur dann robust, wenn der Radius realistisch gewählt wird. Zu kleine Schwellwerte wirken technisch streng, führen in der Praxis aber zu frustrierendem Fehlverhalten. Zu große Schwellwerte machen Aufgaben beliebig.
 
 Die sinnvolle Wahl eines Radius ist daher kein rein mathematisches, sondern ein nutzungsbezogenes Optimierungsproblem. Sie muss Spielmechanik, Umgebungsbedingungen und erwartete Genauigkeit gemeinsam beruecksichtigen.
 
 ### Asynchrone Verarbeitung im Frontend
 
-Moderne Mobile-Apps arbeiten in weiten Teilen asynchron: Netzwerkabfragen, Authentifizierung, Standortupdates, Caching und Datenpersistenz laufen nebenlaeufig. Daraus entstehen typische Risiken wie Race Conditions, veraltete UI-Zustaende oder doppelte Aktionen.
+Moderne Mobile-Apps arbeiten in weiten Teilen asynchron: Netzwerkabfragen, Authentifizierung, Standortupdates, Caching und Datenpersistenz laufen nebenlaeufig. Daraus entstehen typische Risiken wie Race Conditions, veraltete UI-Zustände oder doppelte Aktionen.
 
 Praktisch hilfreiche Gegenmaßnahmen sind:
 
 - klare Lebenszyklen für Streams und Subscriptions,
 - Abbruchlogik bei Screenwechseln,
 - saubere Verarbeitung wiederholter Ereignisse,
-- zentrale Regeln für Lade- und Fehlerzustaende.
+- zentrale Regeln für Lade- und Fehlerzustände.
 
 Besonders wichtig ist die Unterscheidung zwischen "Daten werden geladen" und "Daten konnten nicht geladen werden". Beide Situationen duerfen nicht im selben visuellen Zustand enden, weil sonst keine klare Handlung für Nutzer erkennbar ist.
 
@@ -333,12 +333,12 @@ Besonders wichtig ist die Unterscheidung zwischen "Daten werden geladen" und "Da
 
 Sichere Authentifizierung darf die Einstiegshuerde nicht unverhaeltnismaessig erhöhen. In der Theorie zeigt sich hier ein klassischer Zielkonflikt: Je strenger ein Verfahren, desto haeufiger treten Bedienabbrueche auf. Je einfacher der Zugang, desto hoeher das Missbrauchsrisiko.
 
-Die Kombination aus etablierten Login-Verfahren und tokenbasierter Sessionverwaltung ist für mobile Bildungs- und Spielanwendungen ein tragfähiger Kompromiss. Entscheidend ist, dass das Frontend sicherheitsrelevante Zustaende klar kennt:
+Die Kombination aus etablierten Login-Verfahren und tokenbasierter Sessionverwaltung ist für mobile Bildungs- und Spielanwendungen ein tragfähiger Kompromiss. Entscheidend ist, dass das Frontend sicherheitsrelevante Zustände klar kennt:
 
 - gueltig angemeldet,
 - abgelaufene Sitzung,
 - fehlgeschlagene Anmeldung,
-- temporäre Netzwerkstoerung.
+- temporäre Netzwerkstörung.
 
 Jeder Zustand benötigt eine eigene, verständliche Reaktion in der UI.
 
@@ -346,7 +346,7 @@ Jeder Zustand benötigt eine eigene, verständliche Reaktion in der UI.
 
 Auch wenn die Datenbankstruktur backendseitig umgesetzt wird, traegt das Frontend Mitverantwortung für ein konsistentes Modell. Jede Anfrage, jeder Schreibvorgang und jede lokale Zwischendarstellung beruht auf impliziten Annahmen über Datenformate.
 
-Theoretisch gilt: Je expliziter diese Annahmen dokumentiert und im Code abgesichert sind, desto geringer ist das Risiko inkonsistenter Zustaende. Praktische Ableitungen sind:
+Theoretisch gilt: Je expliziter diese Annahmen dokumentiert und im Code abgesichert sind, desto geringer ist das Risiko inkonsistenter Zustände. Praktische Ableitungen sind:
 
 - eindeutige Feldnamen und Datentypen,
 - verifizierte Pflichtfelder,
@@ -357,7 +357,7 @@ In GeoQuest ist diese Perspektive besonders wichtig, weil Spielzustand, Nutzerko
 
 ### Datenschutz als Bestandteil der UX
 
-Datenschutz wird haeufig als rein juristische Schicht betrachtet. In mobilen Anwendungen ist er jedoch unmittelbar Teil der Benutzererfahrung. Wer nicht versteht, warum eine Berechtigung nötig ist, lehnt sie eher ab. Wer keine Kontrolle über Datenflüsse wahrnimmt, verliert Vertrauen.
+Datenschutz wird häufig als rein juristische Schicht betrachtet. In mobilen Anwendungen ist er jedoch unmittelbar Teil der Benutzererfahrung. Wer nicht versteht, warum eine Berechtigung nötig ist, lehnt sie eher ab. Wer keine Kontrolle über Datenflüsse wahrnimmt, verliert Vertrauen.
 
 Ein gutes Frontend setzt deshalb auf transparente Kommunikation vor der Datenerhebung. Der Nutzen muss vor der Abfrage erklärt werden, nicht erst danach. Gleichzeitig sollte jede Erklärung knapp und situationsbezogen bleiben, um Informationsmüdigkeit zu vermeiden.
 
@@ -365,30 +365,30 @@ Im theoretischen Kern lautet die Regel: **So viel Daten wie nötig, so wenig wie
 
 ### Barrierefreiheit und inklusive Bedienung
 
-Auch in schulischen Projekten sollte Barrierefreiheit nicht als Zusatz betrachtet werden. Ein Frontend, das nur unter idealen Bedingungen funktioniert, schliesst Teile der Zielgruppe faktisch aus.
+Auch in schulischen Projekten sollte Barrierefreiheit nicht als Zusatz betrachtet werden. Ein Frontend, das nur unter idealen Bedingungen funktioniert, schließt Teile der Zielgruppe faktisch aus.
 
 Wichtige Grundsaetze:
 
-- ausreichende Kontraste und gut lesbare Schriftgroessen,
+- ausreichende Kontraste und gut lesbare Schriftgrößen,
 - klare Fokusreihenfolgen und nachvollziehbare Interaktionsziele,
 - sprachlich einfache, eindeutige Formulierungen,
 - Verzicht auf farbliche Codierung als einziges Informationsmittel.
 
-In einer Kartenanwendung bedeutet das zusätzlich, dass Informationen nicht ausschließlich über Markerfarben vermittelt werden sollten. Ergaenzende Icons, Labels oder Textlisten verbessern die Zugänglichkeit deutlich.
+In einer Kartenanwendung bedeutet das zusätzlich, dass Informationen nicht ausschließlich über Markerfarben vermittelt werden sollten. Ergänzende Icons, Labels oder Textlisten verbessern die Zugänglichkeit deutlich.
 
 ### Qualitätssicherung im Frontend-Engineering
 
 Qualität im Frontend ist mehr als visuelle Korrektheit. Stabilität, Vorhersagbarkeit und Wartbarkeit sind gleichwertige Kriterien. Theoretisch laesst sich eine wirksame QS-Strategie in drei Ebenen einteilen:
 
 1. **Statische Qualität**: Lesbarer Code, einheitliche Struktur, klare Benennung.
-2. **Funktionale Qualität**: Korrekte Ablaeufe unter Normalbedingungen.
+2. **Funktionale Qualität**: Korrekte Abläufe unter Normalbedingungen.
 3. **Robustheitsqualität**: Sinnvolles Verhalten bei Fehlern und Randfällen.
 
 Gerade die dritte Ebene wird in frühen Prototypen oft unterschätzt, entscheidet im praktischen Einsatz aber über Akzeptanz.
 
 ### Wartbarkeit als langfristiges Architekturziel
 
-Ein Frontend gilt nicht dann als gut, wenn es einmal funktioniert, sondern wenn es über Zeit kontrolliert veränderbar bleibt. Wartbarkeit ist daher ein Architekturziel mit hoher Prioritaet.
+Ein Frontend gilt nicht dann als gut, wenn es einmal funktioniert, sondern wenn es über Zeit kontrolliert veränderbar bleibt. Wartbarkeit ist daher ein Architekturziel mit hoher Priorität.
 
 Dazu gehoeren:
 
@@ -414,7 +414,7 @@ Ein leistungsfaehiges Frontend sucht den Kompromiss zwischen Aktualität und Res
 
 ### Rückblick auf die Frontend-Entscheidungen
 
-Die in GeoQuest gewaehlen Frontend-Ansätze zeigen, dass technische Stabilität und benutzerorientiertes Design nicht als Gegensaetze behandelt werden muessen. Ein klarer Ablauf, saubere Zustandslogik und transparente Kommunikation steigern gleichzeitig die Bedienbarkeit und reduzieren technische Fehlerbilder.
+Die in GeoQuest gewaehlen Frontend-Ansätze zeigen, dass technische Stabilität und benutzerorientiertes Design nicht als Gegensätze behandelt werden müssen. Ein klarer Ablauf, saubere Zustandslogik und transparente Kommunikation steigern gleichzeitig die Bedienbarkeit und reduzieren technische Fehlerbilder.
 
 Besonders wirksam erwiesen sich:
 
@@ -434,7 +434,7 @@ Für den weiteren Ausbau der Anwendung bieten sich aus Frontend-Sicht mehrere En
 - offlinefaehige Teilfunktionen für Bereiche mit schwacher Netzabdeckung,
 - detailliertere Accessibility-Optimierungen inklusive Screenreader-Feinschliff.
 
-Die vorhandene Architektur bietet dafür eine tragfähige Ausgangsbasis. Entscheidend wird sein, die bisherigen Prinzipien beizubehalten: klare Verantwortlichkeiten, nachvollziehbare Nutzerführung und robuste Verarbeitung externer Einfluesse.
+Die vorhandene Architektur bietet dafür eine tragfähige Ausgangsbasis. Entscheidend wird sein, die bisherigen Prinzipien beizubehalten: klare Verantwortlichkeiten, nachvollziehbare Nutzerführung und robuste Verarbeitung externer Einflüsse.
 
 ### Zusammenfassung
 
@@ -444,15 +444,15 @@ Durch den modularen Aufbau, den geführten Einstieg, die integrierte Standortlog
 
 ### Erweiterung der praktischen Umsetzung: Qualitätsmerkmale im Feldtest
 
-Um die Alltagstauglichkeit abzusichern, wurde die Frontend-Loesung nicht nur unter idealen Laborbedingungen betrachtet, sondern unter realen Nutzungsbedingungen bewertet. Dazu zaehlen Bewegung im Freien, wechselnde Lichtverhaeltnisse, kurze Unterbrechungen der Datenverbindung und Situationen mit hoher Ablenkung durch Umgebungseinfluesse.
+Um die Alltagstauglichkeit abzusichern, wurde die Frontend-Lösung nicht nur unter idealen Laborbedingungen betrachtet, sondern unter realen Nutzungsbedingungen bewertet. Dazu zaehlen Bewegung im Freien, wechselnde Lichtverhaeltnisse, kurze Unterbrechungen der Datenverbindung und Situationen mit hoher Ablenkung durch Umgebungseinflüsse.
 
-Die Beobachtung in solchen Testszenarien zeigt, dass die wahrgenommene Qualität stark von kleinen Interaktionsdetails abhaengt. Ein Beispiel ist die Reaktionszeit zwischen Erreichen einer Station und sichtbarer Rückmeldung. Selbst wenn der Prozess technisch korrekt arbeitet, wird eine zu lange, unkommentierte Verzoegerung von Nutzern als Fehler interpretiert. Deshalb wurde die Rückmeldung mehrstufig umgesetzt: zuerst ein direkter visueller Statuswechsel, danach gegebenenfalls eine nachgelagerte Datenaktualisierung.
+Die Beobachtung in solchen Testszenarien zeigt, dass die wahrgenommene Qualität stark von kleinen Interaktionsdetails abhaengt. Ein Beispiel ist die Reaktionszeit zwischen Erreichen einer Station und sichtbarer Rückmeldung. Selbst wenn der Prozess technisch korrekt arbeitet, wird eine zu lange, unkommentierte Verzögerung von Nutzern als Fehler interpretiert. Deshalb wurde die Rückmeldung mehrstufig umgesetzt: zuerst ein direkter visueller Statuswechsel, danach gegebenenfalls eine nachgelagerte Datenaktualisierung.
 
-Ein zweiter Punkt betrifft die Lesbarkeit in Bewegung. Buttons und zentrale Hinweise wurden bewusst groß genug gestaltet, um auch bei kurzfristigem Blickkontakt schnell erfassbar zu sein. Gleichzeitig wurde die Textmenge pro Screen reduziert. In der Praxis führt diese Reduktion nicht zu Informationsverlust, sondern zu besserem Verstaendnis, weil Nutzer die Reihenfolge der Handlung klar erkennen.
+Ein zweiter Punkt betrifft die Lesbarkeit in Bewegung. Buttons und zentrale Hinweise wurden bewusst groß genug gestaltet, um auch bei kurzfristigem Blickkontakt schnell erfassbar zu sein. Gleichzeitig wurde die Textmenge pro Screen reduziert. In der Praxis führt diese Reduktion nicht zu Informationsverlust, sondern zu besserem Verständnis, weil Nutzer die Reihenfolge der Handlung klar erkennen.
 
 ### Detaillierter Blick auf die Screen-Gestaltung
 
-Der visuelle Aufbau der Screens folgt einem einheitlichen Raster. Wiederkehrende Elemente wie Titelbereich, Primäraktion und Statushinweis sind in vergleichbarer Position platziert. Dieses Muster reduziert kognitive Last, da Nutzer keine neue Orientierung pro Screen aufbauen muessen.
+Der visuelle Aufbau der Screens folgt einem einheitlichen Raster. Wiederkehrende Elemente wie Titelbereich, Primäraktion und Statushinweis sind in vergleichbarer Position platziert. Dieses Muster reduziert kognitive Last, da Nutzer keine neue Orientierung pro Screen aufbauen müssen.
 
 Für die Hauptansichten gelten folgende Gestaltungsregeln:
 
@@ -465,15 +465,15 @@ Gerade im Quiz-Intro-Bereich wurde darauf geachtet, Motivations- und Handlungsan
 
 ### Implementierungsdetails zur Stabilisierung des Flows
 
-Im Frontend wurden mehrere Schutzmechanismen eingebaut, um ungültige Zustaende früh zu verhindern. Dazu gehoert die Guard-Logik vor sensiblen Navigationsschritten. Ein Screen, der zwingend Authentifizierung voraussetzt, wird nur dann geöffnet, wenn ein gültiger Sessionzustand vorliegt. Gleiches gilt für ortsbezogene Ansichten ohne aktive Standortfreigabe.
+Im Frontend wurden mehrere Schutzmechanismen eingebaut, um ungültige Zustände früh zu verhindern. Dazu gehoert die Guard-Logik vor sensiblen Navigationsschritten. Ein Screen, der zwingend Authentifizierung voraussetzt, wird nur dann geöffnet, wenn ein gültiger Sessionzustand vorliegt. Gleiches gilt für ortsbezogene Ansichten ohne aktive Standortfreigabe.
 
-Ein weiterer Stabilitätsfaktor ist die kontrollierte Initialisierungsreihenfolge. Datenabfragen, die voneinander abhängen, werden nicht parallel gestartet, wenn dadurch inkonsistente Zwischenzustände entstehen können. Stattdessen wird eine klare Sequenz genutzt: Voraussetzungen pruefen, Kerninformationen laden, erst danach interaktive Elemente freigeben.
+Ein weiterer Stabilitätsfaktor ist die kontrollierte Initialisierungsreihenfolge. Datenabfragen, die voneinander abhängen, werden nicht parallel gestartet, wenn dadurch inkonsistente Zwischenzustände entstehen können. Stattdessen wird eine klare Sequenz genutzt: Voraussetzungen prüfen, Kerninformationen laden, erst danach interaktive Elemente freigeben.
 
-Bei zeitkritischen Aktionen wurde zudem auf doppelte Auslösung geachtet. Buttons mit Netzwerkanbindung können bei mehrfacher Betätigung unerwünschte Parallelrequests ausloesen. Deshalb erhalten solche Aktionen während laufender Verarbeitung einen gesperrten Zustand mit sichtbarem Ladehinweis.
+Bei zeitkritischen Aktionen wurde zudem auf doppelte Auslösung geachtet. Buttons mit Netzwerkanbindung können bei mehrfacher Betätigung unerwünschte Parallelrequests auslösen. Deshalb erhalten solche Aktionen während laufender Verarbeitung einen gesperrten Zustand mit sichtbarem Ladehinweis.
 
 ### Dokumentation und Nachvollziehbarkeit im Teamprozess
 
-Ein wiederkehrendes Risiko in Frontend-Projekten ist der Verlust von Entscheidungswissen. Wenn nur das Ergebnis im Code sichtbar ist, aber nicht die Gründe für die Loesung, werden spätere Änderungen aufwaendig. Deshalb wurde bei größeren Eingriffen auf kurze technische Dokumentation geachtet.
+Ein wiederkehrendes Risiko in Frontend-Projekten ist der Verlust von Entscheidungswissen. Wenn nur das Ergebnis im Code sichtbar ist, aber nicht die Gründe für die Lösung, werden spätere Änderungen aufwendig. Deshalb wurde bei größeren Eingriffen auf kurze technische Dokumentation geachtet.
 
 Dokumentiert wurden insbesondere:
 
@@ -486,9 +486,9 @@ Diese Form der Dokumentation beschleunigt Einarbeitung und reduziert Konflikte i
 
 ### Theoretische Vertiefung: Frontend als Vermittler zwischen Motivation und Systemlogik
 
-Lern- und Spielanwendungen stehen vor einer doppelten Anforderung: Sie muessen fachlich verlässlich arbeiten und gleichzeitig motivierend wirken. Ein Frontend, das nur technisch korrekt ist, aber wenig einladend wirkt, wird seltener genutzt. Ein Frontend, das attraktiv aussieht, aber unvorhersehbar reagiert, verliert schnell Vertrauen.
+Lern- und Spielanwendungen stehen vor einer doppelten Anforderung: Sie müssen fachlich verlässlich arbeiten und gleichzeitig motivierend wirken. Ein Frontend, das nur technisch korrekt ist, aber wenig einladend wirkt, wird seltener genutzt. Ein Frontend, das attraktiv aussieht, aber unvorhersehbar reagiert, verliert schnell Vertrauen.
 
-Theoretisch laesst sich dieses Spannungsfeld als Balance zwischen **technischer Qualität** und **Qualität für Nutzer** beschreiben. Instrumentelle Qualität umfasst Zuverlaessigkeit, Fehlertoleranz und klare Struktur. Erlebte Qualität betrifft Aktivierung, Verstaendlichkeit und das Gefuehl, im Ablauf sicher geführt zu werden.
+Theoretisch laesst sich dieses Spannungsfeld als Balance zwischen **technischer Qualität** und **Qualität für Nutzer** beschreiben. Instrumentelle Qualität umfasst Zuverlässigkeit, Fehlertoleranz und klare Struktur. Erlebte Qualität betrifft Aktivierung, Verständlichkeit und das Gefuehl, im Ablauf sicher geführt zu werden.
 
 GeoQuest nutzt dafür ein Modell aus kurzen Interaktionszyklen: Aktion, unmittelbare Rückmeldung, sichtbarer Fortschritt. Dieses Muster ist in mobilen Spielszenarien besonders wirksam, weil es Orientierung schafft und den Eindruck vermittelt, dass jede Handlung einen konkreten Effekt hat.
 
@@ -501,13 +501,13 @@ Aus Sicht der Nutzer ist begrenzte Auswahl pro Schritt sinnvoll, wenn die Aufgab
 - Pro Screen nur eine dominante Zielhandlung.
 - Nebenoptionen sichtbar, aber klar nachgeordnet.
 - Komplexe Entscheidungen in Teilentscheidungen zerlegen.
-- Rueckwaertsnavigation jederzeit eindeutig erkennbar halten.
+- Rückwärtsnavigation jederzeit eindeutig erkennbar halten.
 
 Im Kontext von GeoQuest unterstützt diese Architektur den Spielfluss. Nutzer verbringen weniger Zeit mit Oberflächenlogik und mehr Zeit mit der eigentlichen Aufgabe vor Ort.
 
 ### Vertrauen durch Konsistenz und Vorhersagbarkeit
 
-Vertrauen in eine App entsteht nicht allein durch Sicherheitsmerkmale, sondern auch durch vorhersagbares Verhalten. Wenn gleiche Aktionen auf unterschiedlichen Screens unterschiedlich reagieren, sinkt die wahrgenommene Verlaesslichkeit. Konsistenz ist daher ein Sicherheits- und Usability-Faktor zugleich.
+Vertrauen in eine App entsteht nicht allein durch Sicherheitsmerkmale, sondern auch durch vorhersagbares Verhalten. Wenn gleiche Aktionen auf unterschiedlichen Screens unterschiedlich reagieren, sinkt die wahrgenommene Verlässlichkeit. Konsistenz ist daher ein Sicherheits- und Usability-Faktor zugleich.
 
 Konsistenz umfasst mehrere Ebenen:
 
@@ -519,14 +519,14 @@ Gerade Fehlermeldungen profitieren davon. Ein einheitlicher Stil mit kurzer Prob
 
 ### Robustheitsprinzipien für standortbasierte Spiele
 
-Standortbasierte Anwendungen sind strukturell stoeranfaellig, weil externe Faktoren direkten Einfluss haben. Deshalb sollte Robustheit als Designprinzip früh verankert werden. Theoretisch sind vier Prinzipien besonders relevant:
+Standortbasierte Anwendungen sind strukturell störanfaellig, weil externe Faktoren direkten Einfluss haben. Deshalb sollte Robustheit als Designprinzip früh verankert werden. Theoretisch sind vier Prinzipien besonders relevant:
 
 1. **Eingeschränkter Betrieb statt kompletter Abbruch**: Bei Teilausfall soll ein eingeschraenkter Betrieb möglich bleiben.
 2. **Transparenz statt Schweigen**: Der aktuelle Zustand muss kommuniziert werden.
-3. **Wiederanlaufbarkeit**: Nach Stoerung muss der Flow ohne Datenverlust fortsetzbar sein.
-4. **Kontrollierte Wiederholung**: Wiederholte Events duerfen keine inkonsistenten Zustaende erzeugen.
+3. **Wiederanlaufbarkeit**: Nach Störung muss der Flow ohne Datenverlust fortsetzbar sein.
+4. **Kontrollierte Wiederholung**: Wiederholte Events duerfen keine inkonsistenten Zustände erzeugen.
 
-Diese Prinzipien wurden in der Frontend-Logik von GeoQuest berücksichtigt, etwa durch explizite Lade- und Fehlerzustaende, Schutz vor Mehrfachausloesung und geordnete Rueckkehr in stabile Screens.
+Diese Prinzipien wurden in der Frontend-Logik von GeoQuest berücksichtigt, etwa durch explizite Lade- und Fehlerzustände, Schutz vor Mehrfachauslösung und geordnete Rückkehr in stabile Screens.
 
 ### Skalierung und Weiterentwicklung
 
@@ -543,12 +543,6 @@ Solche Schritte erhöhen nicht nur technische Stabilität, sondern auch Planbark
 
 ### Gesamtfazit der erweiterten Betrachtung
 
-Die Frontend-Arbeit an GeoQuest zeigt, dass eine belastbare mobile Anwendung aus dem Zusammenspiel vieler kleiner, konsequent umgesetzter Entscheidungen entsteht. Ein klarer Ablauf, verständliche Sprache, robuste Zustandslogik und kontrollierte Einbindung externer Dienste bilden gemeinsam die Grundlage für eine nutzbare Loesung im schulischen Umfeld.
+Die Frontend-Arbeit an GeoQuest zeigt, dass eine belastbare mobile Anwendung aus dem Zusammenspiel vieler kleiner, konsequent umgesetzter Entscheidungen entsteht. Ein klarer Ablauf, verständliche Sprache, robuste Zustandslogik und kontrollierte Einbindung externer Dienste bilden gemeinsam die Grundlage für eine nutzbare Lösung im schulischen Umfeld.
 
 Im Ergebnis wurde ein System geschaffen, das fachlich tragfähig ist, unter realen Bedingungen funktioniert und gleichzeitig eine solide Basis für den weiteren Ausbau bietet. Die Verbindung aus praktischer Umsetzung und theoretischer Fundierung macht deutlich, dass Frontend-Engineering in diesem Projekt eine zentrale, sehr wichtige Rolle einnimmt.
-
-
-
-
-
-
