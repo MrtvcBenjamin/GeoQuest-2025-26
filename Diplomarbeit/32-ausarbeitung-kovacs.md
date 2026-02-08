@@ -150,6 +150,7 @@ Future<void> saveUserInDatabase(String username) async {
         'createdAt': FieldValue.serverTimestamp(),
       });
 }
+```
 
 ---
 
@@ -195,6 +196,7 @@ const locationSettings = LocationSettings(
   accuracy: LocationAccuracy.bestForNavigation,
   distanceFilter: 2,
 );
+```
 
 Bedeutung der Einstellungen:
 
@@ -213,12 +215,12 @@ StreamSubscription<Position>? _positionStream;
 
 Beim Verlassen der Kartenansicht wird der Stream ordnungsgemäß beendet:
 
-@override
+``` @override
 void dispose() {
   _positionStream?.cancel();
   super.dispose();
 }
-
+```
 
 Dies verhindert unnötigen Akkuverbrauch sowie Speicherlecks.
 
@@ -229,11 +231,12 @@ Dies verhindert unnötigen Akkuverbrauch sowie Speicherlecks.
 
 Die Kartenansicht wird mit dem Paket flutter_map umgesetzt. Als Kartenquelle wird OpenStreetMap verwendet, da keine Lizenzkosten entstehen und keine Abhängigkeit von kommerziellen Anbietern besteht.
 
-TileLayer(
+``` TileLayer(
   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   userAgentPackageName: 'com.example.app',
   tileProvider: NetworkTileProvider(),
 )
+```
 
 ### 4.2 Marker-Darstellung
 
@@ -273,6 +276,7 @@ title
 
 stadionLocation (GeoPoint)
 
+```
 Future<void> getAllStadionData(String huntId) async {
   final snapshot = await FirebaseFirestore.instance
       .collection("Hunts")
@@ -285,6 +289,7 @@ Future<void> getAllStadionData(String huntId) async {
     allStadionData = snapshot.docs.map((doc) => doc.data()).toList();
   });
 }
+```
 
 Query Pattern
 
@@ -299,6 +304,7 @@ Dieses Pattern ermöglicht eine sequentielle Freischaltung der Stationen.
 Collection: PlayerLocation
 Dokument-ID: UID des Benutzers
 
+```
 Future<void> saveLocationInDatabase(LatLng? position) async {
   final user = FirebaseAuth.instance.currentUser;
   if (position == null || user == null) return;
@@ -311,6 +317,7 @@ Future<void> saveLocationInDatabase(LatLng? position) async {
         'timestamp': FieldValue.serverTimestamp(),
       });
 }
+```
 
 Access Pattern
 
@@ -320,19 +327,22 @@ Lesen optional für andere Spieler (Mehrspieler-Szenario)
 
 ## 6. Proximity-Erkennung (Stationslogik)
 ### 6.1 Distanzberechnung
+```
 double distanceInMeters = Geolocator.distanceBetween(
   myPosition!.latitude,
   myPosition!.longitude,
   targetGeo.latitude,
   targetGeo.longitude,
 );
+```
 
 ### 6.2 Radius-Logik
+```
 if (distanceInMeters < 50) {
   _showDiscoveryDialog(aktuellesZiel['title'] ?? "Stadion");
   saveLocationInDatabase(myPosition);
 }
-
+```
 
 Der Radius von 50 Metern stellt einen praxisnahen Kompromiss zwischen Genauigkeit und Benutzerfreundlichkeit dar.
 
@@ -354,6 +364,7 @@ _positionStream?.resume();
 
 ## 8. Sicherheitskonzept
 ### 8.1 Firestore Security Rules
+```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -369,7 +380,7 @@ service cloud.firestore {
     }
   }
 }
-
+```
 
 Diese Regeln stellen sicher, dass Benutzer ausschließlich ihre eigenen Daten verändern können und Standortdaten nur für authentifizierte Nutzer zugänglich sind.
 
@@ -399,8 +410,10 @@ void initState() {
   _loadMyLocation();
   _initData();
 }
+```
 Die Methode _initData() übernimmt dabei eine koordinierende Rolle:
 
+```
 Future<void> _initData() async {
   await getAllStadionData("xISAk6mXjjEpDUHYyxZi");
   await _startLocationTracking();
@@ -409,6 +422,7 @@ Future<void> _initData() async {
     setState(() => isLoading = false);
   }
 }
+```
 Dieses Vorgehen stellt sicher, dass:
 
 alle Zielpunkte bekannt sind
@@ -420,10 +434,13 @@ keine unnötigen Berechnungen stattfinden
 ### 9.3 Starten des Standort-Streams
 Der Standort-Stream wird mit hoher Genauigkeit und kleinem Distanzfilter gestartet, um eine präzise Bewegungserkennung zu ermöglichen.
 
+```
 const locationSettings = LocationSettings(
   accuracy: LocationAccuracy.bestForNavigation,
   distanceFilter: 2,
 );
+```
+
 Begründung der Parameterwahl:
 
 Hohe Genauigkeit ist notwendig, um kurze Distanzen zuverlässig zu messen
@@ -435,6 +452,7 @@ Der Akkuverbrauch bleibt kontrollierbar
 ### 9.4 Verarbeitung von Standort-Updates
 Jede neue Positionsmeldung wird verarbeitet, der interne Zustand aktualisiert und anschließend geprüft, ob eine Station erreicht wurde.
 
+```
 _positionStream = Geolocator.getPositionStream(
   locationSettings: locationSettings,
 ).listen((Position pos) {
@@ -445,6 +463,8 @@ _positionStream = Geolocator.getPositionStream(
     _checkProximity();
   }
 });
+```
+
 Diese Architektur erlaubt eine klare Trennung zwischen:
 
 Datenerfassung
