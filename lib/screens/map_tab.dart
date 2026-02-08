@@ -310,9 +310,7 @@ class _MapTabState extends State<MapTab> {
     if (_player == null) return;
     _didInitialFit = true;
 
-    final bounds = LatLngBounds();
-    bounds.extend(_player!);
-    bounds.extend(_currentStation.pos);
+    final bounds = LatLngBounds(_player!, _currentStation.pos);
 
     try {
       _mapController.fitCamera(
