@@ -63,8 +63,6 @@ Der Einstieg in die App ist als geführter Ablauf konzipiert. Ziel war, Überfor
 
 Diese Reihenfolge verhindert Sackgassen. Wer die App erstmals öffnet, versteht zuerst den Zweck, erteilt dann notwendige Rechte und gelangt erst danach in den eigentlichen Spielmodus. Das senkt die Abbruchrate am Anfang und reduziert Supportaufwand.
 
-![Projektorganisation und Ablaufstruktur im Gesamtprojekt\\label{fig:zeismann_projektorganisation}](img/projektorganisation.png){width=80%}
-
 ### Splash Screen als technische und visuelle Startphase
 
 Der Splash Screen ist nicht nur grafischer Einstieg, sondern übernimmt praktische Aufgaben. In dieser kurzen Phase werden Basiskonfigurationen geladen, der Authentifizierungsstatus geprüft und erste asynchrone Vorgänge angestoßen.
@@ -126,8 +124,6 @@ In der Kartenansicht werden mehrere Informationsebenen zusammengeführt:
 
 Die Markerlogik folgt einem einfachen, klaren Farbkonzept, damit auch in Bewegung und bei direkter Sonneneinstrahlung eine schnelle Orientierung möglich bleibt. Ziel war keine dekorative Karte, sondern eine funktionale Arbeitsansicht.
 
-![Anwendungsfalldiagramm als Überblick über die Nutzerinteraktion\\label{fig:zeismann_usecase}](img/anwendungsfalldiagramm.png){width=82%}
-
 ### Standorttracking und Ereignissteuerung
 
 Die Standortermittlung ist als kontinuierlicher Prozess angelegt. Ein einzelner Positionsabruf wäre für ein bewegungsbasiertes Spiel unzureichend. Deshalb arbeitet die App mit einem Stream, der in definierten Intervallen bzw. bei Distanzveränderung aktualisiert wird.
@@ -168,9 +164,7 @@ Die Frontend-Strategie besteht aus drei Ebenen:
 2. Verständliche Nutzerhinweise statt technischer Details.
 3. Definierte Rückfallpfade, z. B. erneuter Abruf oder Navigation zu einem sicheren Ausgangsscreen.
 
-Diese Vorgehensweise erhoeht die wahrgenommene Zuverlässigkeit deutlich, auch wenn nicht jeder Fehler sofort vollautomatisch behoben werden kann.
-
-![Beispielhafte Auswertung aus der Entwicklungsphase\label{fig:zeismann_graph}](img/graph.png){width=72%}
+Diese Vorgehensweise erhöht die wahrgenommene Zuverlässigkeit deutlich, auch wenn nicht jeder Fehler sofort vollautomatisch behoben werden kann.
 
 ### Performance-Optimierung im mobilen Kontext
 
