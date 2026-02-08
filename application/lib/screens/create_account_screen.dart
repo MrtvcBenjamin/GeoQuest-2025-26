@@ -72,14 +72,25 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     }
   }
 
-  InputDecoration _deco(String hint, {Widget? suffix}) {
+  InputDecoration _deco(BuildContext context, String hint, {Widget? suffix}) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InputDecoration(
       hintText: hint,
       filled: true,
-      fillColor: const Color(0xFFF5F5F5),
+      fillColor: isDark ? scheme.surface.withOpacity(0.65) : scheme.onSurface.withOpacity(0.06),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide.none,
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: scheme.primary, width: 1),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       suffixIcon: suffix,
@@ -88,6 +99,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final canTap = !_loading;
 
     return Scaffold(
@@ -102,22 +114,21 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   const SizedBox(height: 8),
                   Image.asset('assets/logo.png', width: 120),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'GeoQuest',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: scheme.onSurface),
                   ),
                   const SizedBox(height: 28),
-
-                  const Text(
+                  Text(
                     'Create Account',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: scheme.onSurface),
                   ),
                   const SizedBox(height: 10),
 
                   TextField(
                     controller: _emailC,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: _deco('Email'),
+                    decoration: _deco(context, 'Email'),
                   ),
                   const SizedBox(height: 10),
 
@@ -125,10 +136,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _pw1C,
                     obscureText: _hide1,
                     decoration: _deco(
+                      context,
                       'Password',
                       suffix: IconButton(
                         onPressed: () => setState(() => _hide1 = !_hide1),
                         icon: Icon(_hide1 ? Icons.visibility : Icons.visibility_off),
+                        color: scheme.onSurface.withOpacity(0.70),
                       ),
                     ),
                   ),
@@ -138,10 +151,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _pw2C,
                     obscureText: _hide2,
                     decoration: _deco(
+                      context,
                       'Password (repeat)',
                       suffix: IconButton(
                         onPressed: () => setState(() => _hide2 = !_hide2),
                         icon: Icon(_hide2 ? Icons.visibility : Icons.visibility_off),
+                        color: scheme.onSurface.withOpacity(0.70),
                       ),
                     ),
                   ),
@@ -161,13 +176,20 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     child: ElevatedButton(
                       onPressed: canTap ? _create : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
+                        backgroundColor: scheme.primary,
+                        foregroundColor: scheme.onPrimary,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       child: _loading
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                        ),
+                      )
                           : const Text('Continue', style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),

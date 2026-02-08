@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'home_screen.dart';
 import 'login_screen.dart';
 
 class SignInEmailScreen extends StatefulWidget {
@@ -12,41 +13,44 @@ class SignInEmailScreen extends StatefulWidget {
 }
 
 class _SignInEmailScreenState extends State<SignInEmailScreen> {
-  final _emailC = TextEditingController();
-  bool _loading = false;
-  String? _error;
+  final _emailController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorText;
 
   @override
   void dispose() {
-    _emailC.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
   void _continue() {
-    final email = _emailC.text.trim();
+    final email = _emailController.text.trim();
 
-    setState(() => _error = null);
+    setState(() => _errorText = null);
 
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _error = 'Bitte gültige Email eingeben');
+      setState(() => _errorText = 'Bitte gib eine gültige Email ein.');
       return;
     }
 
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => LoginScreen(prefilledEmail: email)),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LoginScreen(prefilledEmail: email),
+      ),
     );
   }
 
-  Future<void> _google() async {
+  Future<void> _signInWithGoogle() async {
     setState(() {
-      _error = null;
-      _loading = true;
+      _isLoading = true;
+      _errorText = null;
     });
 
     try {
       final googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
-        setState(() => _loading = false);
+        setState(() => _isLoading = false);
         return;
       }
 
@@ -60,133 +64,174 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
       await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (!mounted) return;
-      Navigator.of(context).popUntil((r) => r.isFirst);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
     } on FirebaseAuthException catch (e) {
-      setState(() => _error = e.message ?? 'Google Login fehlgeschlagen');
+      setState(() => _errorText = e.message ?? 'Google Login fehlgeschlagen.');
     } catch (_) {
-      setState(() => _error = 'Google Login fehlgeschlagen');
+      setState(() => _errorText = 'Google Login fehlgeschlagen.');
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _goToHomeForTesting() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
+  }
+
+  InputDecoration _emailDecoration(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return InputDecoration(
+      labelText: 'Email',
+      errorText: _errorText,
+      filled: true,
+      fillColor: isDark ? scheme.surface.withOpacity(0.65) : scheme.onSurface.withOpacity(0.06),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: scheme.primary, width: 1),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final canTap = !_loading;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 22),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
-                  Image.asset('assets/logo.png', width: 120),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'GeoQuest',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(height: 26),
-                  const Text(
-                    'Create an account',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Enter your email to sign up for this app',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
 
-                  TextField(
-                    controller: _emailC,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: 'email@domain.com',
-                      errorText: _error,
-                      filled: true,
-                      fillColor: const Color(0xFFF5F5F5),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
+              Image.asset('assets/logo.png', height: 90),
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      onPressed: canTap ? _continue : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      child: _loading
-                          ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                          : const Text('Continue', style: TextStyle(fontWeight: FontWeight.w600)),
-                    ),
-                  ),
+              const SizedBox(height: 32),
 
-                  const SizedBox(height: 14),
-                  const Text('or', style: TextStyle(color: Colors.black54, fontSize: 12)),
-                  const SizedBox(height: 10),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: canTap ? _google : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEDEDED),
-                        foregroundColor: Colors.black,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      child: const Text('Continue with Google', style: TextStyle(fontWeight: FontWeight.w600)),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Android-only aktuell: Apple disabled.
-                  SizedBox(
-                    width: double.infinity,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEDEDED),
-                        foregroundColor: Colors.black54,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      child: const Text('Continue with Apple', style: TextStyle(fontWeight: FontWeight.w600)),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-                  const Text(
-                    'By clicking continue, you agree to our Terms of Service\nand Privacy Policy',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 10, color: Colors.black45, height: 1.3),
-                  ),
-                  const SizedBox(height: 10),
-                ],
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _continue(),
+                decoration: _emailDecoration(context),
               ),
-            ),
+
+              const SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _continue,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: scheme.primary,
+                    foregroundColor: scheme.onPrimary,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                    ),
+                  )
+                      : const Text(
+                    'Continue',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: OutlinedButton(
+                  onPressed: _isLoading ? null : _signInWithGoogle,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: scheme.onSurface,
+                    side: BorderSide(color: Theme.of(context).dividerColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Continue with Google',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: OutlinedButton(
+                  onPressed: null, // Apple Login später
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: scheme.onSurface.withOpacity(0.35),
+                    side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.9)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Continue with Apple (soon)',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              // TEST BUTTON (nur für dich)
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: OutlinedButton(
+                  onPressed: _goToHomeForTesting,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: scheme.onSurface.withOpacity(0.85),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'TEST: Direkt zu Home',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const Spacer(),
+            ],
           ),
         ),
       ),

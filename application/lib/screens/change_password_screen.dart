@@ -47,8 +47,33 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
   }
 
+  InputDecoration _deco(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return InputDecoration(
+      hintText: 'Email',
+      filled: true,
+      fillColor: isDark ? scheme.surface.withOpacity(0.65) : scheme.onSurface.withOpacity(0.06),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: scheme.primary, width: 1),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final canTap = !_loading;
 
     return Scaffold(
@@ -63,20 +88,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   const SizedBox(height: 8),
                   Image.asset('assets/logo.png', width: 120),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'GeoQuest',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: scheme.onSurface),
                   ),
                   const SizedBox(height: 34),
 
-                  const Text(
+                  Text(
                     'Change Password',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: scheme.onSurface),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Enter your email to receive a reset link',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface.withOpacity(0.60),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 14),
@@ -84,23 +113,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   TextField(
                     controller: _emailC,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      filled: true,
-                      fillColor: const Color(0xFFF5F5F5),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
+                    decoration: _deco(context),
                   ),
 
                   const SizedBox(height: 10),
                   if (_err != null)
-                    Text(_err!, style: const TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.w700)),
+                    Text(
+                      _err!,
+                      style: const TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.w700),
+                    ),
                   if (_msg != null)
-                    Text(_msg!, style: const TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w700)),
+                    Text(
+                      _msg!,
+                      style: TextStyle(
+                        color: scheme.onSurface.withOpacity(0.85),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   const SizedBox(height: 10),
 
                   SizedBox(
@@ -109,13 +139,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     child: ElevatedButton(
                       onPressed: canTap ? _sendReset : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
+                        backgroundColor: scheme.primary,
+                        foregroundColor: scheme.onPrimary,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       child: _loading
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                        ),
+                      )
                           : const Text('Continue', style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),

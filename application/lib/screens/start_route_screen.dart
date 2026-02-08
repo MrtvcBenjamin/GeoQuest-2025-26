@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'start_route_screen.dart';
 
-class StartHuntScreen extends StatelessWidget {
-  const StartHuntScreen({super.key});
+class StartRouteScreen extends StatelessWidget {
+  const StartRouteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -64,38 +63,66 @@ class StartHuntScreen extends StatelessWidget {
                           border: Border.all(color: Theme.of(context).dividerColor, width: 1),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Nachdem du “Start Hunt”\nclickst startet das Spiel\nund somit auch die Zeit!',
-                              textAlign: TextAlign.center,
+                              'Next Station:',
                               style: TextStyle(
-                                fontSize: 12.8,
-                                fontWeight: FontWeight.w600,
-                                height: 1.25,
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                height: 1.0,
                                 color: scheme.onSurface,
                               ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Station 1',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                height: 1.0,
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Distance: 250m  Points: 10 p',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w600,
+                                height: 1.0,
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                const Icon(Icons.circle, size: 10, color: Color(0xFFFFC107)),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'remaining Time: 15:00',
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w700,
+                                    color: scheme.onSurface.withOpacity(0.75),
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 14),
                             SizedBox(
                               width: double.infinity,
                               height: 40,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const StartRouteScreen()),
-                                  );
-                                },
+                                onPressed: () => Navigator.pop(context),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: scheme.primary,
                                   foregroundColor: scheme.onPrimary,
                                   elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                 ),
                                 child: const Text(
-                                  'Start Hunt',
+                                  'Start',
                                   style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
                                 ),
                               ),

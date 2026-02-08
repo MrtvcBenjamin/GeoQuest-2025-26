@@ -41,15 +41,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final scheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _LogoBlock(),
-              SizedBox(height: 44),
-              _DottedCircleLoader(size: 46),
+              const _LogoBlock(),
+              const SizedBox(height: 44),
+              _DottedCircleLoader(
+                size: 46,
+                color: scheme.onSurface, // -> im Dark Mode automatisch weiß
+              ),
             ],
           ),
         ),
@@ -63,6 +68,7 @@ class _LogoBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Neues logo.png ist transparent -> passt in Light + Dark sauber.
     return Image.asset(
       'assets/logo.png',
       width: 240,
@@ -73,14 +79,18 @@ class _LogoBlock extends StatelessWidget {
 
 class _DottedCircleLoader extends StatefulWidget {
   final double size;
-  const _DottedCircleLoader({required this.size});
+  final Color color;
+
+  const _DottedCircleLoader({
+    required this.size,
+    required this.color,
+  });
 
   @override
   State<_DottedCircleLoader> createState() => _DottedCircleLoaderState();
 }
 
-class _DottedCircleLoaderState extends State<_DottedCircleLoader>
-    with SingleTickerProviderStateMixin {
+class _DottedCircleLoaderState extends State<_DottedCircleLoader> with SingleTickerProviderStateMixin {
   late final AnimationController _c;
 
   @override
@@ -104,7 +114,10 @@ class _DottedCircleLoaderState extends State<_DottedCircleLoader>
       animation: _c,
       builder: (_, __) => CustomPaint(
         size: Size.square(widget.size),
-        painter: _DottedCirclePainter(progress: _c.value),
+        painter: _DottedCirclePainter(
+          progress: _c.value,
+          color: widget.color,
+        ),
       ),
     );
   }
@@ -112,7 +125,12 @@ class _DottedCircleLoaderState extends State<_DottedCircleLoader>
 
 class _DottedCirclePainter extends CustomPainter {
   final double progress;
-  const _DottedCirclePainter({required this.progress});
+  final Color color;
+
+  const _DottedCirclePainter({
+    required this.progress,
+    required this.color,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -127,7 +145,6 @@ class _DottedCirclePainter extends CustomPainter {
       final dx = math.cos(angle) * radius;
       final dy = math.sin(angle) * radius;
 
-      // "laufender" heller Punkt
       final head = (progress * dotCount);
       final dist = (i - head).abs();
       final wrappedDist = math.min(dist, dotCount - dist);
@@ -136,7 +153,7 @@ class _DottedCirclePainter extends CustomPainter {
       final opacity = (0.18 + 0.82 * t).clamp(0.0, 1.0);
 
       final paint = Paint()
-        ..color = Colors.black.withOpacity(opacity)
+        ..color = color.withOpacity(opacity)
         ..style = PaintingStyle.fill;
 
       canvas.drawCircle(center + Offset(dx, dy), baseDotR, paint);
@@ -145,6 +162,6 @@ class _DottedCirclePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DottedCirclePainter oldDelegate) {
-    return oldDelegate.progress != progress;
+    return oldDelegate.progress != progress || oldDelegate.color != color;
   }
 }

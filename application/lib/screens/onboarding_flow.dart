@@ -55,6 +55,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final page = _pages[_index];
 
     return Scaffold(
@@ -62,10 +63,10 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Spielregeln',
               style: TextStyle(
-                color: Color(0xFFBDBDBD),
+                color: scheme.onSurface.withOpacity(0.35),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -87,20 +88,22 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                           Text(
                             p.title,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
                               height: 1.15,
+                              color: scheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 28),
                           Text(
                             p.body,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               height: 1.3,
+                              color: scheme.onSurface.withOpacity(0.85),
                             ),
                           ),
                         ],
@@ -118,8 +121,8 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                 child: ElevatedButton(
                   onPressed: _next,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: scheme.primary,
+                    foregroundColor: scheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
