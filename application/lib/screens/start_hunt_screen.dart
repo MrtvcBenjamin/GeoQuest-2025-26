@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'start_route_screen.dart';
 
 class StartHuntScreen extends StatelessWidget {
   const StartHuntScreen({super.key});
@@ -10,107 +9,102 @@ class StartHuntScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, c) {
-            final maxCardWidth = c.maxWidth > 430 ? 340.0 : 320.0;
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 18),
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 22),
-
-                  Column(
-                    children: [
-                      Image.asset('assets/logo.png', height: 78),
-                      const SizedBox(height: 10),
-                      Text(
-                        'GeoQuest',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          height: 1.0,
-                          color: scheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 38),
-
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Hello, “Name”',
+              // Logo + Title (zentriert wie Mockup)
+              Center(
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/logo.png',
+                      width: 92,
+                      height: 92,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'GeoQuest',
                       style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
-                        height: 1.05,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
                         color: scheme.onSurface,
                       ),
                     ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 26),
+
+              // Hello (groß wie Mockup)
+              Text(
+                'Hello, “Name”',
+                style: TextStyle(
+                  fontSize: 44,
+                  fontWeight: FontWeight.w900,
+                  height: 1.02,
+                  color: scheme.onSurface,
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              // Card (voll breit, größer)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                decoration: BoxDecoration(
+                  color: scheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: scheme.onSurface.withOpacity(0.25),
+                    width: 1,
                   ),
-
-                  const SizedBox(height: 18),
-
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: maxCardWidth),
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                        decoration: BoxDecoration(
-                          color: scheme.surface,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Nachdem du “Start Hunt”\nclickst startet das Spiel\nund somit auch die Zeit!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w800,
+                        height: 1.25,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 46,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(context).pushNamed('/start-route'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: scheme.primary,
+                          foregroundColor: scheme.onPrimary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Nachdem du “Start Hunt”\nclickst startet das Spiel\nund somit auch die Zeit!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12.8,
-                                fontWeight: FontWeight.w600,
-                                height: 1.25,
-                                color: scheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 40,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const StartRouteScreen()),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: scheme.primary,
-                                  foregroundColor: scheme.onPrimary,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Start Hunt',
-                                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: const Text(
+                          'Start Hunt',
+                          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900),
                         ),
                       ),
                     ),
-                  ),
-
-                  const Spacer(),
-                ],
+                  ],
+                ),
               ),
-            );
-          },
+
+              const Spacer(),
+            ],
+          ),
         ),
       ),
     );

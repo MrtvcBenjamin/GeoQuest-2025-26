@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+
+import '../theme/app_settings.dart';
+import 'sign_in_email_screen.dart';
 
 class OnboardingFlow extends StatefulWidget {
   const OnboardingFlow({super.key});
@@ -16,34 +18,36 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     _OnboardingPage(
       title: 'Willkommen\nbei deiner Schnitzeljagd!',
       body:
-      'Erkunde spannende Orte,\nlöse Rätsel und sammle\nPunkte. Jede Station bringt\ndich ein Stück näher ans\nZiel!',
+          'Erkunde spannende Orte,\nlöse Rätsel und sammle\nPunkte. Jede Station bringt\ndich ein Stück näher ans\nZiel!',
       button: 'Continue',
     ),
     _OnboardingPage(
       title: 'Deine Route ist einzigartig',
       body:
-      'Du bekommst eine zufällige\nReihenfolge der Stationen.\nSo vermeiden wir\nMassenansammlungen\nund halten das Spiel fair.',
+          'Du bekommst eine zufällige\nReihenfolge der Stationen.\nSo vermeiden wir\nMassenansammlungen\nund halten das Spiel fair.',
       button: 'Continue',
     ),
     _OnboardingPage(
       title: 'Löse Aufgaben vor Ort',
       body:
-      'Textfragen, Multiple Choice\noder kleine Bilderrätsel\nwarten auf dich.\nRichtig gelöst = Punkte!\nÜberspringen kostet Punkte.',
+          'Textfragen, Multiple Choice\noder kleine Bilderrätsel\nwarten auf dich.\nRichtig gelöst = Punkte!\nÜberspringen kostet Punkte.',
       button: 'Continue',
     ),
     _OnboardingPage(
       title: 'Bleib ehrlich und sicher',
       body:
-      'Aufgaben funktionieren nur\nin der Nähe der Station.\nBei zu hoher\nGeschwindigkeit wird das\nSpiel kurz gesperrt.',
+          'Aufgaben funktionieren nur\nin der Nähe der Station.\nBei zu hoher\nGeschwindigkeit wird das\nSpiel kurz gesperrt.',
       button: 'Get started!',
       last: true,
     ),
   ];
 
-  void _next() {
+  Future<void> _next() async {
     if (_pages[_index].last) {
+      await AppSettings.setOnboardingDone(true);
+      if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const SignInEmailScreen()),
       );
     } else {
       _controller.nextPage(

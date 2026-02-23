@@ -1,14 +1,60 @@
 import 'package:flutter/material.dart';
 
-class QuizIntroScreen extends StatelessWidget {
-  const QuizIntroScreen({super.key});
+import 'quiz_screen.dart';
+
+class QuizIntroScreen extends StatefulWidget {
+  const QuizIntroScreen({
+    super.key,
+    required this.stationName,
+    required this.teacherName,
+  });
+
+  final String stationName;
+  final String teacherName;
+
+  @override
+  State<QuizIntroScreen> createState() => _QuizIntroScreenState();
+}
+
+class _QuizIntroScreenState extends State<QuizIntroScreen> {
+  final TextEditingController _passwordC = TextEditingController();
+  String? _error;
+
+  @override
+  void dispose() {
+    _passwordC.dispose();
+    super.dispose();
+  }
+
+  Future<void> _continue() async {
+    setState(() => _error = null);
+    if (_passwordC.text.trim() != '123') {
+      setState(() => _error = 'Falsches Lehrer-Passwort.');
+      return;
+    }
+
+    final points = await Navigator.of(context).push<double>(
+      MaterialPageRoute(
+        builder: (_) => QuizScreen(
+          teacherName: widget.teacherName,
+          stationName: widget.stationName,
+        ),
+      ),
+    );
+
+    if (!mounted || points == null) return;
+    Navigator.of(context).pop(points);
+  }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    const stationName = 'Station 1';
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Aufgabe freigeben', style: TextStyle(fontWeight: FontWeight.w900)),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -17,40 +63,50 @@ class QuizIntroScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 40),
               Text(
-                stationName,
+                widget.teacherName,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: scheme.onSurface,
                 ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Text(
-                'Löse die Aufgabe\num die nächste Station freizuschalten!',
+                widget.stationName,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: scheme.onSurface.withOpacity(0.85),
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 40),
-              Text(
-                'max 10 POINTS',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: scheme.onSurface,
+              const SizedBox(height: 28),
+              TextField(
+                controller: _passwordC,
+                obscureText: true,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  hintText: 'Lehrer Passwort (Test: 123)',
+                  filled: true,
+                  fillColor: scheme.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: scheme.outline.withOpacity(0.5)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: scheme.outline.withOpacity(0.5)),
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Time Limit: 3:00',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: scheme.onSurface.withOpacity(0.80),
-                  fontWeight: FontWeight.w600,
+              if (_error != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  _error!,
+                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w800),
                 ),
-              ),
+              ],
               const Spacer(),
               SizedBox(
                 width: double.infinity,
@@ -64,15 +120,9 @@ class QuizIntroScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Quiz would start here (Demo).'),
-                      ),
-                    );
-                  },
+                  onPressed: _continue,
                   child: const Text(
-                    'Start Quiz',
+                    'Weiter zur Punktevergabe',
                     style: TextStyle(fontWeight: FontWeight.w800),
                   ),
                 ),

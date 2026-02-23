@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+
+import '../models/app_nav.dart';
+import 'map_tab.dart';
 import 'menu_tab.dart';
 import 'progress_tab.dart';
 import 'start_hunt_screen.dart';
-import 'map_tab.dart';
+import 'start_route_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,39 +15,86 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _index = 0;
+  final _dashboardNavKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    AppNav.mapBlocked.addListener(_onBlockChanged);
+  }
+
+  @override
+  void dispose() {
+    AppNav.mapBlocked.removeListener(_onBlockChanged);
+    super.dispose();
+  }
+
+  void _onBlockChanged() {
+    if (AppNav.mapBlocked.value) {
+      AppNav.selectedIndex.value = 1;
+    }
+  }
+
+  void _onTabTapped(int index) {
+    if (AppNav.mapBlocked.value) {
+      AppNav.selectedIndex.value = 1;
+      return;
+    }
+
+    if (index == 0 && AppNav.selectedIndex.value == 0) {
+      _dashboardNavKey.currentState?.popUntil((r) => r.isFirst);
+    }
+    AppNav.selectedIndex.value = index;
+  }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      body: IndexedStack(
-        index: _index,
-        children: [
-          const StartHuntScreen(),
-          MapTab(isActive: _index == 1),
-          const ProgressTab(),
-          const MenuTab(),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+    return ValueListenableBuilder<int>(
+      valueListenable: AppNav.selectedIndex,
+      builder: (context, idx, _) => Scaffold(
+        body: IndexedStack(
+          index: idx,
+          children: [
+            Navigator(
+              key: _dashboardNavKey,
+              initialRoute: '/start-hunt',
+              onGenerateRoute: (settings) {
+                switch (settings.name) {
+                  case '/start-route':
+                    return MaterialPageRoute(
+                      builder: (_) => const StartRouteScreen(),
+                      settings: settings,
+                    );
+                  case '/start-hunt':
+                  default:
+                    return MaterialPageRoute(
+                      builder: (_) => const StartHuntScreen(),
+                      settings: settings,
+                    );
+                }
+              },
+            ),
+            MapTab(isActive: idx == 1),
+            const ProgressTab(),
+            const MenuTab(),
+          ],
         ),
-        child: BottomNavigationBar(
-          currentIndex: _index,
-          onTap: (i) => setState(() => _index = i),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: idx,
+          onTap: _onTabTapped,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor ?? scheme.onSurface,
-          unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor ?? scheme.onSurface.withOpacity(0.45),
-          selectedFontSize: 10,
-          unselectedFontSize: 10,
-          iconSize: 22,
+          selectedItemColor: scheme.onSurface,
+          unselectedItemColor: scheme.onSurface.withValues(alpha: 0.45),
+          showUnselectedLabels: true,
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.location_on), label: 'Map'),
-            BottomNavigationBarItem(icon: Icon(Icons.flag), label: 'Progress'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_filled), label: 'Dashboard'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.location_on_outlined), label: 'Map'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.flag_outlined), label: 'Progress'),
             BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
           ],
         ),

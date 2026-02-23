@@ -4,12 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppSettings {
   static const _kThemeModeKey = 'theme_mode';
   static const _kNotificationsKey = 'notifications_enabled';
+  static const _kOnboardingDoneKey = 'onboarding_done';
 
   static final ValueNotifier<ThemeMode> themeMode =
-  ValueNotifier<ThemeMode>(ThemeMode.light);
+      ValueNotifier<ThemeMode>(ThemeMode.light);
 
   static final ValueNotifier<bool> notificationsEnabled =
-  ValueNotifier<bool>(true);
+      ValueNotifier<bool>(true);
+  static final ValueNotifier<bool> onboardingDone = ValueNotifier<bool>(false);
 
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -19,6 +21,9 @@ class AppSettings {
 
     final notif = prefs.getBool(_kNotificationsKey);
     notificationsEnabled.value = notif ?? true;
+
+    final onboarded = prefs.getBool(_kOnboardingDoneKey);
+    onboardingDone.value = onboarded ?? false;
   }
 
   static Future<void> toggleTheme(bool dark) async {
@@ -31,5 +36,11 @@ class AppSettings {
     notificationsEnabled.value = enabled;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kNotificationsKey, enabled);
+  }
+
+  static Future<void> setOnboardingDone(bool done) async {
+    onboardingDone.value = done;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kOnboardingDoneKey, done);
   }
 }
