@@ -1,39 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class QuizScreen extends StatefulWidget {
-  final String title;
-  final String stationName;
-
   const QuizScreen({
     super.key,
-    required this.title,
+    required this.teacherName,
     required this.stationName,
   });
+
+  final String teacherName;
+  final String stationName;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  final _codeC = TextEditingController();
+  final TextEditingController _pointsC = TextEditingController();
   String? _error;
 
   @override
   void dispose() {
-    _codeC.dispose();
+    _pointsC.dispose();
     super.dispose();
   }
 
-  void _submit() {
-    final code = _codeC.text.trim();
+  void _submitPoints() {
+    final raw = _pointsC.text.trim().replaceAll(',', '.');
+    final points = double.tryParse(raw);
     setState(() => _error = null);
 
-    if (code != '123') {
-      setState(() => _error = 'Falscher Code.');
+    if (points == null) {
+      setState(() => _error = 'Bitte gueltige Punkte eingeben.');
+      return;
+    }
+    if (points < 1 || points > 10) {
+      setState(() => _error = 'Nur Werte von 1.0 bis 10.0 sind erlaubt.');
       return;
     }
 
-    Navigator.of(context).pop(true); // true = Erfolg
+    Navigator.of(context).pop(double.parse(points.toStringAsFixed(1)));
   }
 
   @override
@@ -42,7 +48,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w900)),
+        title: const Text('Punkte vergeben', style: TextStyle(fontWeight: FontWeight.w900)),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -52,28 +58,41 @@ class _QuizScreenState extends State<QuizScreen> {
             children: [
               const SizedBox(height: 14),
               Text(
-                widget.stationName,
+                widget.teacherName,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 24,
                   fontWeight: FontWeight.w900,
                   color: scheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               Text(
-                'Gib den Lehrer-Code ein, um Punkte zu erhalten.',
+                widget.stationName,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: scheme.onSurface.withOpacity(0.72),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Punkte (1.0 bis 10.0, max. 1 Nachkommastelle)',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: scheme.onSurface.withOpacity(0.75),
+                  color: scheme.onSurface.withOpacity(0.82),
                 ),
               ),
               const SizedBox(height: 18),
               TextField(
-                controller: _codeC,
-                keyboardType: TextInputType.number,
+                controller: _pointsC,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}([.,]\d?)?$')),
+                ],
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
@@ -81,7 +100,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   color: scheme.onSurface,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Code (Test: 123)',
+                  hintText: 'z.B. 8.5',
                   filled: true,
                   fillColor: scheme.surface,
                   border: OutlineInputBorder(
@@ -110,7 +129,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _submit,
+                  onPressed: _submitPoints,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: scheme.primary,
                     foregroundColor: scheme.onPrimary,
@@ -118,7 +137,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text(
-                    'Bestätigen',
+                    'Punkte speichern',
                     style: TextStyle(fontWeight: FontWeight.w900),
                   ),
                 ),

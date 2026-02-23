@@ -4,8 +4,10 @@ import 'dart:math' as math;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/app_settings.dart';
 import 'home_screen.dart';
 import 'onboarding_flow.dart';
+import 'sign_in_email_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,9 +27,16 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
 
       final user = FirebaseAuth.instance.currentUser;
+      final showOnboarding = !AppSettings.onboardingDone.value;
+
+      final next = user != null
+          ? const HomeScreen()
+          : (showOnboarding
+              ? const OnboardingFlow()
+              : const SignInEmailScreen());
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => user != null ? const HomeScreen() : const OnboardingFlow(),
+          builder: (_) => next,
         ),
       );
     });
@@ -90,7 +99,8 @@ class _DottedCircleLoader extends StatefulWidget {
   State<_DottedCircleLoader> createState() => _DottedCircleLoaderState();
 }
 
-class _DottedCircleLoaderState extends State<_DottedCircleLoader> with SingleTickerProviderStateMixin {
+class _DottedCircleLoaderState extends State<_DottedCircleLoader>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _c;
 
   @override
@@ -153,7 +163,7 @@ class _DottedCirclePainter extends CustomPainter {
       final opacity = (0.18 + 0.82 * t).clamp(0.0, 1.0);
 
       final paint = Paint()
-        ..color = color.withOpacity(opacity)
+        ..color = color.withValues(alpha: opacity)
         ..style = PaintingStyle.fill;
 
       canvas.drawCircle(center + Offset(dx, dy), baseDotR, paint);
