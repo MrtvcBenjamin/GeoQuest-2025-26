@@ -74,3 +74,5 @@ class _QrScanScreenState extends State<QrScanScreen> {
     );
   }
 }
+
+

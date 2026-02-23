@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 switch (settings.name) {
                   case '/start-route':
                     return MaterialPageRoute(
-                      builder: (_) => const StartRouteScreen(),
+                      builder: (_) => const StartRouteScreen(huntId: 'xISAk6mXjjEpDUHYyxZi',),
                       settings: settings,
                     );
                   case '/start-hunt':
@@ -76,8 +76,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
             ),
-            MapTab(isActive: idx == 1),
+            MapTab(
+              isActive: idx == 1,
+              huntId: "xISAk6mXjjEpDUHYyxZi", // <-- your hunt document id
+            ),
+            // Progress
             const ProgressTab(),
+            // Menu
             const MenuTab(),
           ],
         ),
