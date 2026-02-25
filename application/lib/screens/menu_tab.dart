@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../theme/app_settings.dart';
 import 'sign_in_email_screen.dart';
@@ -37,13 +36,37 @@ class _MenuRootScreen extends StatelessWidget {
   const _MenuRootScreen();
 
   Future<void> _signOut(BuildContext context) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        final scheme = Theme.of(context).colorScheme;
+        return AlertDialog(
+          title: const Text(
+            'Abmelden?',
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
+          content: const Text('Möchtest du dich wirklich abmelden?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: scheme.primary,
+                foregroundColor: scheme.onPrimary,
+                elevation: 0,
+              ),
+              child: const Text('Abmelden'),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirm != true) return;
 
-    try {
-      await GoogleSignIn().signOut();
-    } catch (_) {
-      // ignore if user is not signed in with Google
-    }
+    final navigator = Navigator.of(context, rootNavigator: true);
 
     await FirebaseAuth.instance.signOut();
     if (!context.mounted) return;
@@ -197,48 +220,6 @@ class _SettingsScreen extends StatelessWidget {
                               v
                                   ? 'Dark Mode aktiviert'
                                   : 'Light Mode aktiviert');
-                        },
-                        thumbColor: _thumbColor(
-                            activeThumb(), inactiveThumb(), const {}),
-                        trackColor: _trackColor(
-                            activeTrack(), inactiveTrack(), const {}),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 22),
-              ValueListenableBuilder<bool>(
-                valueListenable: AppSettings.notificationsEnabled,
-                builder: (context, enabled, _) {
-                  return Row(
-                    children: [
-                      Text(
-                        'Benachrichtigungen',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: onSurface),
-                      ),
-                      const Spacer(),
-                      Text(
-                        enabled ? 'On' : 'Off',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: onSurface.withOpacity(0.60),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Switch(
-                        value: enabled,
-                        onChanged: (v) async {
-                          await AppSettings.toggleNotifications(v);
-                          _showSnack(
-                              context,
-                              v
-                                  ? 'Benachrichtigungen an'
-                                  : 'Benachrichtigungen aus');
                         },
                         thumbColor: _thumbColor(
                             activeThumb(), inactiveThumb(), const {}),

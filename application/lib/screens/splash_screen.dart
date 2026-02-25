@@ -28,17 +28,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
       final user = FirebaseAuth.instance.currentUser;
       final showOnboarding = !AppSettings.onboardingDone.value;
-
       final next = user != null
           ? const HomeScreen()
-          : (showOnboarding
-              ? const OnboardingFlow()
-              : const SignInEmailScreen());
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => next,
-        ),
-      );
+          : (showOnboarding ? const OnboardingFlow() : const SignInEmailScreen());
+
+      if (user != null) {
+        AppSettings.setOnboardingDone(true);
+      }
+
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => next));
     });
   }
 
@@ -56,14 +54,12 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const _LogoBlock(),
-              const SizedBox(height: 44),
-              _DottedCircleLoader(
-                size: 46,
-                color: scheme.onSurface, // -> im Dark Mode automatisch weiß
-              ),
+              const Spacer(flex: 4),
+              _SplashBrand(color: scheme.onSurface),
+              const SizedBox(height: 120),
+              _SpinnerRing(size: 58, color: scheme.onSurface),
+              const Spacer(flex: 5),
             ],
           ),
         ),
@@ -72,34 +68,42 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-class _LogoBlock extends StatelessWidget {
-  const _LogoBlock();
+class _SplashBrand extends StatelessWidget {
+  final Color color;
+
+  const _SplashBrand({required this.color});
 
   @override
   Widget build(BuildContext context) {
-    // Neues logo.png ist transparent -> passt in Light + Dark sauber.
-    return Image.asset(
-      'assets/logo.png',
-      width: 240,
-      fit: BoxFit.contain,
+    return Column(
+      children: [
+        Image.asset('assets/logo_icon.png', width: 180),
+        const SizedBox(height: 14),
+        Text(
+          'GeoQuest',
+          style: TextStyle(
+            fontSize: 56,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -1.2,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _DottedCircleLoader extends StatefulWidget {
+class _SpinnerRing extends StatefulWidget {
   final double size;
   final Color color;
 
-  const _DottedCircleLoader({
-    required this.size,
-    required this.color,
-  });
+  const _SpinnerRing({required this.size, required this.color});
 
   @override
-  State<_DottedCircleLoader> createState() => _DottedCircleLoaderState();
+  State<_SpinnerRing> createState() => _SpinnerRingState();
 }
 
-class _DottedCircleLoaderState extends State<_DottedCircleLoader>
+class _SpinnerRingState extends State<_SpinnerRing>
     with SingleTickerProviderStateMixin {
   late final AnimationController _c;
 
@@ -124,54 +128,46 @@ class _DottedCircleLoaderState extends State<_DottedCircleLoader>
       animation: _c,
       builder: (_, __) => CustomPaint(
         size: Size.square(widget.size),
-        painter: _DottedCirclePainter(
-          progress: _c.value,
-          color: widget.color,
-        ),
+        painter: _SpinnerPainter(progress: _c.value, color: widget.color),
       ),
     );
   }
 }
 
-class _DottedCirclePainter extends CustomPainter {
+class _SpinnerPainter extends CustomPainter {
   final double progress;
   final Color color;
 
-  const _DottedCirclePainter({
-    required this.progress,
-    required this.color,
-  });
+  const _SpinnerPainter({required this.progress, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width * 0.35;
-
     const dotCount = 12;
-    final baseDotR = size.width * 0.045;
+    final dotRadius = size.width * 0.06;
 
     for (int i = 0; i < dotCount; i++) {
       final angle = (i / dotCount) * math.pi * 2;
       final dx = math.cos(angle) * radius;
       final dy = math.sin(angle) * radius;
 
-      final head = (progress * dotCount);
+      final head = progress * dotCount;
       final dist = (i - head).abs();
       final wrappedDist = math.min(dist, dotCount - dist);
-
       final t = (1.0 - (wrappedDist / (dotCount / 2))).clamp(0.0, 1.0);
-      final opacity = (0.18 + 0.82 * t).clamp(0.0, 1.0);
+      final opacity = (0.10 + 0.90 * t).clamp(0.0, 1.0);
 
       final paint = Paint()
         ..color = color.withValues(alpha: opacity)
         ..style = PaintingStyle.fill;
 
-      canvas.drawCircle(center + Offset(dx, dy), baseDotR, paint);
+      canvas.drawCircle(center + Offset(dx, dy), dotRadius, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _DottedCirclePainter oldDelegate) {
+  bool shouldRepaint(covariant _SpinnerPainter oldDelegate) {
     return oldDelegate.progress != progress || oldDelegate.color != color;
   }
 }

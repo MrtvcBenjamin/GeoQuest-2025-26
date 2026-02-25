@@ -1,79 +1,90 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'change_password_screen.dart';
 import 'create_account_screen.dart';
 import 'home_screen.dart';
+import '../theme/app_settings.dart';
 
 class LoginScreen extends StatefulWidget {
-  final String? prefilledEmail;
+  final String? prefilledUsername;
 
-  const LoginScreen({super.key, this.prefilledEmail});
+  const LoginScreen({super.key, this.prefilledUsername});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _obscure = true;
   bool _isLoading = false;
   String? _errorText;
+  bool _wrongPasswordState = false;
 
   @override
   void initState() {
     super.initState();
-    if (widget.prefilledEmail != null &&
-        widget.prefilledEmail!.trim().isNotEmpty) {
-      _emailController.text = widget.prefilledEmail!.trim();
+    if (widget.prefilledUsername != null &&
+        widget.prefilledUsername!.trim().isNotEmpty) {
+      _usernameController.text = widget.prefilledUsername!.trim();
     }
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  bool _isValidEmail(String value) {
-    final email = value.trim();
-    final re = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    return re.hasMatch(email);
+  bool _isValidUsernameOrEmail(String value) {
+    final input = value.trim();
+    if (input.contains('@')) {
+      final emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+      return emailRe.hasMatch(input);
+    }
+    final usernameRe = RegExp(r'^[A-Za-z0-9._-]{3,24}$');
+    return usernameRe.hasMatch(input);
   }
 
-  void _appendToEmail(String text) {
-    final old = _emailController.text;
-    final sel = _emailController.selection;
-    final start = sel.start >= 0 ? sel.start : old.length;
-    final end = sel.end >= 0 ? sel.end : old.length;
-    final next = old.replaceRange(start, end, text);
-    _emailController.value = TextEditingValue(
-      text: next,
-      selection: TextSelection.collapsed(offset: start + text.length),
-    );
+  Future<String?> _resolveEmailForLogin(String input) async {
+    final trimmed = input.trim();
+    if (trimmed.contains('@')) return trimmed.toLowerCase();
+
+    final snap = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('UsernameLower', isEqualTo: trimmed.toLowerCase())
+        .limit(1)
+        .get();
+    if (snap.docs.isEmpty) return null;
+
+    final data = snap.docs.first.data();
+    final email = data['Email'] as String?;
+    if (email == null || email.isEmpty) return null;
+    return email.toLowerCase();
   }
 
-  Future<void> _pasteFromClipboard() async {
-    final data = await Clipboard.getData('text/plain');
-    final text = data?.text?.trim();
-    if (text == null || text.isEmpty) return;
-    _appendToEmail(text);
+  String _legacyAuthEmailFromUsername(String username) {
+    final normalized = username.trim().toLowerCase();
+    final safe = normalized.replaceAll(RegExp(r'[^a-z0-9._-]'), '_');
+    return '$safe@geoquest.local';
   }
 
   Future<void> _login() async {
-    final email = _emailController.text.trim();
+    final usernameOrEmail = _usernameController.text.trim();
     final pass = _passwordController.text;
 
     setState(() {
       _errorText = null;
+      _wrongPasswordState = false;
     });
 
-    if (!_isValidEmail(email)) {
-      setState(() => _errorText = 'Bitte gib eine gueltige Email ein.');
+    if (!_isValidUsernameOrEmail(usernameOrEmail)) {
+      setState(() => _errorText = 'Bitte gib Username oder E-Mail ein.');
       return;
     }
     if (pass.isEmpty) {
@@ -84,11 +95,29 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: pass,
-      );
+      final authEmail = await _resolveEmailForLogin(usernameOrEmail);
+      if (authEmail != null) {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: authEmail,
+          password: pass,
+        );
+      } else if (!usernameOrEmail.contains('@')) {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _legacyAuthEmailFromUsername(usernameOrEmail),
+          password: pass,
+        );
+      } else {
+        if (mounted) {
+          setState(
+            () => _errorText =
+                'Kein Konto mit diesem Username oder dieser E-Mail gefunden.',
+          );
+        }
+        return;
+      }
 
+      if (!mounted) return;
+      await AppSettings.setOnboardingDone(true);
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -100,13 +129,14 @@ class _LoginScreenState extends State<LoginScreen> {
       switch (e.code) {
         case 'invalid-credential':
         case 'wrong-password':
-          message = 'Email oder Passwort ist falsch.';
+          message = 'Username/E-Mail oder Passwort ist falsch.';
+          _wrongPasswordState = true;
           break;
         case 'user-not-found':
-          message = 'Kein Konto mit dieser Email gefunden.';
+          message = 'Kein Konto mit diesem Username oder dieser E-Mail gefunden.';
           break;
         case 'too-many-requests':
-          message = 'Zu viele Versuche. Bitte spaeter erneut probieren.';
+          message = 'Zu viele Versuche. Bitte später erneut probieren.';
           break;
         default:
           message = e.message ?? 'Login fehlgeschlagen.';
@@ -130,8 +160,9 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            CreateAccountScreen(prefilledEmail: _emailController.text.trim()),
+        builder: (_) => CreateAccountScreen(
+          prefilledUsername: _usernameController.text.trim(),
+        ),
       ),
     );
   }
@@ -140,6 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
     required BuildContext context,
     required String hint,
     Widget? suffixIcon,
+    bool error = false,
   }) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -153,15 +185,24 @@ class _LoginScreenState extends State<LoginScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor, width: 1),
+        borderSide: BorderSide(
+          color: error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
+          width: 1,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor, width: 1),
+        borderSide: BorderSide(
+          color: error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
+          width: 1,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: scheme.primary, width: 1),
+        borderSide: BorderSide(
+          color: error ? const Color(0xFFE53935) : scheme.primary,
+          width: 1,
+        ),
       ),
       suffixIcon: suffixIcon,
     );
@@ -190,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 22),
               Text(
-                'Melde dich mit Email und Passwort an',
+                'Melde dich mit Username oder E-Mail an',
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
@@ -199,29 +240,13 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 24),
               TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                controller: _usernameController,
+                keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
-                decoration: _fieldDecoration(context: context, hint: 'Email'),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  OutlinedButton(
-                    onPressed: () => _appendToEmail('@'),
-                    child: const Text('@'),
-                  ),
-                  OutlinedButton(
-                    onPressed: () => _appendToEmail('gmail.com'),
-                    child: const Text('gmail.com'),
-                  ),
-                  OutlinedButton(
-                    onPressed: _pasteFromClipboard,
-                    child: const Text('Einfuegen'),
-                  ),
-                ],
+                decoration: _fieldDecoration(
+                  context: context,
+                  hint: 'Username oder E-Mail',
+                ),
               ),
               const SizedBox(height: 14),
               TextField(
@@ -232,25 +257,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: _fieldDecoration(
                   context: context,
                   hint: 'Passwort',
+                  error: _wrongPasswordState,
                   suffixIcon: IconButton(
                     onPressed: () => setState(() => _obscure = !_obscure),
                     icon: Icon(
-                        _obscure ? Icons.visibility : Icons.visibility_off),
+                      _obscure ? Icons.visibility : Icons.visibility_off,
+                    ),
                     color: scheme.onSurface.withValues(alpha: 0.70),
                   ),
                 ),
               ),
               if (_errorText != null) ...[
                 const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _errorText!,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
+                Text(
+                  _errorText!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFFE53935),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -297,7 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 18),
               Text(
-                "Noch kein Konto?",
+                'Noch kein Konto?',
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
@@ -310,10 +335,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextButton.styleFrom(foregroundColor: scheme.onSurface),
                 child: const Text(
                   'Sign up',
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
                 ),
               ),
               const Spacer(),

@@ -191,11 +191,47 @@ class GameState {
         .collection('Stadions')
         .orderBy('stadionIndex')
         .snapshots()
-        .listen((snap) {
-      _stadionsCache = snap.docs.map((d) => d.data()).toList();
+        .listen((snap) async {
+      _stadionsCache = await _orderStadionsForUser(huntId, snap);
       _applyCurrentStadionFromCache();
       _recomputeDistance();
     });
+  }
+
+  static Future<List<Map<String, dynamic>>> _orderStadionsForUser(
+    String huntId,
+    QuerySnapshot<Map<String, dynamic>> snap,
+  ) async {
+    final byId = <String, Map<String, dynamic>>{
+      for (final d in snap.docs) d.id: d.data(),
+    };
+
+    final uid = _uid;
+    if (uid == null) return byId.values.toList();
+
+    try {
+      final userSnap =
+          await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+      final stored = ((userSnap.data()?['StationOrderByHunt'] as Map?)?[huntId]
+              as List?)
+          ?.map((e) => e.toString())
+          .toList();
+
+      if (stored == null ||
+          stored.length != byId.length ||
+          stored.any((id) => !byId.containsKey(id))) {
+        return byId.values.toList();
+      }
+
+      final ordered = <Map<String, dynamic>>[];
+      for (final id in stored) {
+        final s = byId[id];
+        if (s != null) ordered.add(s);
+      }
+      return ordered;
+    } catch (_) {
+      return byId.values.toList();
+    }
   }
 
   // =========================

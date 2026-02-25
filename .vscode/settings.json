@@ -1,0 +1,28 @@
+{
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/android/.gradle/**": true,
+    "**/Diplomarbeit/**": true
+  },
+  "search.exclude": {
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/android/.gradle/**": true,
+    "**/Diplomarbeit/**": true
+  },
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true
+  },
+  "dart.analysisExcludedFolders": [
+    "${workspaceFolder}/Diplomarbeit",
+    "${workspaceFolder}/lib",
+    "${workspaceFolder}/application/build",
+    "${workspaceFolder}/application/.dart_tool"
+  ],
+  "java.autobuild.enabled": false,
+  "java.import.gradle.enabled": false,
+  "java.import.maven.enabled": false
+}

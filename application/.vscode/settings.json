@@ -1,0 +1,25 @@
+{
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/android/.gradle/**": true
+  },
+  "search.exclude": {
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/android/.gradle/**": true
+  },
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true
+  },
+  "dart.analysisExcludedFolders": [
+    "${workspaceFolder}/build",
+    "${workspaceFolder}/.dart_tool",
+    "${workspaceFolder}/android/.gradle"
+  ],
+  "java.autobuild.enabled": false,
+  "java.import.gradle.enabled": false,
+  "java.import.maven.enabled": false
+}
