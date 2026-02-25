@@ -211,135 +211,142 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const SizedBox(height: 34),
-              Image.asset('assets/logo.png', height: 92),
-              const SizedBox(height: 16),
-              Text(
-                'GeoQuest',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: scheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 22),
-              Text(
-                'Melde dich mit Username oder E-Mail an',
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: scheme.onSurface.withValues(alpha: 0.60),
-                ),
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: _usernameController,
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.next,
-                decoration: _fieldDecoration(
-                  context: context,
-                  hint: 'Username oder E-Mail',
-                ),
-              ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: _passwordController,
-                obscureText: _obscure,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _isLoading ? null : _login(),
-                decoration: _fieldDecoration(
-                  context: context,
-                  hint: 'Passwort',
-                  error: _wrongPasswordState,
-                  suffixIcon: IconButton(
-                    onPressed: () => setState(() => _obscure = !_obscure),
-                    icon: Icon(
-                      _obscure ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    color: scheme.onSurface.withValues(alpha: 0.70),
-                  ),
-                ),
-              ),
-              if (_errorText != null) ...[
-                const SizedBox(height: 10),
-                Text(
-                  _errorText!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFFE53935),
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: _goToResetPassword,
-                style: TextButton.styleFrom(
-                  foregroundColor: scheme.onSurface.withValues(alpha: 0.60),
-                ),
-                child: const Text(
-                  'Passwort vergessen?',
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: scheme.primary,
-                    foregroundColor: scheme.onPrimary,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.fromLTRB(24, 0, 24, keyboardInset + 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                children: [
+                  const SizedBox(height: 34),
+                  Image.asset('assets/logo.png', height: 92),
+                  const SizedBox(height: 16),
+                  Text(
+                    'GeoQuest',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: scheme.onSurface,
                     ),
                   ),
-                  child: _isLoading
-                      ? SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(scheme.onPrimary),
-                          ),
-                        )
-                      : const Text(
-                          'Continue',
-                          style: TextStyle(fontWeight: FontWeight.w700),
+                  const SizedBox(height: 22),
+                  Text(
+                    'Melde dich mit Username oder E-Mail an',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface.withValues(alpha: 0.60),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: _usernameController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    decoration: _fieldDecoration(
+                      context: context,
+                      hint: 'Username oder E-Mail',
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscure,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _isLoading ? null : _login(),
+                    decoration: _fieldDecoration(
+                      context: context,
+                      hint: 'Passwort',
+                      error: _wrongPasswordState,
+                      suffixIcon: IconButton(
+                        onPressed: () => setState(() => _obscure = !_obscure),
+                        icon: Icon(
+                          _obscure ? Icons.visibility : Icons.visibility_off,
                         ),
-                ),
+                        color: scheme.onSurface.withValues(alpha: 0.70),
+                      ),
+                    ),
+                  ),
+                  if (_errorText != null) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      _errorText!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Color(0xFFE53935),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: _goToResetPassword,
+                    style: TextButton.styleFrom(
+                      foregroundColor: scheme.onSurface.withValues(alpha: 0.60),
+                    ),
+                    child: const Text(
+                      'Passwort vergessen?',
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: scheme.primary,
+                        foregroundColor: scheme.onPrimary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                              ),
+                            )
+                          : const Text(
+                              'Continue',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    'Noch kein Konto?',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface.withValues(alpha: 0.60),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  TextButton(
+                    onPressed: _goToCreateAccount,
+                    style: TextButton.styleFrom(foregroundColor: scheme.onSurface),
+                    child: const Text(
+                      'Sign up',
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
               ),
-              const SizedBox(height: 18),
-              Text(
-                'Noch kein Konto?',
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: scheme.onSurface.withValues(alpha: 0.60),
-                ),
-              ),
-              const SizedBox(height: 6),
-              TextButton(
-                onPressed: _goToCreateAccount,
-                style: TextButton.styleFrom(foregroundColor: scheme.onSurface),
-                child: const Text(
-                  'Sign up',
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
-                ),
-              ),
-              const Spacer(),
-            ],
+            ),
           ),
         ),
       ),

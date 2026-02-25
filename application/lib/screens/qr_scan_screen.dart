@@ -38,8 +38,6 @@ class _QrScanScreenState extends State<QrScanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('QR Scan',
@@ -53,22 +51,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
             controller: _controller,
             onDetect: _onDetect,
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              width: double.infinity,
-              color: Colors.black.withValues(alpha: 0.55),
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
-              child: Text(
-                'Scanne den QR Code bei der Station.\nErwarteter Test-Code: ${widget.expectedCode}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: scheme.onPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
+          const SizedBox.shrink(),
         ],
       ),
     );

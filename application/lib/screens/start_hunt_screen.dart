@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -136,25 +136,6 @@ class StartHuntScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                      decoration: BoxDecoration(
-                        color: scheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: scheme.onSurface.withValues(alpha: 0.18)),
-                      ),
-                      child: Text(
-                        'Tipp: Im Menü kannst du jederzeit das Design wechseln.',
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
-                          color: scheme.onSurface.withValues(alpha: 0.75),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 18),
                   ],
                 ),
@@ -199,3 +180,4 @@ class _InfoBullet extends StatelessWidget {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -293,7 +293,7 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                             ),
                                             child: Text(
                                               started
-                                                  ? 'Naechste Aufgabe starten'
+                                                  ? 'Nächste Aufgabe starten'
                                                   : 'Start',
                                               style: const TextStyle(
                                                   fontSize: 13.5,
@@ -319,3 +319,4 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
     );
   }
 }
+

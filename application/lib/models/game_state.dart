@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -202,6 +203,8 @@ class GameState {
     String huntId,
     QuerySnapshot<Map<String, dynamic>> snap,
   ) async {
+    final ids = snap.docs.map((d) => d.id).toList();
+    final idsSet = ids.toSet();
     final byId = <String, Map<String, dynamic>>{
       for (final d in snap.docs) d.id: d.data(),
     };
@@ -218,9 +221,19 @@ class GameState {
           .toList();
 
       if (stored == null ||
-          stored.length != byId.length ||
-          stored.any((id) => !byId.containsKey(id))) {
-        return byId.values.toList();
+          stored.length != ids.length ||
+          stored.any((id) => !idsSet.contains(id))) {
+        final generated = _deterministicShuffledIds(ids, '$uid:$huntId');
+        await FirebaseFirestore.instance.collection('Users').doc(uid).set(
+          {'StationOrderByHunt.$huntId': generated},
+          SetOptions(merge: true),
+        );
+        final orderedGenerated = <Map<String, dynamic>>[];
+        for (final id in generated) {
+          final s = byId[id];
+          if (s != null) orderedGenerated.add(s);
+        }
+        return orderedGenerated;
       }
 
       final ordered = <Map<String, dynamic>>[];
@@ -230,10 +243,27 @@ class GameState {
       }
       return ordered;
     } catch (_) {
-      return byId.values.toList();
+      final generated = _deterministicShuffledIds(ids, '$uid:$huntId');
+      final ordered = <Map<String, dynamic>>[];
+      for (final id in generated) {
+        final s = byId[id];
+        if (s != null) ordered.add(s);
+      }
+      return ordered;
     }
   }
-
+  static List<String> _deterministicShuffledIds(
+      List<String> ids, String seedText) {
+    final list = [...ids];
+    final rnd = Random(seedText.hashCode);
+    for (var i = list.length - 1; i > 0; i--) {
+      final j = rnd.nextInt(i + 1);
+      final tmp = list[i];
+      list[i] = list[j];
+      list[j] = tmp;
+    }
+    return list;
+  }
   // =========================
   // Derivations: current station, distance, time
   // =========================

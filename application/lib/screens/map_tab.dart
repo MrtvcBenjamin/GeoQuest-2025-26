@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +12,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../models/app_nav.dart';
 import 'quiz_intro_screen.dart';
+import 'qr_scan_screen.dart';
 
 enum MapUiState { normal, warningDialog, blockedDialog, unblockDialog, inRadius }
 
@@ -85,6 +87,9 @@ LatLng? _player;
 double _playerSpeedMps = 0;
 
 bool _didInitialFit = false;
+bool _qrUnlockedForStation = false;
+bool get _canStartQuiz =>
+    _uiState == MapUiState.inRadius || _qrUnlockedForStation;
 
 // DB throttling (location writes)
 DateTime? _lastDbWriteAt;
@@ -165,6 +170,7 @@ _stadionsLoading = true;
 allStadionData = [];
 _stadionIndex = 0;
 _didInitialFit = false;
+_qrUnlockedForStation = false;
 _routePoints = [];
 _stationStartedAt = DateTime.now();
 _init();
@@ -196,6 +202,7 @@ if (_isStationActive) {
 _remainingSeconds = null;
 _remainingTime = '15:00';
 _stationStartedAt = DateTime.now();
+_qrUnlockedForStation = false;
 }
 });
 
@@ -266,7 +273,7 @@ debugPrint('Firestore Save Error (PlayerLocation): $e');
 }
 }
 
-// Optional: save progress (remove if you don’t want it)
+// Optional: save progress (remove if you don't want it)
 Future<void> _saveProgress(int stadionIndex, {bool finished = false}) async {
 final user = FirebaseAuth.instance.currentUser;
 if (user == null) return;
@@ -304,7 +311,8 @@ Future<List<Map<String, dynamic>>> _loadRandomizedStations(
   final byId = <String, Map<String, dynamic>>{
     for (final d in docs) d.id: {...d.data(), '_docId': d.id},
   };
-  final allIds = byId.keys.toSet();
+  final allIds = docs.map((d) => d.id).toList();
+  final allIdsSet = allIds.toSet();
   if (user == null || allIds.isEmpty) return byId.values.toList();
 
   final userRef = FirebaseFirestore.instance.collection('Users').doc(user.uid);
@@ -317,14 +325,17 @@ Future<List<Map<String, dynamic>>> _loadRandomizedStations(
             ?.map((e) => e.toString())
             .toList();
     if (stored != null &&
-        stored.length == allIds.length &&
-        stored.every(allIds.contains)) {
+        stored.length == allIdsSet.length &&
+        stored.every(allIdsSet.contains)) {
       orderedIds = stored;
     }
   } catch (_) {}
 
   if (orderedIds == null) {
-    orderedIds = allIds.toList()..shuffle();
+    orderedIds = _deterministicShuffledIds(
+      allIds,
+      '${user.uid}:${widget.huntId}',
+    );
     try {
       await userRef.set(
         {'StationOrderByHunt.${widget.huntId}': orderedIds},
@@ -341,6 +352,17 @@ Future<List<Map<String, dynamic>>> _loadRandomizedStations(
   return ordered;
 }
 
+List<String> _deterministicShuffledIds(List<String> ids, String seedText) {
+  final list = [...ids];
+  final rnd = Random(seedText.hashCode);
+  for (var i = list.length - 1; i > 0; i--) {
+    final j = rnd.nextInt(i + 1);
+    final tmp = list[i];
+    list[i] = list[j];
+    list[j] = tmp;
+  }
+  return list;
+}
 // =========================
 // Location stream
 // =========================
@@ -420,7 +442,7 @@ if (_player == null || !_hasStadions) return;
 final p = _player!;
 final t = _currentStadionPos;
 
-// ✅ guard against NaN / Infinity
+// Guard against NaN / Infinity
 if (!p.latitude.isFinite || !p.longitude.isFinite || !t.latitude.isFinite || !t.longitude.isFinite) {
 debugPrint("Invalid coords. player=$p target=$t");
 return;
@@ -548,7 +570,7 @@ if (c.length < 2) continue;
 final lon = (c[0] as num).toDouble();
 final lat = (c[1] as num).toDouble();
 
-if (!lat.isFinite || !lon.isFinite) continue; // ✅ skip bad points
+if (!lat.isFinite || !lon.isFinite) continue; // Skip bad points
 pts.add(LatLng(lat, lon));
 
 }
@@ -628,6 +650,50 @@ String _currentTeacherName() {
       (data['lehrer'] as String?);
   if (teacher == null || teacher.trim().isEmpty) return 'Lehrperson';
   return teacher.trim();
+}
+
+String _expectedQrCode() {
+if (!_hasStadions) return '';
+final data = allStadionData[_stadionIndex];
+final raw = (data['qrCode'] ??
+        data['qr'] ??
+        data['code'] ??
+        data['qrToken'] ??
+        data['_docId'])
+    ?.toString()
+    .trim();
+if (raw == null || raw.isEmpty) return _currentStadionName;
+return raw;
+}
+
+String _normalizeQr(String value) => value.trim().toLowerCase();
+
+Future<void> _scanQrCode() async {
+if (!_isStationActive || _isBlocked) return;
+
+final expectedCode = _expectedQrCode();
+final scanned = await Navigator.of(context).push<String>(
+  MaterialPageRoute(
+    builder: (_) => QrScanScreen(expectedCode: expectedCode),
+  ),
+);
+
+if (!mounted || scanned == null || scanned.trim().isEmpty) return;
+
+final ok = _normalizeQr(scanned) == _normalizeQr(expectedCode);
+if (ok) {
+  setState(() => _qrUnlockedForStation = true);
+}
+
+ScaffoldMessenger.of(context).clearSnackBars();
+ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    content: Text(ok
+        ? 'QR-Code erkannt. Aufgabe freigeschaltet.'
+        : 'Falscher QR-Code für diese Station.'),
+    duration: const Duration(milliseconds: 1400),
+  ),
+);
 }
 
 void _applyRemainingEstimate(int estimatedSeconds) {
@@ -723,7 +789,7 @@ _mapController.move(_player!, 17);
 Future<void> _openQuiz() async {
 if (!_isStationActive) return;
 if (_isBlocked) return;
-if (_uiState != MapUiState.inRadius) return;
+if (!_canStartQuiz) return;
 
 final teacherPoints = await Navigator.of(context).push<double>(
   MaterialPageRoute(
@@ -748,6 +814,7 @@ if (!isFinished) {
 _stadionIndex = next;
 }
 _uiState = MapUiState.normal;
+_qrUnlockedForStation = false;
 _routePoints = [];
 _didInitialFit = false;
 _remainingSeconds = null;
@@ -925,7 +992,7 @@ const SizedBox(height: 8),
 Text(
 _isStationActive
     ? (_hasStadions ? 'Station ${_stadionIndex + 1}' : 'Station -')
-    : 'Nächste Aufgabe im Dashboard starten',
+    : '',
 style: TextStyle(
 fontSize: _isStationActive ? 18 : 14,
 fontWeight: FontWeight.w900,
@@ -1068,7 +1135,7 @@ return const SizedBox.shrink();
 
 Widget _continueToQuizButton() {
 if (!_isStationActive) return const SizedBox.shrink();
-if (_uiState != MapUiState.inRadius) return const SizedBox.shrink();
+if (!_canStartQuiz) return const SizedBox.shrink();
 if (_isBlocked) return const SizedBox.shrink();
 
 final scheme = Theme.of(context).colorScheme;
@@ -1088,6 +1155,35 @@ elevation: 0,
 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
 ),
 child: const Text('Zur Aufgabenbewertung', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
+),
+),
+);
+}
+
+Widget _scanQrButton() {
+if (!_isStationActive) return const SizedBox.shrink();
+if (_canStartQuiz) return const SizedBox.shrink();
+if (_isBlocked) return const SizedBox.shrink();
+
+final scheme = Theme.of(context).colorScheme;
+
+return Positioned(
+left: 24,
+right: 24,
+bottom: 146,
+child: SizedBox(
+height: 44,
+child: ElevatedButton.icon(
+onPressed: _scanQrCode,
+style: ElevatedButton.styleFrom(
+backgroundColor: scheme.primary,
+foregroundColor: scheme.onPrimary,
+elevation: 2,
+shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+),
+icon: const Icon(Icons.qr_code_scanner),
+label: const Text('QR-Code scannen',
+    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
 ),
 ),
 );
@@ -1222,6 +1318,7 @@ border: Border.all(color: Colors.white, width: 2),
 ),
 
 _continueToQuizButton(),
+_scanQrButton(),
 _testTeleportButton(),
 _bottomPanel(),
 
@@ -1238,3 +1335,4 @@ child: _overlay(),
 );
 }
 }
+

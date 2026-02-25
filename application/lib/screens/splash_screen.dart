@@ -77,7 +77,11 @@ class _SplashBrand extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset('assets/logo_icon.png', width: 180),
+        Image.asset(
+          'assets/logo.png',
+          width: 180,
+          fit: BoxFit.contain,
+        ),
         const SizedBox(height: 14),
         Text(
           'GeoQuest',

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../theme/app_settings.dart';
@@ -244,65 +244,106 @@ class _PrivacyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon:
-                    Icon(Icons.arrow_back_ios_new, size: 20, color: onSurface),
+        child: Column(
+          children: [
+            _LegalHeader(
+              title: 'Datenschutz',
+              subtitle: 'Transparenz zu Daten und Rechten',
+              onBack: () => Navigator.of(context).pop(),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(22, 4, 22, 20),
+                children: [
+                  _LegalCard(
+                    icon: Icons.business_outlined,
+                    title: 'Verantwortliche Stelle',
+                    child: Text(
+                      'Tobias Zeismann, Benjamin Muratovic und Christian Kovacs\n'
+                      'Max-Tendlerstraße 3',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        height: 1.35,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.storage_outlined,
+                    title: 'Verarbeitete Daten',
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _LegalBullet('Standortdaten zur Positionsprüfung'),
+                        _LegalBullet('Nickname, Punktestand und Fortschritt'),
+                        _LegalBullet('Technische Nutzungsdaten für Stabilität'),
+                      ],
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.rule_outlined,
+                    title: 'Zweck der Verarbeitung',
+                    child: Text(
+                      'Die Daten werden ausschließlich für die Spiellogik, '
+                      'Fortschrittsanzeige und die faire Durchführung der Hunt '
+                      'verwendet.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        height: 1.35,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.schedule_outlined,
+                    title: 'Speicherdauer',
+                    child: Text(
+                      'Standortdaten werden nur während des aktiven Spiels verarbeitet. '
+                      'Spielbezogene Profildaten bleiben bis zur Zurücksetzung '
+                      'oder Löschung gespeichert.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        height: 1.35,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.gavel_outlined,
+                    title: 'Deine Rechte',
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _LegalBullet('Auskunft über gespeicherte Daten'),
+                        _LegalBullet('Berichtigung und Löschung'),
+                        _LegalBullet('Einschränkung der Verarbeitung'),
+                        _LegalBullet('Widerruf erteilter Einwilligungen'),
+                      ],
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.mail_outline,
+                    title: 'Kontakt Datenschutz',
+                    child: Text(
+                      '211wita26@o365.htl-leoben',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                'Datenschutz',
-                style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    height: 1.0,
-                    color: onSurface),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                'Verantwortlich\nGeoquest-Team',
-                style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w800,
-                    height: 1.25,
-                    color: onSurface),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Welche Daten werden erhoben?\n'
-                '• Standort zur Positionsprüfung\n'
-                '• Nickname, Punktestand, Fortschritt\n\n'
-                'Wofür werden die Daten verwendet?\n'
-                'Zur Spiellogik, Fortschrittsanzeige und\n'
-                'Benachrichtigungen über neue\n'
-                'Aufgaben.\n\n'
-                'Wie lange werden Daten gespeichert?\n'
-                'Standortdaten nur während des Spiels.\n'
-                'Fortschritt bleibt bis zum Zurücksetzen\n\n'
-                'Deine Rechte\n'
-                '• Auskunft\n'
-                '• Löschung\n'
-                '• Datenübertragbarkeit\n'
-                '• Widerruf der Einwilligung',
-                style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    height: 1.35,
-                    color: onSurface),
-              ),
-              const Spacer(),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -314,47 +355,231 @@ class _ImprintScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          children: [
+            _LegalHeader(
+              title: 'Impressum',
+              subtitle: 'Anbieterkennzeichnung',
+              onBack: () => Navigator.of(context).pop(),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(22, 4, 22, 20),
+                children: [
+                  _LegalCard(
+                    icon: Icons.apartment_outlined,
+                    title: 'Anbieter',
+                    child: Text(
+                      'Tobias Zeismann, Benjamin Muratovic und Christian Kovacs\n'
+                      'Max-Tendlerstraße 3',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        height: 1.35,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.person_outline,
+                    title: 'Inhaltlich verantwortlich',
+                    child: Text(
+                      'Tobias Zeismann, Benjamin Muratovic und Christian Kovacs',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.email_outlined,
+                    title: 'Kontakt',
+                    child: Text(
+                      '211wita26@o365.htl-leoben',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.info_outline,
+                    title: 'Hinweis',
+                    child: Text(
+                      'Diese App wurde im Rahmen eines Schulprojekts entwickelt. '
+                      'Alle Inhalte wurden mit Sorgfalt erstellt.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        height: 1.35,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  _LegalCard(
+                    icon: Icons.update_outlined,
+                    title: 'Stand',
+                    child: Text(
+                      '25.02.2026',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LegalHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final VoidCallback onBack;
+
+  const _LegalHeader({
+    required this.title,
+    required this.subtitle,
+    required this.onBack,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(22, 10, 22, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          IconButton(
+            onPressed: onBack,
+            icon: Icon(Icons.arrow_back_ios_new, size: 20, color: onSurface),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+              height: 1.0,
+              color: onSurface,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
+              color: onSurface.withValues(alpha: 0.65),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LegalCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Widget child;
+
+  const _LegalCard({
+    required this.icon,
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      decoration: BoxDecoration(
+        color: isDark
+            ? scheme.surface.withValues(alpha: 0.85)
+            : scheme.surface.withValues(alpha: 0.98),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).dividerColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              const SizedBox(height: 10),
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon:
-                    Icon(Icons.arrow_back_ios_new, size: 20, color: onSurface),
-              ),
-              const SizedBox(height: 6),
+              Icon(icon, size: 18, color: scheme.onSurface.withValues(alpha: 0.80)),
+              const SizedBox(width: 8),
               Text(
-                'Impressum',
+                title,
                 style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    height: 1.0,
-                    color: onSurface),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: scheme.onSurface,
+                ),
               ),
-              const SizedBox(height: 18),
-              Text(
-                'Verantwortlich\nGeoquest-Team\n\n'
-                'Kontakt:\n'
-                '21ihw1t7@365.htl-leoben.at\n\n'
-                'Zuletzt geändert:\n'
-                '11.1.2025',
-                style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    height: 1.35,
-                    color: onSurface),
-              ),
-              const Spacer(),
             ],
           ),
-        ),
+          const SizedBox(height: 10),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _LegalBullet extends StatelessWidget {
+  final String text;
+  const _LegalBullet(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Container(
+              width: 5,
+              height: 5,
+              decoration: BoxDecoration(
+                color: onSurface.withValues(alpha: 0.8),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                height: 1.3,
+                color: onSurface,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -399,3 +624,4 @@ class _DividerLine extends StatelessWidget {
     return Container(height: 1, color: color);
   }
 }
+
