@@ -110,12 +110,6 @@ class StartHuntScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 14),
                           _InfoBullet(
-                            text: tr('Lehrerpasswort zur Freigabe: 123',
-                                'Teacher password for approval: 123'),
-                            color: scheme.onSurface,
-                          ),
-                          const SizedBox(height: 8),
-                          _InfoBullet(
                             text: tr(
                               'Zeitbonus: +2 Punkte vor Ablauf des Timers',
                               'Time bonus: +2 points before the timer ends',

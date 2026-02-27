@@ -176,13 +176,15 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      await AppSettings.setLoginMode(
+        _adminMode ? AppLoginMode.admin : AppLoginMode.player,
+      );
       await AppSettings.setOnboardingDone(true);
       if (!mounted) return;
-      final isAdmin = AdminAccess.isAdminEmail(signedInEmail);
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => isAdmin ? const AdminMapScreen() : const HomeScreen(),
+          builder: (_) => _adminMode ? const AdminMapScreen() : const HomeScreen(),
         ),
         (_) => false,
       );

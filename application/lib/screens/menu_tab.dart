@@ -74,6 +74,7 @@ class _MenuRootScreen extends StatelessWidget {
     if (confirm != true) return;
 
     await FirebaseAuth.instance.signOut();
+    await AppSettings.clearLoginMode();
     if (!context.mounted) return;
 
     Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(

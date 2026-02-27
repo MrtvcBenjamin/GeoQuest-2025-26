@@ -47,5 +47,7 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Die Kamera wird zum Scannen von QR-Codes an Stationen verwendet.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Der Standort wird benötigt, um Stationen zu finden und die Aufgaben in deiner Nähe freizuschalten.</string>
 </dict>
 </plist>

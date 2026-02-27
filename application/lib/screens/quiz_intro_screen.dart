@@ -30,7 +30,7 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
 
   Future<void> _continue() async {
     setState(() => _error = null);
-    if (_passwordC.text.trim() != '123') {
+    if (_passwordC.text.trim() != 'HTL8700!') {
       setState(() =>
           _error = tr('Falsches Lehrer-Passwort.', 'Wrong teacher password.'));
       return;
@@ -94,11 +94,10 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
                 TextField(
                   controller: _passwordC,
                   obscureText: true,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.text,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    hintText: tr('Lehrer Passwort (Test: 123)',
-                        'Teacher password (test: 123)'),
+                    hintText: tr('Lehrer Passwort', 'Teacher password'),
                     filled: true,
                     fillColor: scheme.surface,
                     border: OutlineInputBorder(

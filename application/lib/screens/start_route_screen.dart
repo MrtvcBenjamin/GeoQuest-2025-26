@@ -223,16 +223,40 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 6),
-                                      ValueListenableBuilder<String>(
-                                        valueListenable:
-                                            GameState.nextStationName,
-                                        builder: (_, name, __) => Text(
-                                          name,
-                                          style: TextStyle(
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.w900,
-                                            height: 1.0,
-                                            color: scheme.onSurface,
+                                      ValueListenableBuilder<bool>(
+                                        valueListenable: AppNav.stationActive,
+                                        builder: (_, stationActive, __) =>
+                                            ValueListenableBuilder<String>(
+                                          valueListenable:
+                                              GameState.nextStationName,
+                                          builder: (_, name, ___) => Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (stationActive)
+                                                Text(
+                                                  tr(
+                                                    'Gehe zu $name.',
+                                                    'Go to $name.',
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: scheme.onSurface
+                                                        .withValues(
+                                                            alpha: 0.85),
+                                                  ),
+                                                ),
+                                              Text(
+                                                name,
+                                                style: TextStyle(
+                                                  fontSize: 26,
+                                                  fontWeight: FontWeight.w900,
+                                                  height: 1.0,
+                                                  color: scheme.onSurface,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -269,66 +293,94 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                         ],
                                       ),
                                       const SizedBox(height: 14),
-                                      Center(
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
+                                      ValueListenableBuilder<bool>(
+                                        valueListenable: GameState.huntStarted,
+                                        builder: (_, started, __) => Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            const Icon(Icons.circle,
-                                                size: 10,
-                                                color: Color(0xFFFFC107)),
-                                            const SizedBox(width: 8),
-                                            ValueListenableBuilder<Duration>(
-                                              valueListenable:
-                                                  GameState.remainingTime,
-                                              builder: (_, t, __) => Text(
-                                                '${tr('Verbleibende Zeit', 'Remaining time')}: ${_fmtTime(t)}',
+                                            if (started) ...[
+                                              Text(
+                                                tr(
+                                                  'Bewege dich jetzt zur markierten Station und öffne die Karte für die Navigation.',
+                                                  'Move to the highlighted station now and open the map for navigation.',
+                                                ),
                                                 style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 12.5,
+                                                  fontWeight: FontWeight.w800,
                                                   color: scheme.onSurface
                                                       .withValues(alpha: 0.85),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 14),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 46,
-                                        child: ValueListenableBuilder<bool>(
-                                          valueListenable:
-                                              GameState.huntStarted,
-                                          builder: (_, started, __) =>
-                                              ElevatedButton(
-                                            onPressed: () async {
-                                              if (!started) {
-                                                await GameState.startHunt();
-                                              }
-                                              AppNav.stationActive.value = true;
-                                              AppNav.selectedIndex.value = 1;
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: scheme.primary,
-                                              foregroundColor: scheme.onPrimary,
-                                              elevation: 0,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                              const SizedBox(height: 12),
+                                            ],
+                                            Center(
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(Icons.circle,
+                                                      size: 10,
+                                                      color: Color(0xFFFFC107)),
+                                                  const SizedBox(width: 8),
+                                                  ValueListenableBuilder<
+                                                      Duration>(
+                                                    valueListenable:
+                                                        GameState.remainingTime,
+                                                    builder: (_, t, ___) => Text(
+                                                      '${tr('Verbleibende Zeit', 'Remaining time')}: ${_fmtTime(t)}',
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        color: scheme.onSurface
+                                                            .withValues(
+                                                                alpha: 0.85),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            child: Text(
-                                              started
-                                                  ? tr(
-                                                      'Nächste Aufgabe starten',
-                                                      'Start next task')
-                                                  : 'Start',
-                                              style: const TextStyle(
-                                                  fontSize: 13.5,
-                                                  fontWeight: FontWeight.w900),
+                                            const SizedBox(height: 14),
+                                            SizedBox(
+                                              width: double.infinity,
+                                              height: 46,
+                                              child: ElevatedButton(
+                                                onPressed: () async {
+                                                  if (!started) {
+                                                    await GameState.startHunt();
+                                                  }
+                                                  AppNav.stationActive.value =
+                                                      true;
+                                                  AppNav.selectedIndex.value =
+                                                      1;
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      scheme.primary,
+                                                  foregroundColor:
+                                                      scheme.onPrimary,
+                                                  elevation: 0,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(8),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  started
+                                                      ? tr('Zur Map', 'To map')
+                                                      : tr(
+                                                          'Aufgabe starten',
+                                                          'Start task',
+                                                        ),
+                                                  style: const TextStyle(
+                                                    fontSize: 13.5,
+                                                    fontWeight: FontWeight.w900,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
                                       ),
                                     ],
