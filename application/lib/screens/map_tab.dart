@@ -74,9 +74,13 @@ class _MapTabState extends State<MapTab> {
 // =========================
 // Speed logic
 // =========================
-  static const double _speedWarnThresholdMps = 6.0; // ~21.6 km/h
+  static const double _speedWarnThresholdMps = 15.0 / 3.6; // 15 km/h
+  static const Duration _speedViolationDuration = Duration(seconds: 3);
   static const Duration _warnCooldown = Duration(seconds: 12);
   DateTime? _lastWarnAt;
+  DateTime? _speedingSince;
+  LatLng? _lastSpeedSamplePos;
+  DateTime? _lastSpeedSampleAt;
 
 // Block
   static const int _blockSeconds = 5 * 60;
@@ -197,6 +201,7 @@ class _MapTabState extends State<MapTab> {
 
   @override
   void dispose() {
+    AppNav.mapBlocked.value = false;
     AppNav.stationActive.removeListener(_onStationActiveChanged);
     _blockTimer?.cancel();
     _remainingTicker?.cancel();
@@ -447,7 +452,7 @@ class _MapTabState extends State<MapTab> {
         _saveLocationInDatabase(p);
 
         if (_isStationActive) {
-          _checkSpeedAndWarn();
+          _checkSpeedAndWarn(pos);
           _checkRadius();
           _updateRemainingTimeEstimate();
         }
@@ -519,28 +524,73 @@ class _MapTabState extends State<MapTab> {
 // =========================
 // Speed warnings + block
 // =========================
-  void _checkSpeedAndWarn() {
+  void _checkSpeedAndWarn(Position pos) {
     if (_player == null) return;
     if (_isBlocked) return;
-    if (_playerSpeedMps < _speedWarnThresholdMps) return;
-
     final now = DateTime.now();
-    if (_lastWarnAt != null && now.difference(_lastWarnAt!) < _warnCooldown) {
+    final currentPos = _player!;
+
+    // Ignore likely GPS jumps so short spikes are not counted as cheating.
+    final likelyJump = _isLikelyLocationJump(pos, currentPos, now);
+    _lastSpeedSamplePos = currentPos;
+    _lastSpeedSampleAt = now;
+    if (likelyJump) {
+      _speedingSince = null;
       return;
     }
 
+    if (_playerSpeedMps < _speedWarnThresholdMps) {
+      _speedingSince = null;
+      return;
+    }
+
+    _speedingSince ??= now;
+    if (now.difference(_speedingSince!) < _speedViolationDuration) return;
+
+    if (_lastWarnAt != null && now.difference(_lastWarnAt!) < _warnCooldown) {
+      return;
+    }
     _lastWarnAt = now;
+    _speedingSince = null;
+
+    if (_warnings >= 3) {
+      _startBlock();
+      return;
+    }
 
     setState(() {
       _warnings = (_warnings + 1).clamp(0, 3);
-      _uiState = MapUiState.warningDialog;
+      if (_warnings < 3) {
+        _uiState = MapUiState.warningDialog;
+      }
     });
 
     if (_warnings >= 3) _startBlock();
   }
 
+  bool _isLikelyLocationJump(Position pos, LatLng current, DateTime now) {
+    if (pos.accuracy.isFinite && pos.accuracy > 45) return true;
+    final prevPos = _lastSpeedSamplePos;
+    final prevAt = _lastSpeedSampleAt;
+    if (prevPos == null || prevAt == null) return false;
+
+    final dtMs = now.difference(prevAt).inMilliseconds;
+    if (dtMs <= 0) return true;
+    final dtSec = dtMs / 1000.0;
+    final distMeters = const Distance().as(LengthUnit.Meter, prevPos, current);
+    if (!distMeters.isFinite) return true;
+
+    final impliedSpeed = distMeters / dtSec;
+    if (distMeters > 60 && dtSec < 3 && impliedSpeed > 20) return true;
+    if (impliedSpeed > 45) return true;
+    return false;
+  }
+
   void _startBlock() {
+    if (_isBlocked) return;
     _blockTimer?.cancel();
+    AppNav.mapBlocked.value = true;
+    _applyBlockPenalty();
     setState(() {
       _blockLeft = _blockSeconds;
       _uiState = MapUiState.blockedDialog;
@@ -555,6 +605,7 @@ class _MapTabState extends State<MapTab> {
           _blockLeft = 0;
           _uiState = MapUiState.unblockDialog;
         });
+        AppNav.mapBlocked.value = false;
         return;
       }
 
@@ -568,6 +619,36 @@ class _MapTabState extends State<MapTab> {
       _blockLeft = 0;
       _uiState = MapUiState.unblockDialog;
     });
+    AppNav.mapBlocked.value = false;
+  }
+
+  Future<void> _applyBlockPenalty() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final ref = FirebaseFirestore.instance.collection('Users').doc(user.uid);
+    try {
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        final snap = await tx.get(ref);
+        final data = snap.data() ?? <String, dynamic>{};
+        final currentPoints = (data['Points'] as num?)?.toDouble() ??
+            (data['points'] as num?)?.toDouble() ??
+            (data['score'] as num?)?.toDouble() ??
+            0.0;
+        final nextPoints = (currentPoints - 2.0).clamp(0.0, 999999.0);
+        tx.set(
+          ref,
+          {
+            'Points': double.parse(nextPoints.toStringAsFixed(1)),
+            'AntiCheatBlockCount': FieldValue.increment(1),
+            'AntiCheatPenaltyPoints': FieldValue.increment(2.0),
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+      });
+    } catch (e) {
+      debugPrint('AntiCheat penalty error: $e');
+    }
   }
 
   void _closeOverlay() {
@@ -1108,9 +1189,14 @@ class _MapTabState extends State<MapTab> {
       case MapUiState.blockedDialog:
         return _dialogCard(
           title: tr('Warnung!', 'Warning!'),
-          body: 'You are moving too fast!\n'
-              'You violated the game rules too often,\n'
-              'so you are temporarily blocked.',
+          body: tr(
+            'Du bist zu schnell unterwegs.\n'
+            'Du bist für 5 Minuten gesperrt.\n'
+            'Für jede Sperre werden 2 Punkte abgezogen.',
+            'You are moving too fast.\n'
+            'You are blocked for 5 minutes.\n'
+            'Each block deducts 2 points.',
+          ),
           bottom: Text(
             _fmtCountdown(_blockLeft),
             style: const TextStyle(
