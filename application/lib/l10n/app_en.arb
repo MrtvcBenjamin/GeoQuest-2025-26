@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "GeoQuest",
+  "genericRetry": "Retry",
+  "genericErrorTitle": "Something went wrong",
+  "genericOffline": "No internet connection"
+}

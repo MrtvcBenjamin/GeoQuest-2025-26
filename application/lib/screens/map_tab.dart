@@ -1,6 +1,4 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
+﻿import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,721 +9,690 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../models/app_nav.dart';
+import '../theme/app_text.dart';
 import 'quiz_intro_screen.dart';
 import 'qr_scan_screen.dart';
 
-enum MapUiState { normal, warningDialog, blockedDialog, unblockDialog, inRadius }
+enum MapUiState {
+  normal,
+  warningDialog,
+  blockedDialog,
+  unblockDialog,
+  inRadius
+}
 
 class MapTab extends StatefulWidget {
-final bool isActive;
+  final bool isActive;
 
-/// Firestore: Hunts/{huntId}/Stadions (ordered by stadionIndex)
-final String huntId;
+  /// Firestore: Hunts/{huntId}/Stadions (ordered by stadionIndex)
+  final String huntId;
 
-const MapTab({
-super.key,
-required this.isActive,
-required this.huntId,
-});
+  const MapTab({
+    super.key,
+    required this.isActive,
+    required this.huntId,
+  });
 
-@override
-State<MapTab> createState() => _MapTabState();
+  @override
+  State<MapTab> createState() => _MapTabState();
 }
 
 class _MapTabState extends State<MapTab> {
-final MapController _mapController = MapController();
-bool get _isStationActive => AppNav.stationActive.value;
+  final MapController _mapController = MapController();
+  bool get _isStationActive => AppNav.stationActive.value;
 
 // =========================
 // DB Stadions (your structure)
 // =========================
-List<Map<String, dynamic>> allStadionData = [];
-bool _stadionsLoading = true;
+  List<Map<String, dynamic>> allStadionData = [];
+  bool _stadionsLoading = true;
 
-int _stadionIndex = 0; // points to current stadion in allStadionData
+  int _stadionIndex = 0; // points to current stadion in allStadionData
 
 // Helpers to read current stadion from allStadionData
-bool get _hasStadions => allStadionData.isNotEmpty && _stadionIndex >= 0 && _stadionIndex < allStadionData.length;
+  bool get _hasStadions =>
+      allStadionData.isNotEmpty &&
+      _stadionIndex >= 0 &&
+      _stadionIndex < allStadionData.length;
 
-String get _currentStadionName {
-if (!_hasStadions) return 'Station';
-return (allStadionData[_stadionIndex]['title'] as String?) ??
-(allStadionData[_stadionIndex]['name'] as String?) ??
-'Station ${_stadionIndex + 1}';
-}
+  String get _currentStadionName {
+    if (!_hasStadions) return 'Station';
+    return (allStadionData[_stadionIndex]['title'] as String?) ??
+        (allStadionData[_stadionIndex]['name'] as String?) ??
+        'Station ${_stadionIndex + 1}';
+  }
 
-LatLng get _currentStadionPos {
-if (!_hasStadions) return const LatLng(47.3763, 15.0930);
-final gp = allStadionData[_stadionIndex]['stadionLocation'] as GeoPoint;
-return LatLng(gp.latitude, gp.longitude);
-}
+  LatLng get _currentStadionPos {
+    if (!_hasStadions) return const LatLng(47.3763, 15.0930);
+    final gp = allStadionData[_stadionIndex]['stadionLocation'] as GeoPoint;
+    return LatLng(gp.latitude, gp.longitude);
+  }
 
 // Radius (Meter)
-static const double _stationRadiusMeters = 15;
+  static const double _stationRadiusMeters = 15;
 
 // =========================
 // Speed logic
 // =========================
-static const double _speedWarnThresholdMps = 6.0; // ~21.6 km/h
-static const Duration _warnCooldown = Duration(seconds: 12);
-DateTime? _lastWarnAt;
+  static const double _speedWarnThresholdMps = 6.0; // ~21.6 km/h
+  static const Duration _warnCooldown = Duration(seconds: 12);
+  DateTime? _lastWarnAt;
 
 // Block
-static const int _blockSeconds = 5 * 60;
-Timer? _blockTimer;
-int _blockLeft = 0;
+  static const int _blockSeconds = 5 * 60;
+  Timer? _blockTimer;
+  int _blockLeft = 0;
 
-bool get _isBlocked => _blockLeft > 0;
+  bool get _isBlocked => _blockLeft > 0;
 
 // =========================
 // Location
 // =========================
-StreamSubscription<Position>? _posSub;
-bool _streamRunning = false;
+  StreamSubscription<Position>? _posSub;
+  bool _streamRunning = false;
 
-LatLng? _player;
-double _playerSpeedMps = 0;
+  LatLng? _player;
+  double _playerSpeedMps = 0;
 
-bool _didInitialFit = false;
-bool _qrUnlockedForStation = false;
-bool get _canStartQuiz =>
-    _uiState == MapUiState.inRadius || _qrUnlockedForStation;
+  bool _didInitialFit = false;
+  bool _qrUnlockedForStation = false;
+  bool get _canStartQuiz =>
+      _uiState == MapUiState.inRadius || _qrUnlockedForStation;
 
 // DB throttling (location writes)
-DateTime? _lastDbWriteAt;
-static const Duration _dbWriteCooldown = Duration(seconds: 10);
-
-// Route (OSRM)
-bool _routeLoading = false;
-List<LatLng> _routePoints = [];
+  DateTime? _lastDbWriteAt;
+  static const Duration _dbWriteCooldown = Duration(seconds: 10);
 
 // UI State
-MapUiState _uiState = MapUiState.normal;
-int _warnings = 0;
+  MapUiState _uiState = MapUiState.normal;
+  int _warnings = 0;
+  String? _statusHint;
 
 // Demo/mock values
-String _remainingTime = '15:00';
-int? _remainingSeconds;
-Timer? _remainingTicker;
-DateTime? _stationStartedAt;
+  String _remainingTime = '15:00';
+  int? _remainingSeconds;
+  Timer? _remainingTicker;
+  DateTime? _stationStartedAt;
+
+  void _setStatusHint(String? hint) {
+    if (!mounted) return;
+    setState(() => _statusHint = hint);
+  }
 
 // =========================
 // Lifecycle
 // =========================
-@override
-void initState() {
-super.initState();
-AppNav.stationActive.addListener(_onStationActiveChanged);
-_init();
-}
+  @override
+  void initState() {
+    super.initState();
+    AppNav.stationActive.addListener(_onStationActiveChanged);
+    _init();
+  }
 
-Future<void> _init() async {
-await _loadAllStadionData(widget.huntId);
-await _loadSavedProgress();
+  Future<void> _init() async {
+    await _loadAllStadionData(widget.huntId);
+    await _loadSavedProgress();
 
-if (mounted && widget.isActive) {
-await _startLocationStream();
-}
+    if (mounted && widget.isActive) {
+      await _startLocationStream();
+    }
 
-if (mounted) {
-setState(() => _stadionsLoading = false);
-}
-_stationStartedAt ??= DateTime.now();
-}
+    if (mounted) {
+      setState(() => _stadionsLoading = false);
+    }
+    _stationStartedAt ??= DateTime.now();
+  }
 
-Future<void> _loadSavedProgress() async {
-final user = FirebaseAuth.instance.currentUser;
-if (user == null || allStadionData.isEmpty) return;
+  Future<void> _loadSavedProgress() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || allStadionData.isEmpty) return;
 
-int? saved;
+    int? saved;
 
-try {
-final userSnap =
-    await FirebaseFirestore.instance.collection("Users").doc(user.uid).get();
-saved = ((userSnap.data()?['CurrentStadionIndexByHunt'] as Map?)?[widget.huntId]
-        as num?)
-    ?.toInt();
-} catch (_) {}
+    try {
+      final userSnap = await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(user.uid)
+          .get();
+      saved = ((userSnap.data()?['CurrentStadionIndexByHunt']
+              as Map?)?[widget.huntId] as num?)
+          ?.toInt();
+    } catch (_) {}
 
-try {
-final locSnap =
-    await FirebaseFirestore.instance.collection("PlayerLocation").doc(user.uid).get();
-saved ??= (locSnap.data()?['stadionIndex'] as num?)?.toInt();
-} catch (_) {}
+    try {
+      final locSnap = await FirebaseFirestore.instance
+          .collection("PlayerLocation")
+          .doc(user.uid)
+          .get();
+      saved ??= (locSnap.data()?['stadionIndex'] as num?)?.toInt();
+    } catch (_) {}
 
-if (saved == null) return;
-final clamped = saved.clamp(0, allStadionData.length);
-if (mounted) {
-setState(() => _stadionIndex = clamped);
-}
-}
+    if (saved == null) return;
+    final clamped = saved.clamp(0, allStadionData.length);
+    if (mounted) {
+      setState(() => _stadionIndex = clamped);
+    }
+  }
 
-@override
-void didUpdateWidget(covariant MapTab oldWidget) {
-super.didUpdateWidget(oldWidget);
+  @override
+  void didUpdateWidget(covariant MapTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
 
 // If huntId changes, reload stadions
-if (oldWidget.huntId != widget.huntId) {
-_stadionsLoading = true;
-allStadionData = [];
-_stadionIndex = 0;
-_didInitialFit = false;
-_qrUnlockedForStation = false;
-_routePoints = [];
-_stationStartedAt = DateTime.now();
-_init();
-return;
-}
+    if (oldWidget.huntId != widget.huntId) {
+      _stadionsLoading = true;
+      allStadionData = [];
+      _stadionIndex = 0;
+      _didInitialFit = false;
+      _qrUnlockedForStation = false;
+      _stationStartedAt = DateTime.now();
+      _init();
+      return;
+    }
 
 // Start/stop stream based on active tab
-if (widget.isActive && !_streamRunning) _startLocationStream();
-if (!widget.isActive && _streamRunning) _stopLocationStream();
-}
+    if (widget.isActive && !_streamRunning) _startLocationStream();
+    if (!widget.isActive && _streamRunning) _stopLocationStream();
+  }
 
-@override
-void dispose() {
-AppNav.stationActive.removeListener(_onStationActiveChanged);
-_blockTimer?.cancel();
-_remainingTicker?.cancel();
-_stopLocationStream();
-super.dispose();
-}
+  @override
+  void dispose() {
+    AppNav.stationActive.removeListener(_onStationActiveChanged);
+    _blockTimer?.cancel();
+    _remainingTicker?.cancel();
+    _stopLocationStream();
+    super.dispose();
+  }
 
-void _onStationActiveChanged() {
-if (!mounted) return;
+  void _onStationActiveChanged() {
+    if (!mounted) return;
 
-setState(() {
-_uiState = MapUiState.normal;
-_didInitialFit = false;
-_routePoints = [];
-if (_isStationActive) {
-_remainingSeconds = null;
-_remainingTime = '15:00';
-_stationStartedAt = DateTime.now();
-_qrUnlockedForStation = false;
-}
-});
+    setState(() {
+      _uiState = MapUiState.normal;
+      _didInitialFit = false;
+      if (_isStationActive) {
+        _remainingSeconds = null;
+        _remainingTime = '15:00';
+        _stationStartedAt = DateTime.now();
+        _qrUnlockedForStation = false;
+      }
+    });
 
-if (_player != null) {
-if (_isStationActive) {
-_fitToPlayerAndStation();
-} else {
-_fitToPlayerOnly();
-}
-}
-}
+    if (_player != null) {
+      if (_isStationActive) {
+        _fitToPlayerAndStation();
+      } else {
+        _fitToPlayerOnly();
+      }
+    }
+  }
 
 // =========================
 // Firestore: load stadions
 // =========================
-Future<void> _loadAllStadionData(String huntId) async {
-try {
-final snapshot = await FirebaseFirestore.instance
-    .collection("Hunts")
-    .doc(huntId)
-    .collection("Stadions")
-    .orderBy("stadionIndex")
-    .get();
+  Future<void> _loadAllStadionData(String huntId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection("Hunts")
+          .doc(huntId)
+          .collection("Stadions")
+          .orderBy("stadionIndex")
+          .get();
 
-final list = await _loadRandomizedStations(snapshot.docs);
+      final list = await _loadRandomizedStations(snapshot.docs);
 
-if (mounted) {
-setState(() {
-allStadionData = list;
+      if (mounted) {
+        setState(() {
+          allStadionData = list;
+          _statusHint = null;
 // clamp index if needed
-if (_stadionIndex >= allStadionData.length) {
-_stadionIndex = allStadionData.isEmpty ? 0 : allStadionData.length - 1;
-}
-});
-}
-_stationStartedAt ??= DateTime.now();
-} catch (e) {
-debugPrint('Firestore Load Error (Stadions): $e');
-if (mounted) {
-setState(() => allStadionData = []);
-}
-}
-}
+          if (_stadionIndex >= allStadionData.length) {
+            _stadionIndex =
+                allStadionData.isEmpty ? 0 : allStadionData.length - 1;
+          }
+        });
+      }
+      _stationStartedAt ??= DateTime.now();
+    } catch (e) {
+      debugPrint('Firestore Load Error (Stadions): $e');
+      if (mounted) {
+        setState(() {
+          allStadionData = [];
+          _statusHint = tr(
+            'Stations could not be loaded. Please check your internet connection.',
+            'Stations could not be loaded. Please check your internet connection.',
+          );
+        });
+      }
+    }
+  }
 
 // =========================
 // Firestore: save player location
 // =========================
-Future<void> _saveLocationInDatabase(LatLng position) async {
-final user = FirebaseAuth.instance.currentUser;
-if (user == null) return;
+  Future<void> _saveLocationInDatabase(LatLng position) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-final now = DateTime.now();
-if (_lastDbWriteAt != null && now.difference(_lastDbWriteAt!) < _dbWriteCooldown) return;
-_lastDbWriteAt = now;
-
-try {
-await FirebaseFirestore.instance.collection("PlayerLocation").doc(user.uid).set(
-{
-'location': GeoPoint(position.latitude, position.longitude),
-'timestamp': FieldValue.serverTimestamp(),
-'huntId': widget.huntId,
-'stadionIndex': _stadionIndex,
-},
-SetOptions(merge: true),
-);
-} catch (e) {
-debugPrint('Firestore Save Error (PlayerLocation): $e');
-}
-}
-
-// Optional: save progress (remove if you don't want it)
-Future<void> _saveProgress(int stadionIndex, {bool finished = false}) async {
-final user = FirebaseAuth.instance.currentUser;
-if (user == null) return;
-
-try {
-await FirebaseFirestore.instance.collection("PlayerLocation").doc(user.uid).set(
-{
-'huntId': widget.huntId,
-'stadionIndex': stadionIndex,
-'timestamp': FieldValue.serverTimestamp(),
-},
-SetOptions(merge: true),
-);
-} catch (e) {
-debugPrint('Firestore Save Error (Progress): $e');
-}
-
-try {
-await FirebaseFirestore.instance.collection("Users").doc(user.uid).set(
-{
-'CurrentStadionIndexByHunt.${widget.huntId}': stadionIndex,
-if (finished) 'FinishedHunts.${widget.huntId}': true,
-'updatedAt': FieldValue.serverTimestamp(),
-},
-SetOptions(merge: true),
-);
-} catch (e) {
-debugPrint('Firestore Save Error (User progress): $e');
-}
-}
-
-Future<List<Map<String, dynamic>>> _loadRandomizedStations(
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) async {
-  final user = FirebaseAuth.instance.currentUser;
-  final byId = <String, Map<String, dynamic>>{
-    for (final d in docs) d.id: {...d.data(), '_docId': d.id},
-  };
-  final allIds = docs.map((d) => d.id).toList();
-  final allIdsSet = allIds.toSet();
-  if (user == null || allIds.isEmpty) return byId.values.toList();
-
-  final userRef = FirebaseFirestore.instance.collection('Users').doc(user.uid);
-  List<String>? orderedIds;
-
-  try {
-    final snap = await userRef.get();
-    final stored =
-        ((snap.data()?['StationOrderByHunt'] as Map?)?[widget.huntId] as List?)
-            ?.map((e) => e.toString())
-            .toList();
-    if (stored != null &&
-        stored.length == allIdsSet.length &&
-        stored.every(allIdsSet.contains)) {
-      orderedIds = stored;
+    final now = DateTime.now();
+    if (_lastDbWriteAt != null &&
+        now.difference(_lastDbWriteAt!) < _dbWriteCooldown) {
+      return;
     }
-  } catch (_) {}
+    _lastDbWriteAt = now;
 
-  if (orderedIds == null) {
-    orderedIds = _deterministicShuffledIds(
-      allIds,
-      '${user.uid}:${widget.huntId}',
-    );
     try {
-      await userRef.set(
-        {'StationOrderByHunt.${widget.huntId}': orderedIds},
+      await FirebaseFirestore.instance
+          .collection("PlayerLocation")
+          .doc(user.uid)
+          .set(
+        {
+          'location': GeoPoint(position.latitude, position.longitude),
+          'timestamp': FieldValue.serverTimestamp(),
+          'huntId': widget.huntId,
+          'stadionIndex': _stadionIndex,
+        },
         SetOptions(merge: true),
       );
+    } catch (e) {
+      debugPrint('Firestore Save Error (PlayerLocation): $e');
+    }
+  }
+
+// Optional: save progress (remove if you don't want it)
+  Future<void> _saveProgress(int stadionIndex, {bool finished = false}) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("PlayerLocation")
+          .doc(user.uid)
+          .set(
+        {
+          'huntId': widget.huntId,
+          'stadionIndex': stadionIndex,
+          'timestamp': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('Firestore Save Error (Progress): $e');
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection("Users").doc(user.uid).set(
+        {
+          'CurrentStadionIndexByHunt.${widget.huntId}': stadionIndex,
+          if (finished) 'FinishedHunts.${widget.huntId}': true,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('Firestore Save Error (User progress): $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _loadRandomizedStations(
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final byId = <String, Map<String, dynamic>>{
+      for (final d in docs) d.id: {...d.data(), '_docId': d.id},
+    };
+    final allIds = docs.map((d) => d.id).toList();
+    final allIdsSet = allIds.toSet();
+    if (user == null || allIds.isEmpty) return byId.values.toList();
+
+    final userRef =
+        FirebaseFirestore.instance.collection('Users').doc(user.uid);
+    List<String>? orderedIds;
+
+    try {
+      final snap = await userRef.get();
+      final stored = ((snap.data()?['StationOrderByHunt']
+              as Map?)?[widget.huntId] as List?)
+          ?.map((e) => e.toString())
+          .toList();
+      if (stored != null &&
+          stored.length == allIdsSet.length &&
+          stored.every(allIdsSet.contains)) {
+        orderedIds = stored;
+      }
     } catch (_) {}
+
+    if (orderedIds == null) {
+      orderedIds = _deterministicShuffledIds(
+        allIds,
+        '${user.uid}:${widget.huntId}',
+      );
+      try {
+        await userRef.set(
+          {'StationOrderByHunt.${widget.huntId}': orderedIds},
+          SetOptions(merge: true),
+        );
+      } catch (_) {}
+    }
+
+    final ordered = <Map<String, dynamic>>[];
+    for (final id in orderedIds) {
+      final row = byId[id];
+      if (row != null) ordered.add(row);
+    }
+    return ordered;
   }
 
-  final ordered = <Map<String, dynamic>>[];
-  for (final id in orderedIds) {
-    final row = byId[id];
-    if (row != null) ordered.add(row);
+  List<String> _deterministicShuffledIds(List<String> ids, String seedText) {
+    final list = [...ids];
+    final rnd = Random(seedText.hashCode);
+    for (var i = list.length - 1; i > 0; i--) {
+      final j = rnd.nextInt(i + 1);
+      final tmp = list[i];
+      list[i] = list[j];
+      list[j] = tmp;
+    }
+    return list;
   }
-  return ordered;
-}
 
-List<String> _deterministicShuffledIds(List<String> ids, String seedText) {
-  final list = [...ids];
-  final rnd = Random(seedText.hashCode);
-  for (var i = list.length - 1; i > 0; i--) {
-    final j = rnd.nextInt(i + 1);
-    final tmp = list[i];
-    list[i] = list[j];
-    list[j] = tmp;
-  }
-  return list;
-}
 // =========================
 // Location stream
 // =========================
-Future<void> _startLocationStream() async {
-_streamRunning = true;
+  Future<void> _startLocationStream() async {
+    _streamRunning = true;
 
-try {
-final enabled = await Geolocator.isLocationServiceEnabled();
-if (!enabled) {
-_streamRunning = false;
-return;
-}
+    try {
+      final enabled = await Geolocator.isLocationServiceEnabled();
+      if (!enabled) {
+        _streamRunning = false;
+        _setStatusHint(tr(
+          'Standortdienste sind deaktiviert. Bitte aktiviere GPS.',
+          'Location services are disabled. Please enable GPS.',
+        ));
+        return;
+      }
 
-LocationPermission perm = await Geolocator.checkPermission();
-if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
-if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
-_streamRunning = false;
-return;
-}
+      LocationPermission perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever) {
+        _streamRunning = false;
+        _setStatusHint(tr(
+          'Location permission missing. Please allow it in settings.',
+          'Location permission missing. Please allow it in settings.',
+        ));
+        return;
+      }
+      _setStatusHint(null);
 
-await _posSub?.cancel();
-_posSub = Geolocator.getPositionStream(
-locationSettings: const LocationSettings(
-accuracy: LocationAccuracy.best,
-distanceFilter: 2,
-),
-).listen((pos) {
-if (!mounted || !widget.isActive) return;
+      await _posSub?.cancel();
+      _posSub = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.best,
+          distanceFilter: 2,
+        ),
+      ).listen((pos) {
+        if (!mounted || !widget.isActive) return;
 
-final p = LatLng(pos.latitude, pos.longitude);
+        final p = LatLng(pos.latitude, pos.longitude);
 
-setState(() {
-_player = p;
-_playerSpeedMps = (pos.speed.isFinite && pos.speed >= 0) ? pos.speed : 0;
-});
+        setState(() {
+          _player = p;
+          _playerSpeedMps =
+              (pos.speed.isFinite && pos.speed >= 0) ? pos.speed : 0;
+        });
 
 // Save location (throttled)
-_saveLocationInDatabase(p);
+        _saveLocationInDatabase(p);
 
-if (_isStationActive) {
-_checkSpeedAndWarn();
-_checkRadius();
-_updateRemainingTimeEstimate();
-}
+        if (_isStationActive) {
+          _checkSpeedAndWarn();
+          _checkRadius();
+          _updateRemainingTimeEstimate();
+        }
 
-if (!_didInitialFit) {
-if (_isStationActive) {
-_fitToPlayerAndStation();
-} else {
-_fitToPlayerOnly();
-}
-} else {
-if (_isStationActive) {
-_updateRoute(throttle: true);
-}
-}
-});
-} catch (e) {
-debugPrint('Location stream error: $e');
-_streamRunning = false;
-}
-}
+        if (!_didInitialFit) {
+          if (_isStationActive) {
+            _fitToPlayerAndStation();
+          } else {
+            _fitToPlayerOnly();
+          }
+        }
+      });
+    } catch (e) {
+      debugPrint('Location stream error: $e');
+      _streamRunning = false;
+      _setStatusHint(tr(
+        'Standort konnte nicht aktualisiert werden.',
+        'Could not update location.',
+      ));
+    }
+  }
 
-void _stopLocationStream() {
-_posSub?.cancel();
-_posSub = null;
-_streamRunning = false;
-}
+  void _stopLocationStream() {
+    _posSub?.cancel();
+    _posSub = null;
+    _streamRunning = false;
+  }
 
 // =========================
 // Radius / In-Radius UI
 // =========================
-void _checkRadius() {
-if (!_isStationActive) return;
-if (_player == null || !_hasStadions) return;
+  void _checkRadius() {
+    if (!_isStationActive) return;
+    if (_player == null || !_hasStadions) return;
 
-final p = _player!;
-final t = _currentStadionPos;
+    final p = _player!;
+    final t = _currentStadionPos;
 
 // Guard against NaN / Infinity
-if (!p.latitude.isFinite || !p.longitude.isFinite || !t.latitude.isFinite || !t.longitude.isFinite) {
-debugPrint("Invalid coords. player=$p target=$t");
-return;
-}
+    if (!p.latitude.isFinite ||
+        !p.longitude.isFinite ||
+        !t.latitude.isFinite ||
+        !t.longitude.isFinite) {
+      debugPrint("Invalid coords. player=$p target=$t");
+      return;
+    }
 
-final d = const Distance().as(LengthUnit.Meter, p, t);
+    final d = const Distance().as(LengthUnit.Meter, p, t);
 
-if (!d.isFinite) {
-debugPrint("Distance is NaN. player=$p target=$t");
-return;
-}
+    if (!d.isFinite) {
+      debugPrint("Distance is NaN. player=$p target=$t");
+      return;
+    }
 
-final inRad = d <= _stationRadiusMeters;
+    final inRad = d <= _stationRadiusMeters;
 
-if (!inRad) {
-if (_uiState == MapUiState.inRadius) setState(() => _uiState = MapUiState.normal);
-return;
-}
+    if (!inRad) {
+      if (_uiState == MapUiState.inRadius) {
+        setState(() => _uiState = MapUiState.normal);
+      }
+      return;
+    }
 
-if (_uiState != MapUiState.inRadius && !_isBlocked) {
-setState(() => _uiState = MapUiState.inRadius);
-}
-}
-
+    if (_uiState != MapUiState.inRadius && !_isBlocked) {
+      setState(() => _uiState = MapUiState.inRadius);
+    }
+  }
 
 // =========================
 // Speed warnings + block
 // =========================
-void _checkSpeedAndWarn() {
-if (_player == null) return;
-if (_isBlocked) return;
-if (_playerSpeedMps < _speedWarnThresholdMps) return;
+  void _checkSpeedAndWarn() {
+    if (_player == null) return;
+    if (_isBlocked) return;
+    if (_playerSpeedMps < _speedWarnThresholdMps) return;
 
-final now = DateTime.now();
-if (_lastWarnAt != null && now.difference(_lastWarnAt!) < _warnCooldown) return;
+    final now = DateTime.now();
+    if (_lastWarnAt != null && now.difference(_lastWarnAt!) < _warnCooldown) {
+      return;
+    }
 
-_lastWarnAt = now;
+    _lastWarnAt = now;
 
-setState(() {
-_warnings = (_warnings + 1).clamp(0, 3);
-_uiState = MapUiState.warningDialog;
-});
+    setState(() {
+      _warnings = (_warnings + 1).clamp(0, 3);
+      _uiState = MapUiState.warningDialog;
+    });
 
-if (_warnings >= 3) _startBlock();
-}
-
-void _startBlock() {
-_blockTimer?.cancel();
-setState(() {
-_blockLeft = _blockSeconds;
-_uiState = MapUiState.blockedDialog;
-});
-
-_blockTimer = Timer.periodic(const Duration(seconds: 1), (t) {
-if (!mounted) return;
-
-if (_blockLeft <= 1) {
-t.cancel();
-setState(() {
-_blockLeft = 0;
-_uiState = MapUiState.unblockDialog;
-});
-return;
-}
-
-setState(() => _blockLeft -= 1);
-});
-}
-
-void _skipBlockForTesting() {
-_blockTimer?.cancel();
-setState(() {
-_blockLeft = 0;
-_uiState = MapUiState.unblockDialog;
-});
-}
-
-void _closeOverlay() {
-if (_isBlocked) return;
-setState(() {
-if (_uiState == MapUiState.warningDialog || _uiState == MapUiState.unblockDialog) {
-_uiState = MapUiState.normal;
-_checkRadius();
-}
-});
-}
-
-// =========================
-// Routing via OSRM
-// =========================
-Future<void> _updateRoute({bool throttle = false}) async {
-if (!_isStationActive) return;
-if (_player == null) return;
-if (!_hasStadions) return;
-if (_routeLoading) return;
-if (throttle && _routePoints.isNotEmpty) return;
-
-_routeLoading = true;
-
-try {
-final from = _player!;
-final to = _currentStadionPos;
-
-final url = Uri.parse(
-'https://router.project-osrm.org/route/v1/foot/'
-'${from.longitude},${from.latitude};${to.longitude},${to.latitude}'
-'?overview=full&geometries=geojson&alternatives=false&steps=false',
-);
-
-final jsonStr = await _httpGet(url);
-final data = json.decode(jsonStr) as Map<String, dynamic>;
-
-final routes = (data['routes'] as List?) ?? const [];
-if (routes.isEmpty) return;
-
-final route = routes.first as Map<String, dynamic>;
-final geom = route['geometry'] as Map<String, dynamic>;
-final coords = (geom['coordinates'] as List).cast<List>();
-final routeDistance = (route['distance'] as num?)?.toDouble();
-final routeDuration = (route['duration'] as num?)?.toDouble();
-
-final pts = <LatLng>[];
-for (final c in coords) {
-if (c.length < 2) continue;
-final lon = (c[0] as num).toDouble();
-final lat = (c[1] as num).toDouble();
-
-if (!lat.isFinite || !lon.isFinite) continue; // Skip bad points
-pts.add(LatLng(lat, lon));
-
-}
-
-if (!mounted) return;
-setState(() => _routePoints = pts);
-_updateRemainingTimeEstimate(
-routeMeters: routeDistance,
-routeDurationSeconds: routeDuration,
-);
-} catch (_) {
-// ignore
-} finally {
-_routeLoading = false;
-}
-}
-
-Future<String> _httpGet(Uri url) async {
-final client = HttpClient();
-try {
-final req = await client.getUrl(url);
-req.headers.set(HttpHeaders.userAgentHeader, 'GeoQuest-App');
-final res = await req.close();
-return await res.transform(utf8.decoder).join();
-} finally {
-client.close(force: true);
-}
-}
-
-void _updateRemainingTimeEstimate({
-double? routeMeters,
-double? routeDurationSeconds,
-}) {
-if (!_isStationActive) return;
-double? baseSeconds;
-
-if (routeDurationSeconds != null &&
-routeDurationSeconds.isFinite &&
-routeDurationSeconds > 0) {
-baseSeconds = routeDurationSeconds;
-} else if (routeMeters != null && routeMeters.isFinite && routeMeters > 0) {
-baseSeconds = routeMeters / 1.35;
-} else if (_player != null && _hasStadions) {
-final d = const Distance().as(LengthUnit.Meter, _player!, _currentStadionPos);
-if (d.isFinite && d > 0) {
-baseSeconds = d / 1.35;
-routeMeters = d;
-}
-}
-
-if (baseSeconds == null || !baseSeconds.isFinite) return;
-
-final meters = (routeMeters != null && routeMeters.isFinite && routeMeters > 0)
-? routeMeters
-: baseSeconds * 1.35;
-final km = meters / 1000.0;
-final bufferMinutes = km < 1.0 ? 5 : (km < 2.5 ? 7 : 10);
-final totalSeconds =
-(baseSeconds + (bufferMinutes * 60)).round().clamp(60, 4 * 60 * 60);
-
-_applyRemainingEstimate(totalSeconds);
-}
-
-String _fmtRemaining(int totalSeconds) {
-final m = (totalSeconds ~/ 60).toString();
-final s = (totalSeconds % 60).toString().padLeft(2, '0');
-return '$m:$s';
-}
-
-String _currentTeacherName() {
-  if (!_hasStadions) return 'Lehrperson';
-  final data = allStadionData[_stadionIndex];
-  final teacher =
-      (data['teacherName'] as String?) ??
-      (data['teacher'] as String?) ??
-      (data['professor'] as String?) ??
-      (data['lehrer'] as String?);
-  if (teacher == null || teacher.trim().isEmpty) return 'Lehrperson';
-  return teacher.trim();
-}
-
-String _expectedQrCode() {
-if (!_hasStadions) return '';
-final data = allStadionData[_stadionIndex];
-final raw = (data['qrCode'] ??
-        data['qr'] ??
-        data['code'] ??
-        data['qrToken'] ??
-        data['_docId'])
-    ?.toString()
-    .trim();
-if (raw == null || raw.isEmpty) return _currentStadionName;
-return raw;
-}
-
-String _normalizeQr(String value) => value.trim().toLowerCase();
-
-Future<void> _scanQrCode() async {
-if (!_isStationActive || _isBlocked) return;
-
-final expectedCode = _expectedQrCode();
-final scanned = await Navigator.of(context).push<String>(
-  MaterialPageRoute(
-    builder: (_) => QrScanScreen(expectedCode: expectedCode),
-  ),
-);
-
-if (!mounted || scanned == null || scanned.trim().isEmpty) return;
-
-final ok = _normalizeQr(scanned) == _normalizeQr(expectedCode);
-if (ok) {
-  setState(() => _qrUnlockedForStation = true);
-}
-
-ScaffoldMessenger.of(context).clearSnackBars();
-ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-    content: Text(ok
-        ? 'QR-Code erkannt. Aufgabe freigeschaltet.'
-        : 'Falscher QR-Code für diese Station.'),
-    duration: const Duration(milliseconds: 1400),
-  ),
-);
-}
-
-void _applyRemainingEstimate(int estimatedSeconds) {
-  final roundedToFullMinute = ((estimatedSeconds + 59) ~/ 60) * 60;
-  final current = _remainingSeconds;
-
-  // Keep countdown stable; only adjust when estimate changed at least 1 minute.
-  if (current != null && (roundedToFullMinute - current).abs() < 60) {
-    return;
+    if (_warnings >= 3) _startBlock();
   }
 
-  if (!mounted) return;
-  setState(() {
-    _remainingSeconds = roundedToFullMinute;
-    _remainingTime = _fmtRemaining(roundedToFullMinute);
-  });
-  _ensureRemainingTickerRunning();
-}
-
-void _ensureRemainingTickerRunning() {
-  if (_remainingTicker != null) return;
-  _remainingTicker = Timer.periodic(const Duration(seconds: 1), (_) {
-    if (!mounted) return;
-    final value = _remainingSeconds;
-    if (value == null) return;
-    if (value <= 0) return;
+  void _startBlock() {
+    _blockTimer?.cancel();
     setState(() {
-      _remainingSeconds = value - 1;
-      _remainingTime = _fmtRemaining(_remainingSeconds!);
+      _blockLeft = _blockSeconds;
+      _uiState = MapUiState.blockedDialog;
     });
-  });
-}
+
+    _blockTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) return;
+
+      if (_blockLeft <= 1) {
+        t.cancel();
+        setState(() {
+          _blockLeft = 0;
+          _uiState = MapUiState.unblockDialog;
+        });
+        return;
+      }
+
+      setState(() => _blockLeft -= 1);
+    });
+  }
+
+  void _skipBlockForTesting() {
+    _blockTimer?.cancel();
+    setState(() {
+      _blockLeft = 0;
+      _uiState = MapUiState.unblockDialog;
+    });
+  }
+
+  void _closeOverlay() {
+    if (_isBlocked) return;
+    setState(() {
+      if (_uiState == MapUiState.warningDialog ||
+          _uiState == MapUiState.unblockDialog) {
+        _uiState = MapUiState.normal;
+        _checkRadius();
+      }
+    });
+  }
+
+  void _updateRemainingTimeEstimate() {
+    if (!_isStationActive) return;
+    if (_player == null || !_hasStadions) return;
+    final d =
+        const Distance().as(LengthUnit.Meter, _player!, _currentStadionPos);
+    if (!d.isFinite || d <= 0) return;
+
+    final baseSeconds = d / 1.35;
+    if (!baseSeconds.isFinite) return;
+
+    final meters = d;
+    final km = meters / 1000.0;
+    final bufferMinutes = km < 1.0 ? 5 : (km < 2.5 ? 7 : 10);
+    final totalSeconds =
+        (baseSeconds + (bufferMinutes * 60)).round().clamp(60, 4 * 60 * 60);
+
+    _applyRemainingEstimate(totalSeconds);
+  }
+
+  String _fmtRemaining(int totalSeconds) {
+    final m = (totalSeconds ~/ 60).toString();
+    final s = (totalSeconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+
+  String _currentTeacherName() {
+    if (!_hasStadions) return 'Lehrperson';
+    final data = allStadionData[_stadionIndex];
+    final teacher = (data['teacherName'] as String?) ??
+        (data['teacher'] as String?) ??
+        (data['professor'] as String?) ??
+        (data['lehrer'] as String?);
+    if (teacher == null || teacher.trim().isEmpty) return 'Lehrperson';
+    return teacher.trim();
+  }
+
+  String _expectedQrCode() {
+    if (!_hasStadions) return '';
+    final data = allStadionData[_stadionIndex];
+    final raw = (data['qrCode'] ??
+            data['qr'] ??
+            data['code'] ??
+            data['qrToken'] ??
+            data['_docId'])
+        ?.toString()
+        .trim();
+    if (raw == null || raw.isEmpty) return _currentStadionName;
+    return raw;
+  }
+
+  String _normalizeQr(String value) => value.trim().toLowerCase();
+
+  Future<void> _scanQrCode() async {
+    if (!_isStationActive || _isBlocked) return;
+
+    final expectedCode = _expectedQrCode();
+    final scanned = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => QrScanScreen(expectedCode: expectedCode),
+      ),
+    );
+
+    if (!mounted || scanned == null || scanned.trim().isEmpty) return;
+
+    final ok = _normalizeQr(scanned) == _normalizeQr(expectedCode);
+    if (ok) {
+      setState(() => _qrUnlockedForStation = true);
+    }
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(ok
+            ? tr('QR-Code erkannt. Aufgabe freigeschaltet.',
+                'QR code accepted. Task unlocked.')
+            : tr('Falscher QR-Code für diese Station.',
+                'Wrong QR code for this station.')),
+        duration: const Duration(milliseconds: 1400),
+      ),
+    );
+  }
+
+  void _applyRemainingEstimate(int estimatedSeconds) {
+    final roundedToFullMinute = ((estimatedSeconds + 59) ~/ 60) * 60;
+    final current = _remainingSeconds;
+
+    // Keep countdown stable; only adjust when estimate changed at least 1 minute.
+    if (current != null && (roundedToFullMinute - current).abs() < 60) {
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _remainingSeconds = roundedToFullMinute;
+      _remainingTime = _fmtRemaining(roundedToFullMinute);
+    });
+    _ensureRemainingTickerRunning();
+  }
+
+  void _ensureRemainingTickerRunning() {
+    if (_remainingTicker != null) return;
+    _remainingTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final value = _remainingSeconds;
+      if (value == null) return;
+      if (value <= 0) return;
+      setState(() {
+        _remainingSeconds = value - 1;
+        _remainingTime = _fmtRemaining(_remainingSeconds!);
+      });
+    });
+  }
 
   // =========================
   // Camera helpers
@@ -771,568 +738,627 @@ void _ensureRemainingTickerRunning() {
       _mapController.move(station, 17);
     }
 
-    _updateRoute();
-}
+    _updateRemainingTimeEstimate();
+  }
 
-void _fitToPlayerOnly() {
-if (_player == null) return;
-if (!_isValidLatLng(_player!)) return;
-_didInitialFit = true;
-try {
-_mapController.move(_player!, 17);
-} catch (_) {}
-}
+  void _fitToPlayerOnly() {
+    if (_player == null) return;
+    if (!_isValidLatLng(_player!)) return;
+    _didInitialFit = true;
+    try {
+      _mapController.move(_player!, 17);
+    } catch (_) {}
+  }
 
 // =========================
 // Quiz / Stadion flow
 // =========================
-Future<void> _openQuiz() async {
-if (!_isStationActive) return;
-if (_isBlocked) return;
-if (!_canStartQuiz) return;
+  Future<void> _openQuiz() async {
+    if (!_isStationActive) return;
+    if (_isBlocked) return;
+    if (!_canStartQuiz) return;
 
-final teacherPoints = await Navigator.of(context).push<double>(
-  MaterialPageRoute(
-    builder: (_) => QuizIntroScreen(
-      stationName: _currentStadionName,
-      teacherName: _currentTeacherName(),
-    ),
-  ),
-);
+    final teacherPoints = await Navigator.of(context).push<double>(
+      MaterialPageRoute(
+        builder: (_) => QuizIntroScreen(
+          stationName: _currentStadionName,
+          teacherName: _currentTeacherName(),
+        ),
+      ),
+    );
 
-if (!mounted || teacherPoints == null) return;
+    if (!mounted || teacherPoints == null) return;
 
-final next = _stadionIndex + 1;
-final isFinished = next >= allStadionData.length;
+    final next = _stadionIndex + 1;
+    final isFinished = next >= allStadionData.length;
 
-await _awardPointsForCurrentStadion(teacherPoints);
+    await _awardPointsForCurrentStadion(teacherPoints);
 
-await _saveProgress(isFinished ? allStadionData.length : next, finished: isFinished);
+    await _saveProgress(isFinished ? allStadionData.length : next,
+        finished: isFinished);
 
-setState(() {
-if (!isFinished) {
-_stadionIndex = next;
-}
-_uiState = MapUiState.normal;
-_qrUnlockedForStation = false;
-_routePoints = [];
-_didInitialFit = false;
-_remainingSeconds = null;
-_remainingTime = '15:00';
-_stationStartedAt = DateTime.now();
-});
+    setState(() {
+      if (!isFinished) {
+        _stadionIndex = next;
+      }
+      _uiState = MapUiState.normal;
+      _qrUnlockedForStation = false;
+      _didInitialFit = false;
+      _remainingSeconds = null;
+      _remainingTime = '15:00';
+      _stationStartedAt = DateTime.now();
+    });
 
-AppNav.stationActive.value = false;
-AppNav.selectedIndex.value = 0;
-}
+    AppNav.stationActive.value = false;
+    AppNav.selectedIndex.value = 0;
+  }
 
-Future<void> _awardPointsForCurrentStadion(double teacherPoints) async {
-final user = FirebaseAuth.instance.currentUser;
-if (user == null || !_hasStadions) return;
+  Future<void> _awardPointsForCurrentStadion(double teacherPoints) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || !_hasStadions) return;
 
-final fallbackRemaining = _remainingTime.split(':');
-final fallbackSeconds = fallbackRemaining.length == 2
-    ? ((int.tryParse(fallbackRemaining[0]) ?? 0) * 60) +
-        (int.tryParse(fallbackRemaining[1]) ?? 0)
-    : 0;
-final remainingSeconds = _remainingSeconds ?? fallbackSeconds;
-final inTime = remainingSeconds > 0;
-final timeBonus = inTime ? 2.0 : 0.0;
-final sanitizedTeacherPoints = teacherPoints.clamp(0.0, 10.0);
-final spentSeconds = _stationStartedAt == null
-    ? 0
-    : DateTime.now()
-        .difference(_stationStartedAt!)
-        .inSeconds
-        .clamp(0, 24 * 60 * 60);
-final userRef = FirebaseFirestore.instance.collection('Users').doc(user.uid);
-final stationKey = _stadionIndex.toString();
+    final fallbackRemaining = _remainingTime.split(':');
+    final fallbackSeconds = fallbackRemaining.length == 2
+        ? ((int.tryParse(fallbackRemaining[0]) ?? 0) * 60) +
+            (int.tryParse(fallbackRemaining[1]) ?? 0)
+        : 0;
+    final remainingSeconds = _remainingSeconds ?? fallbackSeconds;
+    final inTime = remainingSeconds > 0;
+    final timeBonus = inTime ? 2.0 : 0.0;
+    final sanitizedTeacherPoints = teacherPoints.clamp(0.0, 10.0);
+    final spentSeconds = _stationStartedAt == null
+        ? 0
+        : DateTime.now()
+            .difference(_stationStartedAt!)
+            .inSeconds
+            .clamp(0, 24 * 60 * 60);
+    final userRef =
+        FirebaseFirestore.instance.collection('Users').doc(user.uid);
+    final stationKey = _stadionIndex.toString();
 
-try {
-await FirebaseFirestore.instance.runTransaction((tx) async {
-final snap = await tx.get(userRef);
-final data = snap.data() ?? <String, dynamic>{};
+    try {
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        final snap = await tx.get(userRef);
+        final data = snap.data() ?? <String, dynamic>{};
 
-final completedRaw = (data['CompletedStadions'] as List?) ?? const [];
-final completed = completedRaw
-    .map((e) {
-      if (e is num) return e.toInt();
-      return int.tryParse(e.toString());
-    })
-    .whereType<int>()
-    .toSet();
-final rawTeacherByStation =
-    (data['TeacherPointsByStation'] as Map?)?.cast<String, dynamic>() ??
-        <String, dynamic>{};
-final rawBonusByStation =
-    (data['TimeBonusByStation'] as Map?)?.cast<String, dynamic>() ??
-        <String, dynamic>{};
-final rawTimeByStation =
-    (data['TimeSecondsByStation'] as Map?)?.cast<String, dynamic>() ??
-        <String, dynamic>{};
+        final completedRaw = (data['CompletedStadions'] as List?) ?? const [];
+        final completed = completedRaw
+            .map((e) {
+              if (e is num) return e.toInt();
+              return int.tryParse(e.toString());
+            })
+            .whereType<int>()
+            .toSet();
+        final rawTeacherByStation =
+            (data['TeacherPointsByStation'] as Map?)?.cast<String, dynamic>() ??
+                <String, dynamic>{};
+        final rawBonusByStation =
+            (data['TimeBonusByStation'] as Map?)?.cast<String, dynamic>() ??
+                <String, dynamic>{};
+        final rawTimeByStation =
+            (data['TimeSecondsByStation'] as Map?)?.cast<String, dynamic>() ??
+                <String, dynamic>{};
 
-final previousTeacherPoints =
-    (rawTeacherByStation[stationKey] as num?)?.toDouble() ?? 0.0;
-final previousTimeBonus =
-    (rawBonusByStation[stationKey] as num?)?.toDouble() ?? 0.0;
-final previousStationTime =
-    (rawTimeByStation[stationKey] as num?)?.toInt() ?? 0;
+        final previousTeacherPoints =
+            (rawTeacherByStation[stationKey] as num?)?.toDouble() ?? 0.0;
+        final previousTimeBonus =
+            (rawBonusByStation[stationKey] as num?)?.toDouble() ?? 0.0;
+        final previousStationTime =
+            (rawTimeByStation[stationKey] as num?)?.toInt() ?? 0;
 
-final currentTotalPoints =
-    (data['Points'] as num?)?.toDouble() ??
-    (data['points'] as num?)?.toDouble() ??
-    (data['score'] as num?)?.toDouble() ??
-    0.0;
-final currentTimeBonusTotal =
-    (data['TimeBonusPoints'] as num?)?.toDouble() ?? 0.0;
-final currentTeacherTotal =
-    (data['TeacherPointsTotal'] as num?)?.toDouble() ??
-    (currentTotalPoints - currentTimeBonusTotal);
-final currentTotalTimeSeconds =
-    (data['TotalTimeSeconds'] as num?)?.toInt() ??
-    (data['totalTimeSeconds'] as num?)?.toInt() ??
-    0;
+        final currentTotalPoints = (data['Points'] as num?)?.toDouble() ??
+            (data['points'] as num?)?.toDouble() ??
+            (data['score'] as num?)?.toDouble() ??
+            0.0;
+        final currentTimeBonusTotal =
+            (data['TimeBonusPoints'] as num?)?.toDouble() ?? 0.0;
+        final currentTeacherTotal =
+            (data['TeacherPointsTotal'] as num?)?.toDouble() ??
+                (currentTotalPoints - currentTimeBonusTotal);
+        final currentTotalTimeSeconds =
+            (data['TotalTimeSeconds'] as num?)?.toInt() ??
+                (data['totalTimeSeconds'] as num?)?.toInt() ??
+                0;
 
-final nextTeacherTotal =
-    currentTeacherTotal - previousTeacherPoints + sanitizedTeacherPoints;
-final nextTimeBonusTotal = currentTimeBonusTotal - previousTimeBonus + timeBonus;
-final nextTotalPoints = nextTeacherTotal + nextTimeBonusTotal;
-final nextTotalTimeSeconds =
-    currentTotalTimeSeconds - previousStationTime + spentSeconds;
-final nextTotalTimeText =
-    '${nextTotalTimeSeconds ~/ 60}:${(nextTotalTimeSeconds % 60).toString().padLeft(2, '0')}';
+        final nextTeacherTotal = currentTeacherTotal -
+            previousTeacherPoints +
+            sanitizedTeacherPoints;
+        final nextTimeBonusTotal =
+            currentTimeBonusTotal - previousTimeBonus + timeBonus;
+        final nextTotalPoints = nextTeacherTotal + nextTimeBonusTotal;
+        final nextTotalTimeSeconds =
+            currentTotalTimeSeconds - previousStationTime + spentSeconds;
+        final nextTotalTimeText =
+            '${nextTotalTimeSeconds ~/ 60}:${(nextTotalTimeSeconds % 60).toString().padLeft(2, '0')}';
 
-tx.set(
-  userRef,
-  {
-    'Points': double.parse(nextTotalPoints.toStringAsFixed(1)),
-    'TeacherPointsTotal': double.parse(nextTeacherTotal.toStringAsFixed(1)),
-    'TimeBonusPoints': double.parse(nextTimeBonusTotal.toStringAsFixed(1)),
-    'LastTeacherScore': sanitizedTeacherPoints,
-    'LastTimeBonus': timeBonus,
-    'TotalTimeSeconds': nextTotalTimeSeconds,
-    'TotalTimeText': nextTotalTimeText,
-    'TeacherPointsByStation.$stationKey':
-        double.parse(sanitizedTeacherPoints.toStringAsFixed(1)),
-    'TimeBonusByStation.$stationKey': double.parse(timeBonus.toStringAsFixed(1)),
-    'TimeSecondsByStation.$stationKey': spentSeconds,
-    'CompletedStadions': FieldValue.arrayUnion([_stadionIndex]),
-    if (!completed.contains(_stadionIndex)) 'SolvedCount': FieldValue.increment(1),
-  },
-  SetOptions(merge: true),
-);
-});
-} catch (e) {
-debugPrint('Award points error: $e');
-}
-}
+        tx.set(
+          userRef,
+          {
+            'Points': double.parse(nextTotalPoints.toStringAsFixed(1)),
+            'TeacherPointsTotal':
+                double.parse(nextTeacherTotal.toStringAsFixed(1)),
+            'TimeBonusPoints':
+                double.parse(nextTimeBonusTotal.toStringAsFixed(1)),
+            'LastTeacherScore': sanitizedTeacherPoints,
+            'LastTimeBonus': timeBonus,
+            'TotalTimeSeconds': nextTotalTimeSeconds,
+            'TotalTimeText': nextTotalTimeText,
+            'TeacherPointsByStation.$stationKey':
+                double.parse(sanitizedTeacherPoints.toStringAsFixed(1)),
+            'TimeBonusByStation.$stationKey':
+                double.parse(timeBonus.toStringAsFixed(1)),
+            'TimeSecondsByStation.$stationKey': spentSeconds,
+            'CompletedStadions': FieldValue.arrayUnion([_stadionIndex]),
+            if (!completed.contains(_stadionIndex))
+              'SolvedCount': FieldValue.increment(1),
+          },
+          SetOptions(merge: true),
+        );
+      });
+    } catch (e) {
+      debugPrint('Award points error: $e');
+    }
+  }
 
-void _teleportToStationForTesting() {
-if (!_hasStadions) return;
+  void _teleportToStationForTesting() {
+    if (!_hasStadions) return;
 
-final t = _currentStadionPos;
-if (!t.latitude.isFinite || !t.longitude.isFinite) {
-debugPrint("Teleport blocked: target coords invalid: $t");
-return;
-}
+    final t = _currentStadionPos;
+    if (!t.latitude.isFinite || !t.longitude.isFinite) {
+      debugPrint("Teleport blocked: target coords invalid: $t");
+      return;
+    }
 
-setState(() {
-_player = LatLng(t.latitude, t.longitude);
-_playerSpeedMps = 0;
-_uiState = MapUiState.inRadius;
-});
+    setState(() {
+      _player = LatLng(t.latitude, t.longitude);
+      _playerSpeedMps = 0;
+      _uiState = MapUiState.inRadius;
+    });
 
-_fitToPlayerAndStation();
-_checkRadius();
-}
-
+    _fitToPlayerAndStation();
+    _checkRadius();
+  }
 
 // =========================
 // UI building blocks
 // =========================
-Widget _bottomPanel() {
-final scheme = Theme.of(context).colorScheme;
+  Widget _bottomPanel() {
+    final scheme = Theme.of(context).colorScheme;
 
-final showWarningsLine = _warnings > 0;
-final warnText = _isBlocked ? 'Warnungen: 3/3' : 'Warnungen: $_warnings/3';
+    final showWarningsLine = _warnings > 0;
+    final warnText = _isBlocked ? 'Warnungen: 3/3' : 'Warnungen: $_warnings/3';
 
-return Align(
-alignment: Alignment.bottomCenter,
-child: Container(
-width: double.infinity,
-padding: const EdgeInsets.fromLTRB(24, 14, 24, 18),
-decoration: BoxDecoration(
-color: scheme.surface,
-borderRadius: const BorderRadius.only(
-topLeft: Radius.circular(18),
-topRight: Radius.circular(18),
-),
-),
-child: Column(
-mainAxisSize: MainAxisSize.min,
-children: [
-if (_isStationActive) ...[
-Row(
-mainAxisAlignment: MainAxisAlignment.center,
-children: [
-const Icon(Icons.circle, size: 10, color: Color(0xFFFFC107)),
-const SizedBox(width: 8),
-Text(
-'remaining Time: $_remainingTime',
-style: TextStyle(
-fontSize: 12.0,
-fontWeight: FontWeight.w800,
-color: scheme.onSurface.withOpacity(0.75),
-),
-),
-],
-),
-const SizedBox(height: 8),
-],
-Text(
-_isStationActive
-    ? (_hasStadions ? 'Station ${_stadionIndex + 1}' : 'Station -')
-    : '',
-style: TextStyle(
-fontSize: _isStationActive ? 18 : 14,
-fontWeight: FontWeight.w900,
-height: 1.0,
-color: scheme.onSurface,
-),
-),
-if (showWarningsLine || _isBlocked) ...[
-const SizedBox(height: 4),
-Text(
-warnText,
-style: const TextStyle(
-fontSize: 12.0,
-fontWeight: FontWeight.w900,
-color: Colors.red,
-height: 1.0,
-),
-),
-],
-],
-),
-),
-);
-}
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(24, 14, 24, 18),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(18),
+            topRight: Radius.circular(18),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isStationActive) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.circle, size: 10, color: Color(0xFFFFC107)),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${tr('Verbleibende Zeit', 'Remaining time')}: $_remainingTime',
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w800,
+                      color: scheme.onSurface.withValues(alpha: 0.75),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+            Text(
+              _isStationActive
+                  ? (_hasStadions
+                      ? 'Station ${_stadionIndex + 1}'
+                      : 'Station -')
+                  : '',
+              style: TextStyle(
+                fontSize: _isStationActive ? 18 : 14,
+                fontWeight: FontWeight.w900,
+                height: 1.0,
+                color: scheme.onSurface,
+              ),
+            ),
+            if (showWarningsLine || _isBlocked) ...[
+              const SizedBox(height: 4),
+              Text(
+                warnText,
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.red,
+                  height: 1.0,
+                ),
+              ),
+            ],
+            if (_statusHint != null && _statusHint!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                _statusHint!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.red.shade700,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
-Widget _blackButton(String text, VoidCallback onTap) {
-final scheme = Theme.of(context).colorScheme;
-return SizedBox(
-width: double.infinity,
-height: 42,
-child: ElevatedButton(
-onPressed: onTap,
-style: ElevatedButton.styleFrom(
-backgroundColor: scheme.primary,
-foregroundColor: scheme.onPrimary,
-elevation: 0,
-shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-),
-child: Text(text, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
-),
-);
-}
+  Widget _blackButton(String text, VoidCallback onTap) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: double.infinity,
+      height: 42,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: scheme.primary,
+          foregroundColor: scheme.onPrimary,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        child: Text(text,
+            style:
+                const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
+      ),
+    );
+  }
 
-String _fmtCountdown(int seconds) {
-final m = (seconds ~/ 60).toString().padLeft(1, '0');
-final s = (seconds % 60).toString().padLeft(2, '0');
-return '$m:$s';
-}
+  String _fmtCountdown(int seconds) {
+    final m = (seconds ~/ 60).toString().padLeft(1, '0');
+    final s = (seconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
 
-Widget _dialogCard({
-required String title,
-required String body,
-required Widget bottom,
-bool showSkip = false,
-}) {
-final scheme = Theme.of(context).colorScheme;
+  Widget _dialogCard({
+    required String title,
+    required String body,
+    required Widget bottom,
+    bool showSkip = false,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
 
-return Center(
-child: Container(
-width: 300,
-padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-decoration: BoxDecoration(
-color: scheme.surface,
-borderRadius: BorderRadius.circular(12),
-border: Border.all(color: Theme.of(context).dividerColor, width: 1),
-),
-child: Column(
-mainAxisSize: MainAxisSize.min,
-children: [
-Text(
-title,
-style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, height: 1.0, color: scheme.onSurface),
-),
-const SizedBox(height: 10),
-Text(
-body,
-textAlign: TextAlign.center,
-style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, height: 1.25, color: scheme.onSurface),
-),
-const SizedBox(height: 14),
-bottom,
-if (showSkip) ...[
-const SizedBox(height: 10),
-SizedBox(
-width: double.infinity,
-height: 38,
-child: OutlinedButton(
-onPressed: _skipBlockForTesting,
-style: OutlinedButton.styleFrom(
-foregroundColor: scheme.onSurface.withOpacity(0.85),
-side: BorderSide(color: scheme.outline.withOpacity(0.5)),
-shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-),
-child: const Text('TEST: Timer überspringen', style: TextStyle(fontWeight: FontWeight.w800)),
-),
-),
-],
-],
-),
-),
-);
-}
+    return Center(
+      child: Container(
+        width: 300,
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  height: 1.0,
+                  color: scheme.onSurface),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                  height: 1.25,
+                  color: scheme.onSurface),
+            ),
+            const SizedBox(height: 14),
+            bottom,
+            if (showSkip) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 38,
+                child: OutlinedButton(
+                  onPressed: _skipBlockForTesting,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: scheme.onSurface.withValues(alpha: 0.85),
+                    side: BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                      tr('TEST: Timer überspringen', 'TEST: Skip timer'),
+                      style: TextStyle(fontWeight: FontWeight.w800)),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
-Widget _overlay() {
-switch (_uiState) {
-case MapUiState.warningDialog:
-return _dialogCard(
-title: 'Warnung!',
-body: 'Du bewegst dich zu schnell!\nBitte zu Fuß!',
-bottom: _blackButton('Verstanden!', _closeOverlay),
-);
+  Widget _overlay() {
+    switch (_uiState) {
+      case MapUiState.warningDialog:
+        return _dialogCard(
+          title: tr('Warnung!', 'Warning!'),
+          body: tr('Du bewegst dich zu schnell!\nBitte zu Fuß!',
+              'You are moving too fast!\nPlease continue on foot.'),
+          bottom: _blackButton(tr('Verstanden!', 'Understood!'), _closeOverlay),
+        );
 
-case MapUiState.blockedDialog:
-return _dialogCard(
-title: 'Warnung!',
-body: 'Du bewegst dich zu schnell!!!!!\n'
-'Da du zu oft gegen die Spielregeln\n'
-'verstoßen hast bekommst du eine\n'
-'Sperre!',
-bottom: Text(
-_fmtCountdown(_blockLeft),
-style: const TextStyle(fontSize: 44, fontWeight: FontWeight.w900, height: 1.0),
-),
-showSkip: true,
-);
+      case MapUiState.blockedDialog:
+        return _dialogCard(
+          title: tr('Warnung!', 'Warning!'),
+          body: 'You are moving too fast!\n'
+              'You violated the game rules too often,\n'
+              'so you are temporarily blocked.',
+          bottom: Text(
+            _fmtCountdown(_blockLeft),
+            style: const TextStyle(
+                fontSize: 44, fontWeight: FontWeight.w900, height: 1.0),
+          ),
+          showSkip: true,
+        );
 
-case MapUiState.unblockDialog:
-return _dialogCard(
-title: 'Warnung!',
-body: 'Bitte beachte die Spielregeln um ein\nfaires Spiel zu garantieren!',
-bottom: _blackButton('Verstanden!', _closeOverlay),
-);
+      case MapUiState.unblockDialog:
+        return _dialogCard(
+          title: tr('Warnung!', 'Warning!'),
+          body: tr(
+              'Bitte beachte die Spielregeln um ein\nfaires Spiel zu garantieren!',
+              'Please follow the game rules to\nensure fair play.'),
+          bottom: _blackButton(tr('Verstanden!', 'Understood!'), _closeOverlay),
+        );
 
-case MapUiState.inRadius:
-case MapUiState.normal:
-default:
-return const SizedBox.shrink();
-}
-}
+      case MapUiState.inRadius:
+      case MapUiState.normal:
+        return const SizedBox.shrink();
+    }
+  }
 
-Widget _continueToQuizButton() {
-if (!_isStationActive) return const SizedBox.shrink();
-if (!_canStartQuiz) return const SizedBox.shrink();
-if (_isBlocked) return const SizedBox.shrink();
+  Widget _continueToQuizButton() {
+    if (!_isStationActive) return const SizedBox.shrink();
+    if (!_canStartQuiz) return const SizedBox.shrink();
+    if (_isBlocked) return const SizedBox.shrink();
 
-final scheme = Theme.of(context).colorScheme;
+    final scheme = Theme.of(context).colorScheme;
 
-return Positioned(
-left: 24,
-right: 24,
-bottom: 96,
-child: SizedBox(
-height: 44,
-child: ElevatedButton(
-onPressed: _openQuiz,
-style: ElevatedButton.styleFrom(
-backgroundColor: scheme.primary,
-foregroundColor: scheme.onPrimary,
-elevation: 0,
-shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-),
-child: const Text('Zur Aufgabenbewertung', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
-),
-),
-);
-}
+    return Positioned(
+      left: 24,
+      right: 24,
+      bottom: 96,
+      child: SizedBox(
+        height: 44,
+        child: ElevatedButton(
+          onPressed: _openQuiz,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: scheme.primary,
+            foregroundColor: scheme.onPrimary,
+            elevation: 0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+          child: Text(tr('Zur Aufgabenbewertung', 'Go to task rating'),
+              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
+        ),
+      ),
+    );
+  }
 
-Widget _scanQrButton() {
-if (!_isStationActive) return const SizedBox.shrink();
-if (_canStartQuiz) return const SizedBox.shrink();
-if (_isBlocked) return const SizedBox.shrink();
+  Widget _scanQrButton() {
+    if (!_isStationActive) return const SizedBox.shrink();
+    if (_canStartQuiz) return const SizedBox.shrink();
+    if (_isBlocked) return const SizedBox.shrink();
 
-final scheme = Theme.of(context).colorScheme;
+    final scheme = Theme.of(context).colorScheme;
 
-return Positioned(
-left: 24,
-right: 24,
-bottom: 146,
-child: SizedBox(
-height: 44,
-child: ElevatedButton.icon(
-onPressed: _scanQrCode,
-style: ElevatedButton.styleFrom(
-backgroundColor: scheme.primary,
-foregroundColor: scheme.onPrimary,
-elevation: 2,
-shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-),
-icon: const Icon(Icons.qr_code_scanner),
-label: const Text('QR-Code scannen',
-    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
-),
-),
-);
-}
+    return Positioned(
+      left: 24,
+      right: 24,
+      bottom: 146,
+      child: SizedBox(
+        height: 44,
+        child: ElevatedButton.icon(
+          onPressed: _scanQrCode,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: scheme.primary,
+            foregroundColor: scheme.onPrimary,
+            elevation: 2,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+          icon: const Icon(Icons.qr_code_scanner),
+          label: Text(tr('QR-Code scannen', 'Scan QR code'),
+              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
+        ),
+      ),
+    );
+  }
 
-Widget _testTeleportButton() {
-if (!_isStationActive) return const SizedBox.shrink();
-final scheme = Theme.of(context).colorScheme;
-return Positioned(
-right: 14,
-bottom: 168,
-child: FloatingActionButton(
-heroTag: 'teleport',
-backgroundColor: scheme.primary,
-foregroundColor: scheme.onPrimary,
-onPressed: _teleportToStationForTesting,
-child: const Icon(Icons.my_location),
-),
-);
-}
+  Widget _testTeleportButton() {
+    if (!_isStationActive) return const SizedBox.shrink();
+    final scheme = Theme.of(context).colorScheme;
+    return Positioned(
+      right: 14,
+      bottom: 168,
+      child: FloatingActionButton(
+        heroTag: 'teleport',
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+        onPressed: _teleportToStationForTesting,
+        child: const Icon(Icons.my_location),
+      ),
+    );
+  }
 
 // =========================
 // Build
 // =========================
-@override
-Widget build(BuildContext context) {
-final scheme = Theme.of(context).colorScheme;
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
 
-if (_stadionsLoading) {
-return const Scaffold(body: Center(child: CircularProgressIndicator()));
-}
+    if (_stadionsLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
-if (allStadionData.isEmpty) {
-return const Scaffold(
-body: Center(child: Text('No stadions found for this hunt.')),
-);
-}
+    if (allStadionData.isEmpty) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  tr('Keine Stationen für diese Hunt gefunden.',
+                      'No stations found for this hunt.'),
+                  textAlign: TextAlign.center,
+                ),
+                if (_statusHint != null) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    _statusHint!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.red.shade700,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => _init(),
+                  child: Text(tr('Erneut versuchen', 'Retry')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
-    final centerCandidate =
-        _player ?? (_isStationActive ? _currentStadionPos : const LatLng(47.3763, 15.0930));
+    final centerCandidate = _player ??
+        (_isStationActive
+            ? _currentStadionPos
+            : const LatLng(47.3763, 15.0930));
     final mapCenter = _isValidLatLng(centerCandidate)
         ? centerCandidate
         : const LatLng(47.3763, 15.0930);
 
-return Scaffold(
-appBar: AppBar(
-title: Text(
-  _isStationActive ? _currentStadionName : 'Karte',
-  style: const TextStyle(fontWeight: FontWeight.w900),
-),
-centerTitle: true,
-),
-body: Stack(
-children: [
-FlutterMap(
-mapController: _mapController,
-options: MapOptions(
-initialCenter: mapCenter,
-initialZoom: 15,
-onMapReady: () {
-if (_player != null && !_didInitialFit) {
-if (_isStationActive) {
-_fitToPlayerAndStation();
-} else {
-_fitToPlayerOnly();
-}
-}
-},
-),
-children: [
-TileLayer(
-urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-userAgentPackageName: 'com.example.geoquest',
-),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          _isStationActive ? _currentStadionName : tr('Karte', 'Map'),
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: mapCenter,
+              initialZoom: 15,
+              onMapReady: () {
+                if (_player != null && !_didInitialFit) {
+                  if (_isStationActive) {
+                    _fitToPlayerAndStation();
+                  } else {
+                    _fitToPlayerOnly();
+                  }
+                }
+              },
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.geoquest',
+              ),
 
 // Radius circle around current stadion
-if (_isStationActive)
-CircleLayer(
-circles: [
-CircleMarker(
-point: _currentStadionPos,
-radius: _stationRadiusMeters,
-useRadiusInMeter: true,
-color: Colors.red.withOpacity(0.12),
-borderColor: Colors.red.withOpacity(0.60),
-borderStrokeWidth: 2,
-),
-],
-),
-
-// Route (OSRM)
-if (_isStationActive && _routePoints.length >= 2)
-PolylineLayer(
-polylines: [
-Polyline(
-points: _routePoints,
-strokeWidth: 5,
-color: Colors.red.withOpacity(0.85),
-),
-],
-),
+              if (_isStationActive)
+                CircleLayer(
+                  circles: [
+                    CircleMarker(
+                      point: _currentStadionPos,
+                      radius: _stationRadiusMeters,
+                      useRadiusInMeter: true,
+                      color: Colors.red.withValues(alpha: 0.12),
+                      borderColor: Colors.red.withValues(alpha: 0.60),
+                      borderStrokeWidth: 2,
+                    ),
+                  ],
+                ),
 
 // Markers
-MarkerLayer(
-markers: [
+              MarkerLayer(
+                markers: [
 // Current stadion marker
-if (_isStationActive)
-Marker(
-point: _currentStadionPos,
-width: 44,
-height: 44,
-child: const Icon(Icons.location_pin, size: 44, color: Colors.red),
-),
+                  if (_isStationActive)
+                    Marker(
+                      point: _currentStadionPos,
+                      width: 44,
+                      height: 44,
+                      child: const Icon(Icons.location_pin,
+                          size: 44, color: Colors.red),
+                    ),
 
 // Player marker
-if (_player != null)
-Marker(
-point: _player!,
-width: 18,
-height: 18,
-child: Container(
-decoration: BoxDecoration(
-color: Colors.blue,
-shape: BoxShape.circle,
-border: Border.all(color: Colors.white, width: 2),
-),
-),
-),
-],
-),
-],
-),
+                  if (_player != null)
+                    Marker(
+                      point: _player!,
+                      width: 18,
+                      height: 18,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
 
-_continueToQuizButton(),
-_scanQrButton(),
-_testTeleportButton(),
-_bottomPanel(),
+          _continueToQuizButton(),
+          _scanQrButton(),
+          _testTeleportButton(),
+          _bottomPanel(),
 
 // Overlay (Warn/Block/Unblock)
-if (_uiState == MapUiState.warningDialog ||
-_uiState == MapUiState.blockedDialog ||
-_uiState == MapUiState.unblockDialog)
-Container(
-color: scheme.onSurface.withOpacity(0.10),
-child: _overlay(),
-),
-],
-),
-);
-}
+          if (_uiState == MapUiState.warningDialog ||
+              _uiState == MapUiState.blockedDialog ||
+              _uiState == MapUiState.unblockDialog)
+            Container(
+              color: scheme.onSurface.withValues(alpha: 0.10),
+              child: _overlay(),
+            ),
+        ],
+      ),
+    );
+  }
 }
 

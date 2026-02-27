@@ -4,10 +4,12 @@ import 'dart:math' as math;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../auth/admin_access.dart';
 import '../theme/app_settings.dart';
+import 'admin_map_screen.dart';
 import 'home_screen.dart';
 import 'onboarding_flow.dart';
-import 'sign_in_email_screen.dart';
+import 'role_select_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,9 +30,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
       final user = FirebaseAuth.instance.currentUser;
       final showOnboarding = !AppSettings.onboardingDone.value;
+      final isAdmin = AdminAccess.isAdminEmail(user?.email);
       final next = user != null
-          ? const HomeScreen()
-          : (showOnboarding ? const OnboardingFlow() : const SignInEmailScreen());
+          ? (isAdmin ? const AdminMapScreen() : const HomeScreen())
+          : (showOnboarding ? const OnboardingFlow() : const RoleSelectScreen());
 
       if (user != null) {
         AppSettings.setOnboardingDone(true);

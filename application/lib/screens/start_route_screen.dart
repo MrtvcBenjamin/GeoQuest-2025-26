@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/app_nav.dart';
 import '../models/game_state.dart';
+import '../theme/app_text.dart';
 
 class StartRouteScreen extends StatefulWidget {
   final String huntId;
@@ -24,11 +25,13 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
 
   Future<String> _loadUsername() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return 'Player';
+    if (user == null) return tr('Spieler', 'Player');
 
-    final snapshot =
-        await FirebaseFirestore.instance.collection('Users').doc(user.uid).get();
-    return (snapshot.data()?['Username'] as String?) ?? 'Player';
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(user.uid)
+        .get();
+    return (snapshot.data()?['Username'] as String?) ?? tr('Spieler', 'Player');
   }
 
   Future<int> _loadTotalStations() async {
@@ -56,7 +59,8 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
   }
 
   bool _isFinished(Map<String, dynamic> data, int totalStations) {
-    final finishedByHunt = ((data['FinishedHunts'] as Map?)?[widget.huntId] as bool?) ?? false;
+    final finishedByHunt =
+        ((data['FinishedHunts'] as Map?)?[widget.huntId] as bool?) ?? false;
     if (finishedByHunt) return true;
     return totalStations > 0 && _readSolvedCount(data) >= totalStations;
   }
@@ -86,7 +90,7 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
         child: FutureBuilder<String>(
           future: _usernameFuture,
           builder: (context, userSnap) {
-            final username = userSnap.data ?? 'Player';
+            final username = userSnap.data ?? tr('Spieler', 'Player');
             if (userSnap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -99,9 +103,13 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                 return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                   stream: _uid == null
                       ? null
-                      : FirebaseFirestore.instance.collection('Users').doc(_uid).snapshots(),
+                      : FirebaseFirestore.instance
+                          .collection('Users')
+                          .doc(_uid)
+                          .snapshots(),
                   builder: (context, progressSnap) {
-                    final data = progressSnap.data?.data() ?? const <String, dynamic>{};
+                    final data =
+                        progressSnap.data?.data() ?? const <String, dynamic>{};
                     final solvedCount = _readSolvedCount(data);
                     final finished = _isFinished(data, totalStations);
 
@@ -134,7 +142,7 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                           ),
                           const SizedBox(height: 26),
                           Text(
-                            'Hello, $username',
+                            '${tr('Hallo', 'Hello')}, $username',
                             style: TextStyle(
                               fontSize: 44,
                               fontWeight: FontWeight.w900,
@@ -150,16 +158,18 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                               color: scheme.surface,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: scheme.onSurface.withOpacity(0.25),
+                                color: scheme.onSurface.withValues(alpha: 0.25),
                                 width: 1,
                               ),
                             ),
                             child: finished
                                 ? Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Alle Rätsel gelöst',
+                                        tr('Alle Rätsel gelöst',
+                                            'All puzzles solved'),
                                         style: TextStyle(
                                           fontSize: 26,
                                           fontWeight: FontWeight.w900,
@@ -169,11 +179,15 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                       ),
                                       const SizedBox(height: 10),
                                       Text(
-                                        'Du bist fertig: $solvedCount / $totalStations Stationen abgeschlossen.',
+                                        tr(
+                                          'Du bist fertig: $solvedCount / $totalStations Stationen abgeschlossen.',
+                                          'You are done: $solvedCount / $totalStations stations completed.',
+                                        ),
                                         style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w800,
-                                          color: scheme.onSurface.withOpacity(0.85),
+                                          color: scheme.onSurface
+                                              .withValues(alpha: 0.85),
                                         ),
                                       ),
                                       const SizedBox(height: 16),
@@ -186,20 +200,22 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                             backgroundColor: scheme.primary,
                                             foregroundColor: scheme.onPrimary,
                                           ),
-                                          child: const Text(
-                                            'Fertig',
+                                          child: Text(
+                                            tr('Fertig', 'Done'),
                                             style: TextStyle(
-                                                fontSize: 13.5, fontWeight: FontWeight.w900),
+                                                fontSize: 13.5,
+                                                fontWeight: FontWeight.w900),
                                           ),
                                         ),
                                       ),
                                     ],
                                   )
                                 : Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Next Station:',
+                                        tr('Nächste Station:', 'Next station:'),
                                         style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w900,
@@ -208,7 +224,8 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                       ),
                                       const SizedBox(height: 6),
                                       ValueListenableBuilder<String>(
-                                        valueListenable: GameState.nextStationName,
+                                        valueListenable:
+                                            GameState.nextStationName,
                                         builder: (_, name, __) => Text(
                                           name,
                                           style: TextStyle(
@@ -223,25 +240,29 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                       Row(
                                         children: [
                                           ValueListenableBuilder<int>(
-                                            valueListenable: GameState.nextStationDistanceMeters,
+                                            valueListenable: GameState
+                                                .nextStationDistanceMeters,
                                             builder: (_, meters, __) => Text(
-                                              'Distance: ${meters}m',
+                                              '${tr('Distanz', 'Distance')}: ${meters}m',
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w900,
-                                                color: scheme.onSurface.withOpacity(0.85),
+                                                color: scheme.onSurface
+                                                    .withValues(alpha: 0.85),
                                               ),
                                             ),
                                           ),
                                           const SizedBox(width: 12),
                                           ValueListenableBuilder<int>(
-                                            valueListenable: GameState.nextStationPoints,
+                                            valueListenable:
+                                                GameState.nextStationPoints,
                                             builder: (_, pts, __) => Text(
-                                              'Points: $pts p',
+                                              '${tr('Punkte', 'Points')}: $pts p',
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w900,
-                                                color: scheme.onSurface.withOpacity(0.85),
+                                                color: scheme.onSurface
+                                                    .withValues(alpha: 0.85),
                                               ),
                                             ),
                                           ),
@@ -253,16 +274,19 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             const Icon(Icons.circle,
-                                                size: 10, color: Color(0xFFFFC107)),
+                                                size: 10,
+                                                color: Color(0xFFFFC107)),
                                             const SizedBox(width: 8),
                                             ValueListenableBuilder<Duration>(
-                                              valueListenable: GameState.remainingTime,
+                                              valueListenable:
+                                                  GameState.remainingTime,
                                               builder: (_, t, __) => Text(
-                                                'remaining Time: ${_fmtTime(t)}',
+                                                '${tr('Verbleibende Zeit', 'Remaining time')}: ${_fmtTime(t)}',
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w900,
-                                                  color: scheme.onSurface.withOpacity(0.85),
+                                                  color: scheme.onSurface
+                                                      .withValues(alpha: 0.85),
                                                 ),
                                               ),
                                             ),
@@ -274,8 +298,10 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                         width: double.infinity,
                                         height: 46,
                                         child: ValueListenableBuilder<bool>(
-                                          valueListenable: GameState.huntStarted,
-                                          builder: (_, started, __) => ElevatedButton(
+                                          valueListenable:
+                                              GameState.huntStarted,
+                                          builder: (_, started, __) =>
+                                              ElevatedButton(
                                             onPressed: () async {
                                               if (!started) {
                                                 await GameState.startHunt();
@@ -288,12 +314,15 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                               foregroundColor: scheme.onPrimary,
                                               elevation: 0,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                               ),
                                             ),
                                             child: Text(
                                               started
-                                                  ? 'Nächste Aufgabe starten'
+                                                  ? tr(
+                                                      'Nächste Aufgabe starten',
+                                                      'Start next task')
                                                   : 'Start',
                                               style: const TextStyle(
                                                   fontSize: 13.5,

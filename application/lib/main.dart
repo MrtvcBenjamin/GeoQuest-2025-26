@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import 'firebase_options.dart';
+import 'l10n/app_localizations.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_settings.dart';
 
@@ -34,8 +36,6 @@ class GeoQuestApp extends StatelessWidget {
       onPrimary: Colors.white,
       surface: Colors.white,
       onSurface: Colors.black,
-      background: bg,
-      onBackground: onBg,
       secondary: Colors.black,
       onSecondary: Colors.white,
     );
@@ -50,11 +50,11 @@ class GeoQuestApp extends StatelessWidget {
         elevation: 0,
         foregroundColor: onBg,
       ),
-      dividerColor: Colors.black.withOpacity(0.15),
+      dividerColor: Colors.black.withValues(alpha: 0.15),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: bg,
         selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black.withOpacity(0.35),
+        unselectedItemColor: Colors.black.withValues(alpha: 0.35),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -63,7 +63,7 @@ class GeoQuestApp extends StatelessWidget {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return Colors.black;
-          return Colors.black.withOpacity(0.20);
+          return Colors.black.withValues(alpha: 0.20);
         }),
       ),
     );
@@ -79,8 +79,6 @@ class GeoQuestApp extends StatelessWidget {
       onPrimary: Colors.black,
       surface: surface,
       onSurface: Colors.white,
-      background: bg,
-      onBackground: onBg,
       secondary: Colors.white,
       onSecondary: Colors.black,
     );
@@ -95,17 +93,19 @@ class GeoQuestApp extends StatelessWidget {
         elevation: 0,
         foregroundColor: onBg,
       ),
-      dividerColor: Colors.white.withOpacity(0.15),
+      dividerColor: Colors.white.withValues(alpha: 0.15),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: bg,
         selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white.withOpacity(0.45),
+        unselectedItemColor: Colors.white.withValues(alpha: 0.45),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) => Colors.white),
         trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return Colors.white.withOpacity(0.55);
-          return Colors.white.withOpacity(0.20);
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white.withValues(alpha: 0.55);
+          }
+          return Colors.white.withValues(alpha: 0.20);
         }),
       ),
     );
@@ -116,12 +116,31 @@ class GeoQuestApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: AppSettings.themeMode,
       builder: (context, mode, _) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: _lightTheme(),
-          darkTheme: _darkTheme(),
-          themeMode: mode,
-          home: const SplashScreen(),
+        return ValueListenableBuilder<AppLanguage>(
+          valueListenable: AppSettings.language,
+          builder: (context, language, ___) {
+            final locale = language == AppLanguage.en
+                ? const Locale('en')
+                : const Locale('de');
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: _lightTheme(),
+              darkTheme: _darkTheme(),
+              themeMode: mode,
+              locale: locale,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en'),
+                Locale('de'),
+              ],
+              home: const SplashScreen(),
+            );
+          },
         );
       },
     );

@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+
+import '../theme/app_text.dart';
 
 import 'quiz_screen.dart';
 
@@ -29,7 +31,8 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
   Future<void> _continue() async {
     setState(() => _error = null);
     if (_passwordC.text.trim() != '123') {
-      setState(() => _error = 'Falsches Lehrer-Passwort.');
+      setState(() =>
+          _error = tr('Falsches Lehrer-Passwort.', 'Wrong teacher password.'));
       return;
     }
 
@@ -61,7 +64,7 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
               children: [
                 const SizedBox(height: 6),
                 Text(
-                  'Aufgabe freigeben',
+                  tr('Aufgabe freigeben', 'Unlock task'),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -83,7 +86,7 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
                   widget.stationName,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: scheme.onSurface.withOpacity(0.85),
+                    color: scheme.onSurface.withValues(alpha: 0.85),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -94,18 +97,19 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    hintText: 'Lehrer Passwort (Test: 123)',
+                    hintText: tr('Lehrer Passwort (Test: 123)',
+                        'Teacher password (test: 123)'),
                     filled: true,
                     fillColor: scheme.surface,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide:
-                          BorderSide(color: scheme.outline.withOpacity(0.5)),
+                          BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide:
-                          BorderSide(color: scheme.outline.withOpacity(0.5)),
+                          BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
                     ),
                   ),
                 ),
@@ -113,8 +117,8 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
                   const SizedBox(height: 10),
                   Text(
                     _error!,
-                    style:
-                        const TextStyle(color: Colors.red, fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.w800),
                   ),
                 ],
                 const Spacer(),
@@ -131,8 +135,8 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
                       ),
                     ),
                     onPressed: _continue,
-                    child: const Text(
-                      'Weiter zur Punktevergabe',
+                    child: Text(
+                      tr('Weiter zur Punktevergabe', 'Continue to scoring'),
                       style: TextStyle(fontWeight: FontWeight.w800),
                     ),
                   ),
@@ -146,3 +150,4 @@ class _QuizIntroScreenState extends State<QuizIntroScreen> {
     );
   }
 }
+

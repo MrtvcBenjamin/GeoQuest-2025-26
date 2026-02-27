@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import '../theme/app_text.dart';
 import 'home_screen.dart';
 
 class LocationPermissionScreen extends StatefulWidget {
   const LocationPermissionScreen({super.key});
 
   @override
-  State<LocationPermissionScreen> createState() => _LocationPermissionScreenState();
+  State<LocationPermissionScreen> createState() =>
+      _LocationPermissionScreenState();
 }
 
 class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
@@ -42,24 +44,27 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Fast fertig!\nErlaube bitte folgende Berechtigungen:',
+                tr('Fast fertig!\nErlaube bitte folgende Berechtigungen:',
+                    'Almost done!\nPlease allow the following permissions:'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: scheme.onSurface.withOpacity(0.80),
+                  color: scheme.onSurface.withValues(alpha: 0.80),
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 24),
-
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.location_on, color: scheme.onSurface.withOpacity(0.85)),
+                  Icon(Icons.location_on,
+                      color: scheme.onSurface.withValues(alpha: 0.85)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Standortzugriff\nBenötigt, um deine Position an Stationen zu überprüfen.',
-                      style: TextStyle(color: scheme.onSurface.withOpacity(0.85)),
+                      tr('Standortzugriff\nBenötigt, um deine Position an Stationen zu überprüfen.',
+                          'Location access\nRequired to verify your position at stations.'),
+                      style:
+                          TextStyle(color: scheme.onSurface.withValues(alpha: 0.85)),
                     ),
                   ),
                 ],
@@ -73,13 +78,14 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                     foregroundColor: scheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: () {
                     setState(() => _locationAllowed = true);
                   },
-                  child: const Text(
-                    'Standort erlauben',
+                  child: Text(
+                    tr('Standort erlauben', 'Allow location'),
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -88,25 +94,30 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  _locationAllowed ? 'Aktiviert' : 'Noch nicht erlaubt',
+                  _locationAllowed
+                      ? tr('Aktiviert', 'Enabled')
+                      : tr('Noch nicht erlaubt', 'Not allowed yet'),
                   style: TextStyle(
-                    color: _locationAllowed ? Colors.green : scheme.onSurface.withOpacity(0.55),
+                    color: _locationAllowed
+                        ? Colors.green
+                        : scheme.onSurface.withValues(alpha: 0.55),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-
               const SizedBox(height: 24),
-
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.notifications, color: scheme.onSurface.withOpacity(0.85)),
+                  Icon(Icons.notifications,
+                      color: scheme.onSurface.withValues(alpha: 0.85)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Benachrichtigungen\nDamit du über neue Aufgaben informiert wirst.',
-                      style: TextStyle(color: scheme.onSurface.withOpacity(0.85)),
+                      tr('Benachrichtigungen\nDamit du über neue Aufgaben informiert wirst.',
+                          'Notifications\nTo inform you about new tasks.'),
+                      style:
+                          TextStyle(color: scheme.onSurface.withValues(alpha: 0.85)),
                     ),
                   ),
                 ],
@@ -120,13 +131,14 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                     foregroundColor: scheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: () {
                     setState(() => _notificationsAllowed = true);
                   },
-                  child: const Text(
-                    'Benachrichtigungen erlauben',
+                  child: Text(
+                    tr('Benachrichtigungen erlauben', 'Allow notifications'),
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -135,16 +147,18 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  _notificationsAllowed ? 'Aktiviert' : 'Noch nicht erlaubt',
+                  _notificationsAllowed
+                      ? tr('Aktiviert', 'Enabled')
+                      : tr('Noch nicht erlaubt', 'Not allowed yet'),
                   style: TextStyle(
-                    color: _notificationsAllowed ? Colors.green : scheme.onSurface.withOpacity(0.55),
+                    color: _notificationsAllowed
+                        ? Colors.green
+                        : scheme.onSurface.withValues(alpha: 0.55),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-
               const Spacer(),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -153,12 +167,13 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                     foregroundColor: scheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: _continueToApp,
-                  child: const Text(
-                    'Continue to App',
-                    style: TextStyle(fontWeight: FontWeight.w800),
+                  child: Text(
+                    tr('Zur App', 'Continue to app'),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
@@ -170,3 +185,4 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
     );
   }
 }
+

@@ -2,15 +2,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../auth/admin_access.dart';
+import '../theme/app_text.dart';
+import 'admin_first_time_setup_screen.dart';
+import 'admin_map_screen.dart';
 import 'change_password_screen.dart';
 import 'create_account_screen.dart';
 import 'home_screen.dart';
+import 'role_select_screen.dart';
 import '../theme/app_settings.dart';
+
+enum LoginRole { player, admin }
 
 class LoginScreen extends StatefulWidget {
   final String? prefilledUsername;
+  final LoginRole role;
+  final String? infoText;
 
-  const LoginScreen({super.key, this.prefilledUsername});
+  const LoginScreen({
+    super.key,
+    this.prefilledUsername,
+    this.role = LoginRole.player,
+    this.infoText,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -23,7 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscure = true;
   bool _isLoading = false;
   String? _errorText;
+  String? _infoText;
   bool _wrongPasswordState = false;
+  bool get _adminMode => widget.role == LoginRole.admin;
 
   @override
   void initState() {
@@ -32,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
         widget.prefilledUsername!.trim().isNotEmpty) {
       _usernameController.text = widget.prefilledUsername!.trim();
     }
+    _infoText = widget.infoText;
   }
 
   @override
@@ -43,6 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isValidUsernameOrEmail(String value) {
     final input = value.trim();
+    if (_adminMode) {
+      final emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+      return emailRe.hasMatch(input);
+    }
     if (input.contains('@')) {
       final emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
       return emailRe.hasMatch(input);
@@ -53,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<String?> _resolveEmailForLogin(String input) async {
     final trimmed = input.trim();
-    if (trimmed.contains('@')) return trimmed.toLowerCase();
+    if (trimmed.contains('@') || _adminMode) return trimmed.toLowerCase();
 
     final snap = await FirebaseFirestore.instance
         .collection('Users')
@@ -80,15 +101,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() {
       _errorText = null;
+      _infoText = null;
       _wrongPasswordState = false;
     });
 
     if (!_isValidUsernameOrEmail(usernameOrEmail)) {
-      setState(() => _errorText = 'Bitte gib Username oder E-Mail ein.');
+      setState(() => _errorText = _adminMode
+          ? tr('Bitte gültige Admin-E-Mail eingeben.',
+              'Please enter a valid admin email.')
+          : tr('Bitte gib Username oder E-Mail ein.',
+              'Please enter username or email.'));
       return;
     }
     if (pass.isEmpty) {
-      setState(() => _errorText = 'Bitte Passwort eingeben.');
+      setState(() => _errorText =
+          tr('Bitte Passwort eingeben.', 'Please enter password.'));
       return;
     }
 
@@ -101,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
           email: authEmail,
           password: pass,
         );
-      } else if (!usernameOrEmail.contains('@')) {
+      } else if (!_adminMode && !usernameOrEmail.contains('@')) {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _legacyAuthEmailFromUsername(usernameOrEmail),
           password: pass,
@@ -109,19 +136,54 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         if (mounted) {
           setState(
-            () => _errorText =
+            () => _errorText = tr(
                 'Kein Konto mit diesem Username oder dieser E-Mail gefunden.',
+                'No account found with this username or email.'),
           );
         }
         return;
       }
 
       if (!mounted) return;
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final signedInEmail = currentUser?.email?.trim().toLowerCase();
+      final isLegacyUser =
+          signedInEmail != null && signedInEmail.endsWith('@geoquest.local');
+      if (currentUser != null && !isLegacyUser && !currentUser.emailVerified) {
+        await currentUser.sendEmailVerification();
+        await FirebaseAuth.instance.signOut();
+        if (mounted) {
+          setState(
+            () => _errorText = tr(
+              'E-Mail ist noch nicht verifiziert. Wir haben einen neuen Verifizierungslink gesendet.',
+              'Email is not verified yet. We sent a new verification link.',
+            ),
+          );
+        }
+        return;
+      }
+
+      if (_adminMode && !AdminAccess.isAdminEmail(signedInEmail)) {
+        await FirebaseAuth.instance.signOut();
+        if (mounted) {
+          setState(
+            () => _errorText = tr(
+              'Diese E-Mail ist nicht als Admin freigeschaltet.',
+              'This email is not authorized as admin.',
+            ),
+          );
+        }
+        return;
+      }
+
       await AppSettings.setOnboardingDone(true);
       if (!mounted) return;
+      final isAdmin = AdminAccess.isAdminEmail(signedInEmail);
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(
+          builder: (_) => isAdmin ? const AdminMapScreen() : const HomeScreen(),
+        ),
         (_) => false,
       );
     } on FirebaseAuthException catch (e) {
@@ -129,34 +191,52 @@ class _LoginScreenState extends State<LoginScreen> {
       switch (e.code) {
         case 'invalid-credential':
         case 'wrong-password':
-          message = 'Username/E-Mail oder Passwort ist falsch.';
+          message = tr('Username/E-Mail oder Passwort ist falsch.',
+              'Username/email or password is incorrect.');
           _wrongPasswordState = true;
           break;
         case 'user-not-found':
-          message = 'Kein Konto mit diesem Username oder dieser E-Mail gefunden.';
+          message = tr(
+              'Kein Konto mit diesem Username oder dieser E-Mail gefunden.',
+              'No account found with this username or email.');
           break;
         case 'too-many-requests':
-          message = 'Zu viele Versuche. Bitte später erneut probieren.';
+          message = tr('Zu viele Versuche. Bitte später erneut probieren.',
+              'Too many attempts. Please try again later.');
+          break;
+        case 'network-request-failed':
+          message = tr('Keine Internetverbindung. Bitte Verbindung prüfen.',
+              'No internet connection. Please check your connection.');
           break;
         default:
-          message = e.message ?? 'Login fehlgeschlagen.';
+          message = e.message ?? tr('Login fehlgeschlagen.', 'Login failed.');
       }
-      if (mounted) setState(() => _errorText = message);
+      if (mounted) {
+        setState(() => _errorText = message);
+      }
     } catch (_) {
-      if (mounted) setState(() => _errorText = 'Login fehlgeschlagen.');
+      if (mounted) {
+        setState(
+            () => _errorText = tr('Login fehlgeschlagen.', 'Login failed.'));
+      }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   void _goToResetPassword() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
+      MaterialPageRoute(
+        builder: (_) => ChangePasswordScreen(role: widget.role),
+      ),
     );
   }
 
   void _goToCreateAccount() {
+    if (_adminMode) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -186,14 +266,16 @@ class _LoginScreenState extends State<LoginScreen> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
+          color:
+              error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
           width: 1,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
+          color:
+              error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
           width: 1,
         ),
       ),
@@ -236,7 +318,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 22),
                   Text(
-                    'Melde dich mit Username oder E-Mail an',
+                    _adminMode
+                        ? tr('Admin Login mit E-Mail', 'Admin sign in with email')
+                        : tr('Melde dich mit Username oder E-Mail an',
+                            'Sign in with username or email'),
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
@@ -250,7 +335,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: _fieldDecoration(
                       context: context,
-                      hint: 'Username oder E-Mail',
+                      hint: _adminMode
+                          ? tr('Admin E-Mail', 'Admin email')
+                          : tr('Username oder E-Mail', 'Username or email'),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -261,7 +348,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onSubmitted: (_) => _isLoading ? null : _login(),
                     decoration: _fieldDecoration(
                       context: context,
-                      hint: 'Passwort',
+                      hint: 'Password',
                       error: _wrongPasswordState,
                       suffixIcon: IconButton(
                         onPressed: () => setState(() => _obscure = !_obscure),
@@ -284,15 +371,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ],
+                  if (_infoText != null) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      _infoText!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: scheme.onSurface.withValues(alpha: 0.80),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: _goToResetPassword,
                     style: TextButton.styleFrom(
                       foregroundColor: scheme.onSurface.withValues(alpha: 0.60),
                     ),
-                    child: const Text(
-                      'Passwort vergessen?',
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                    child: Text(
+                      tr('Passwort vergessen?', 'Forgot password?'),
+                      style: const TextStyle(
+                          fontSize: 12.5, fontWeight: FontWeight.w600),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -315,32 +415,79 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    scheme.onPrimary),
                               ),
                             )
-                          : const Text(
-                              'Continue',
-                              style: TextStyle(fontWeight: FontWeight.w700),
+                          : Text(
+                              tr('Weiter', 'Continue'),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700),
                             ),
                     ),
                   ),
                   const SizedBox(height: 18),
-                  Text(
-                    'Noch kein Konto?',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                      color: scheme.onSurface.withValues(alpha: 0.60),
+                  if (!_adminMode) ...[
+                    Text(
+                      tr('Noch kein Konto?', 'No account yet?'),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: scheme.onSurface.withValues(alpha: 0.60),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
+                    const SizedBox(height: 6),
+                    TextButton(
+                      onPressed: _goToCreateAccount,
+                      style:
+                          TextButton.styleFrom(foregroundColor: scheme.onSurface),
+                      child: Text(
+                        tr('Registrieren', 'Sign up'),
+                        style: const TextStyle(
+                            fontSize: 12.5, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ],
+                  if (_adminMode)
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminFirstTimeSetupScreen(),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: scheme.onSurface.withValues(alpha: 0.75),
+                      ),
+                      child: Text(
+                        tr('Erstes Admin-Login?', 'First admin login?'),
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                   TextButton(
-                    onPressed: _goToCreateAccount,
-                    style: TextButton.styleFrom(foregroundColor: scheme.onSurface),
-                    child: const Text(
-                      'Sign up',
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const RoleSelectScreen(),
+                        ),
+                        (_) => false,
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: scheme.onSurface.withValues(alpha: 0.65),
+                    ),
+                    child: Text(
+                      tr('Rolle ändern', 'Change role'),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

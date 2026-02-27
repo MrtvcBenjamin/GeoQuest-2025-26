@@ -2,11 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/app_text.dart';
 import 'create_account_screen.dart';
 import 'login_screen.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({super.key});
+  final LoginRole role;
+
+  const ChangePasswordScreen({
+    super.key,
+    this.role = LoginRole.player,
+  });
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -34,7 +40,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     });
 
     if (usernameOrEmail.isEmpty) {
-      setState(() => _err = 'Bitte Username oder E-Mail eingeben.');
+      setState(() => _err = tr('Bitte Username oder E-Mail eingeben.',
+          'Please enter username or email.'));
       return;
     }
 
@@ -56,16 +63,27 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
       if (email == null || email.isEmpty) {
         setState(
-          () => _err = 'Kein Konto mit diesem Username oder dieser E-Mail gefunden.',
+          () => _err = tr(
+              'Kein Konto mit diesem Username oder dieser E-Mail gefunden.',
+              'No account found with this username or email.'),
         );
         return;
       }
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       setState(
-        () => _msg = 'Reset-E-Mail gesendet. Bitte Link in der E-Mail öffnen.',
+        () => _msg = tr(
+            'Reset-E-Mail gesendet. Bitte Link in der E-Mail öffnen.',
+            'Reset email sent. Please open the link in your email.'),
       );
     } on FirebaseAuthException catch (e) {
-      setState(() => _err = e.message ?? 'Passwort-Reset fehlgeschlagen.');
+      if (e.code == 'network-request-failed') {
+        setState(() => _err = tr(
+            'Keine Internetverbindung. Bitte Verbindung prüfen.',
+            'No internet connection. Please check your connection.'));
+      } else {
+        setState(() => _err = e.message ??
+            tr('Passwort-Reset fehlgeschlagen.', 'Password reset failed.'));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -126,7 +144,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Change Password',
+                  tr('Passwort zurücksetzen', 'Change password'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -135,7 +153,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Username/E-Mail eingeben',
+                  tr('Username oder E-Mail eingeben',
+                      'Enter username or email'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 12.5,
@@ -149,7 +168,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   keyboardType: TextInputType.text,
                   decoration: _fieldDecoration(
                     context: context,
-                    hint: 'Username oder E-Mail',
+                    hint: 'Username or email',
                   ),
                 ),
                 if (_err != null) ...[
@@ -196,13 +215,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             height: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  scheme.onPrimary),
                             ),
                           )
-                        : const Text(
-                            'Continue',
-                            style: TextStyle(fontWeight: FontWeight.w700),
+                        : Text(
+                            tr('Weiter', 'Continue'),
+                            style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                   ),
                 ),
@@ -216,34 +235,40 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: scheme.onSurface.withValues(alpha: 0.70),
-                      ),
-                      child: const Text(
-                        'Zu Login',
-                        style:
-                            TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
                           MaterialPageRoute(
-                            builder: (_) => const CreateAccountScreen(),
+                            builder: (_) => LoginScreen(role: widget.role),
                           ),
                         );
                       },
                       style: TextButton.styleFrom(
-                        foregroundColor: scheme.onSurface.withValues(alpha: 0.70),
+                        foregroundColor:
+                            scheme.onSurface.withValues(alpha: 0.70),
                       ),
-                      child: const Text(
-                        'Account erstellen',
-                        style:
-                            TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                      child: Text(
+                        tr('Zum Login', 'Back to login'),
+                        style: const TextStyle(
+                            fontSize: 12.5, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: widget.role == LoginRole.admin
+                          ? null
+                          : () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CreateAccountScreen(),
+                                ),
+                              );
+                            },
+                      style: TextButton.styleFrom(
+                        foregroundColor:
+                            scheme.onSurface.withValues(alpha: 0.70),
+                      ),
+                      child: Text(
+                        tr('Account erstellen', 'Create account'),
+                        style: const TextStyle(
+                            fontSize: 12.5, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ],

@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import '../theme/app_settings.dart';
-import 'sign_in_email_screen.dart';
+import '../theme/app_text.dart';
+import 'role_select_screen.dart';
 
 class OnboardingFlow extends StatefulWidget {
   const OnboardingFlow({super.key});
@@ -14,40 +15,52 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   final PageController _controller = PageController();
   int _index = 0;
 
-  static const _pages = [
-    _OnboardingPage(
-      title: 'Willkommen\nbei deiner Schnitzeljagd!',
-      body:
-          'Erkunde spannende Orte,\nlöse Rätsel und sammle\nPunkte. Jede Station bringt\ndich ein Stück näher ans\nZiel!',
-      button: 'Continue',
-    ),
-    _OnboardingPage(
-      title: 'Deine Route ist einzigartig',
-      body:
-          'Du bekommst eine zufällige\nReihenfolge der Stationen.\nSo vermeiden wir\nMassenansammlungen\nund halten das Spiel fair.',
-      button: 'Continue',
-    ),
-    _OnboardingPage(
-      title: 'Löse Aufgaben vor Ort',
-      body:
-          'Textfragen, Multiple Choice\noder kleine Bilderrätsel\nwarten auf dich.\nRichtig gelöst = Punkte!\nÜberspringen kostet Punkte.',
-      button: 'Continue',
-    ),
-    _OnboardingPage(
-      title: 'Bleib ehrlich und sicher',
-      body:
-          'Aufgaben funktionieren nur\nin der Nähe der Station.\nBei zu hoher\nGeschwindigkeit wird das\nSpiel kurz gesperrt.',
-      button: 'Get started!',
-      last: true,
-    ),
-  ];
+  List<_OnboardingPage> _pages() => [
+        _OnboardingPage(
+          title: tr(
+            'Willkommen\nbei deiner Schnitzeljagd!',
+            'Welcome\nto your scavenger hunt!',
+          ),
+          body: tr(
+            'Erkunde spannende Orte,\nlöse Rätsel und sammle\nPunkte. Jede Station bringt\ndich ein Stück näher ans\nZiel!',
+            'Explore exciting places,\nsolve puzzles and collect\npoints. Every station gets\nyou one step closer to your\ngoal!',
+          ),
+          button: tr('Weiter', 'Continue'),
+        ),
+        _OnboardingPage(
+          title: tr('Deine Route ist einzigartig', 'Your route is unique'),
+          body: tr(
+            'Du bekommst eine zufällige\nReihenfolge der Stationen.\nSo vermeiden wir\nMassenansammlungen\nund halten das Spiel fair.',
+            'You get a randomized\nstation order. This avoids\ncrowds and keeps the game\nfair for everyone.',
+          ),
+          button: tr('Weiter', 'Continue'),
+        ),
+        _OnboardingPage(
+          title: tr('Löse Aufgaben vor Ort', 'Solve tasks on site'),
+          body: tr(
+            'Textfragen, Multiple Choice\noder kleine Bilderrätsel\nwarten auf dich.\nRichtig gelöst = Punkte!\nÜberspringen kostet Punkte.',
+            'Text questions, multiple choice\nor image puzzles await you.\nSolve them correctly to earn\npoints. Skipping costs points.',
+          ),
+          button: tr('Weiter', 'Continue'),
+        ),
+        _OnboardingPage(
+          title: tr('Bleib ehrlich und sicher', 'Stay fair and safe'),
+          body: tr(
+            'Aufgaben funktionieren nur\nin der Nähe der Station.\nBei zu hoher\nGeschwindigkeit wird das\nSpiel kurz gesperrt.',
+            'Tasks only work near the\nstation. If your speed is too\nhigh, the game is\ntemporarily blocked.',
+          ),
+          button: tr('Los gehts!', 'Get started!'),
+          last: true,
+        ),
+      ];
 
   Future<void> _next() async {
-    if (_pages[_index].last) {
+    final pages = _pages();
+    if (pages[_index].last) {
       await AppSettings.setOnboardingDone(true);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const SignInEmailScreen()),
+        MaterialPageRoute(builder: (_) => const RoleSelectScreen()),
       );
     } else {
       _controller.nextPage(
@@ -60,7 +73,8 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final page = _pages[_index];
+    final pages = _pages();
+    final page = pages[_index];
 
     return Scaffold(
       body: SafeArea(
@@ -68,9 +82,9 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
           children: [
             const SizedBox(height: 16),
             Text(
-              'Spielregeln',
+              tr('Spielregeln', 'Game rules'),
               style: TextStyle(
-                color: scheme.onSurface.withOpacity(0.35),
+                color: scheme.onSurface.withValues(alpha: 0.35),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -79,10 +93,10 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
             Expanded(
               child: PageView.builder(
                 controller: _controller,
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 onPageChanged: (i) => setState(() => _index = i),
                 itemBuilder: (_, i) {
-                  final p = _pages[i];
+                  final p = pages[i];
                   return Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 360),
@@ -107,7 +121,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               height: 1.3,
-                              color: scheme.onSurface.withOpacity(0.85),
+                              color: scheme.onSurface.withValues(alpha: 0.85),
                             ),
                           ),
                         ],
@@ -162,3 +176,4 @@ class _OnboardingPage {
     this.last = false,
   });
 }
+

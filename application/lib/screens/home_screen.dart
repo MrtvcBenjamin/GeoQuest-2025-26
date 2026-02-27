@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/app_nav.dart';
+import '../theme/app_text.dart';
 import 'map_tab.dart';
 import 'menu_tab.dart';
 import 'progress_tab.dart';
@@ -50,6 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final dashboardLabel = tr('Dashboard', 'Dashboard');
+    final mapLabel = tr('Karte', 'Map');
+    final progressLabel = tr('Fortschritt', 'Progress');
+    final menuLabel = tr('Menü', 'Menu');
 
     return ValueListenableBuilder<int>(
       valueListenable: AppNav.selectedIndex,
@@ -64,7 +69,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 switch (settings.name) {
                   case '/start-route':
                     return MaterialPageRoute(
-                      builder: (_) => const StartRouteScreen(huntId: 'xISAk6mXjjEpDUHYyxZi',),
+                      builder: (_) => const StartRouteScreen(
+                        huntId: 'xISAk6mXjjEpDUHYyxZi',
+                      ),
                       settings: settings,
                     );
                   case '/start-hunt':
@@ -93,14 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedItemColor: scheme.onSurface,
           unselectedItemColor: scheme.onSurface.withValues(alpha: 0.45),
           showUnselectedLabels: true,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.home_filled), label: 'Dashboard'),
+                icon: const Icon(Icons.home_filled), label: dashboardLabel),
             BottomNavigationBarItem(
-                icon: Icon(Icons.location_on_outlined), label: 'Map'),
+                icon: const Icon(Icons.location_on_outlined), label: mapLabel),
             BottomNavigationBarItem(
-                icon: Icon(Icons.flag_outlined), label: 'Progress'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+                icon: const Icon(Icons.flag_outlined), label: progressLabel),
+            BottomNavigationBarItem(
+                icon: const Icon(Icons.menu), label: menuLabel),
           ],
         ),
       ),

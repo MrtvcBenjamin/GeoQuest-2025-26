@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/app_text.dart';
 import 'change_password_screen.dart';
 import 'login_screen.dart';
 
@@ -23,8 +24,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   late final TextEditingController _usernameC;
   late final TextEditingController _emailC;
   final _pwC = TextEditingController();
+  final _pwConfirmC = TextEditingController();
 
   bool _hidePassword = true;
+  bool _hidePasswordConfirm = true;
   bool _loading = false;
   String? _error;
 
@@ -40,6 +43,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     _usernameC.dispose();
     _emailC.dispose();
     _pwC.dispose();
+    _pwConfirmC.dispose();
     super.dispose();
   }
 
@@ -59,19 +63,30 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final username = _usernameC.text.trim();
     final email = _emailC.text.trim().toLowerCase();
     final password = _pwC.text;
+    final passwordConfirm = _pwConfirmC.text;
 
     setState(() => _error = null);
 
     if (!_isValidUsername(username)) {
-      setState(() => _error = 'Username muss 3-24 Zeichen haben (A-Z, 0-9, . _ -).');
+      setState(() => _error = tr(
+          'Username muss 3-24 Zeichen haben (A-Z, 0-9, . _ -).',
+          'Username must be 3-24 chars (A-Z, 0-9, . _ -).'));
       return;
     }
     if (!_isValidEmail(email)) {
-      setState(() => _error = 'Bitte gültige E-Mail eingeben.');
+      setState(() => _error =
+          tr('Bitte gültige E-Mail eingeben.', 'Please enter a valid email.'));
       return;
     }
     if (password.length < 6) {
-      setState(() => _error = 'Passwort muss mindestens 6 Zeichen haben.');
+      setState(() => _error = tr('Passwort muss mindestens 6 Zeichen haben.',
+          'Password must have at least 6 characters.'));
+      return;
+    }
+    if (password != passwordConfirm) {
+      setState(() => _error = tr(
+          'Passwörter stimmen nicht überein.',
+          'Passwords do not match.'));
       return;
     }
 
@@ -85,7 +100,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           .limit(1)
           .get();
       if (usernameTaken.docs.isNotEmpty) {
-        setState(() => _error = 'Username existiert bereits.');
+        setState(() => _error =
+            tr('Username existiert bereits.', 'Username already exists.'));
         return;
       }
 
@@ -96,6 +112,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
+        await user.sendEmailVerification();
         await FirebaseFirestore.instance.collection('Users').doc(user.uid).set({
           'Username': username,
           'UsernameLower': usernameLower,
@@ -107,12 +124,26 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => LoginScreen(prefilledUsername: username),
+          builder: (_) => LoginScreen(
+            role: LoginRole.player,
+            prefilledUsername: username,
+            infoText: tr(
+              'Verifizierungs-E-Mail gesendet. Bitte zuerst E-Mail bestätigen und dann anmelden.',
+              'Verification email sent. Please verify your email first, then sign in.',
+            ),
+          ),
         ),
         (_) => false,
       );
     } on FirebaseAuthException catch (e) {
-      setState(() => _error = e.message ?? 'Registrierung fehlgeschlagen.');
+      if (e.code == 'network-request-failed') {
+        setState(() => _error = tr(
+            'Keine Internetverbindung. Bitte Verbindung prüfen.',
+            'No internet connection. Please check your connection.'));
+      } else {
+        setState(() => _error = e.message ??
+            tr('Registrierung fehlgeschlagen.', 'Registration failed.'));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -173,7 +204,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Create Account',
+                  tr('Konto erstellen', 'Create account'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -182,7 +213,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Username, E-Mail und Passwort eingeben',
+                  tr('Username, E-Mail und Passwort eingeben',
+                      'Enter username, email and password'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 12.5,
@@ -205,7 +237,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: _fieldDecoration(
                     context: context,
-                    hint: 'E-Mail',
+                    hint: 'Email',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -214,12 +246,32 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   obscureText: _hidePassword,
                   decoration: _fieldDecoration(
                     context: context,
-                    hint: 'Passwort',
+                    hint: 'Password',
                     suffixIcon: IconButton(
                       onPressed: () =>
                           setState(() => _hidePassword = !_hidePassword),
                       icon: Icon(
                         _hidePassword ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      color: scheme.onSurface.withValues(alpha: 0.70),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _pwConfirmC,
+                  obscureText: _hidePasswordConfirm,
+                  decoration: _fieldDecoration(
+                    context: context,
+                    hint: tr('Passwort wiederholen', 'Repeat password'),
+                    suffixIcon: IconButton(
+                      onPressed: () => setState(
+                        () => _hidePasswordConfirm = !_hidePasswordConfirm,
+                      ),
+                      icon: Icon(
+                        _hidePasswordConfirm
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       color: scheme.onSurface.withValues(alpha: 0.70),
                     ),
@@ -257,45 +309,51 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             height: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  scheme.onPrimary),
                             ),
                           )
-                        : const Text(
-                            'Continue',
-                            style: TextStyle(fontWeight: FontWeight.w700),
+                        : Text(
+                            tr('Weiter', 'Continue'),
+                            style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          ),
+                  ),
                 ),
                 const SizedBox(height: 14),
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const LoginScreen(role: LoginRole.player),
+                      ),
                     );
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: scheme.onSurface.withValues(alpha: 0.65),
                   ),
-                  child: const Text(
-                    'Bereits ein Konto? Sign in',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                  child: Text(
+                    tr('Bereits ein Konto? Anmelden',
+                        'Already have an account? Sign in'),
+                    style: const TextStyle(
+                        fontSize: 12.5, fontWeight: FontWeight.w600),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
+                      MaterialPageRoute(
+                          builder: (_) => const ChangePasswordScreen()),
                     );
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: scheme.onSurface.withValues(alpha: 0.65),
                   ),
-                  child: const Text(
-                    'Passwort vergessen?',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                  child: Text(
+                    tr('Passwort vergessen?', 'Forgot password?'),
+                    style: const TextStyle(
+                        fontSize: 12.5, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],

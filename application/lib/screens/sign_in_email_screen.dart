@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_text.dart';
 import 'create_account_screen.dart';
 import 'login_screen.dart';
+import 'role_select_screen.dart';
 
 class SignInEmailScreen extends StatefulWidget {
   const SignInEmailScreen({super.key});
@@ -31,7 +33,8 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     setState(() => _errorText = null);
 
     if (!_isValidEmail(email)) {
-      setState(() => _errorText = 'Bitte gib eine gültige E-Mail ein.');
+      setState(() => _errorText = tr(
+          'Bitte gib eine gültige E-Mail ein.', 'Please enter a valid email.'));
       return;
     }
 
@@ -93,7 +96,7 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Create an account',
+                tr('Konto erstellen', 'Create an account'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -102,7 +105,8 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter your email to sign up for this app',
+                tr('Gib deine E-Mail ein, um ein Konto zu erstellen',
+                    'Enter your email to sign up for this app'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12.5,
@@ -132,9 +136,9 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                  child: Text(
+                    tr('Weiter', 'Continue'),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -143,15 +147,38 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const LoginScreen(role: LoginRole.player),
+                    ),
                   );
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: scheme.onSurface.withValues(alpha: 0.65),
                 ),
-                child: const Text(
-                  'Already have an account? Sign in',
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                child: Text(
+                  tr('Bereits ein Konto? Anmelden',
+                      'Already have an account? Sign in'),
+                  style: const TextStyle(
+                      fontSize: 12.5, fontWeight: FontWeight.w600),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RoleSelectScreen()),
+                    (_) => false,
+                  );
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: scheme.onSurface.withValues(alpha: 0.65),
+                ),
+                child: Text(
+                  tr('Rolle ändern', 'Change role'),
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const Spacer(),

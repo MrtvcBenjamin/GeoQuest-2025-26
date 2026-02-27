@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../theme/app_text.dart';
 
 class ProgressTab extends StatelessWidget {
   const ProgressTab({super.key});
 
   static const int _totalStations = 12;
+  static const double _maxPoints = 120.0;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,8 @@ class ProgressTab extends StatelessWidget {
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              'Ranking konnte nicht geladen werden.',
+              tr('Ranking konnte nicht geladen werden.',
+                  'Ranking could not be loaded.'),
               style: TextStyle(color: scheme.onSurface),
             ),
           );
@@ -55,8 +58,10 @@ class ProgressTab extends StatelessWidget {
         final showOwnRow =
             ownPlayer != null && !top.any((p) => p.uid == ownPlayer.uid);
 
-        final progressSolved = (currentPlayer?.solved ?? 0).clamp(0, _totalStations);
-        final progressRatio = progressSolved / _totalStations;
+        final progressSolved =
+            (currentPlayer?.solved ?? 0).clamp(0, _totalStations);
+        final progressRatio =
+            ((currentPlayer?.points ?? 0) / _maxPoints).clamp(0.0, 1.0);
 
         void openDetails(_Player player) {
           showDialog<void>(
@@ -73,7 +78,7 @@ class ProgressTab extends StatelessWidget {
                 children: [
                   const SizedBox(height: 6),
                   Text(
-                    'Progress',
+                    tr('Fortschritt', 'Progress'),
                     style: TextStyle(
                       fontSize: 58,
                       fontWeight: FontWeight.w900,
@@ -160,10 +165,23 @@ class _StatsText extends StatelessWidget {
 
     return Column(
       children: [
-        _StatRow(label: 'Gesamtpunkte:', value: '${_fmtPoints(points)} p', style: s()),
-        _StatRow(label: '+ ${_fmtPoints(timeBonus)} Zeitbonus', value: '', style: s()),
-        _StatRow(label: 'Gelöste Aufgaben:', value: '$solved', style: s()),
-        _StatRow(label: 'Gesamtzeit:', value: totalTime, style: s()),
+        _StatRow(
+            label: tr('Gesamtpunkte:', 'Total points:'),
+            value: '${_fmtPoints(points)} p',
+            style: s()),
+        _StatRow(
+            label: tr('+ ${_fmtPoints(timeBonus)} Zeitbonus',
+                '+ ${_fmtPoints(timeBonus)} time bonus'),
+            value: '',
+            style: s()),
+        _StatRow(
+            label: tr('Gelöste Aufgaben:', 'Solved tasks:'),
+            value: '$solved',
+            style: s()),
+        _StatRow(
+            label: tr('Gesamtzeit:', 'Total time:'),
+            value: totalTime,
+            style: s()),
       ],
     );
   }
@@ -276,7 +294,8 @@ class _RankRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFD3D3D6),
           borderRadius: BorderRadius.circular(9),
-          border: highlight ? Border.all(color: Colors.black, width: 1.2) : null,
+          border:
+              highlight ? Border.all(color: Colors.black, width: 1.2) : null,
         ),
         child: Row(
           children: [
@@ -336,9 +355,10 @@ class _PlayerDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const totalStations = 12;
+    const maxPoints = 120.0;
     final solved = player.solved.clamp(0, totalStations);
-    final percent = ((solved / totalStations) * 100).round();
-    final ratio = solved / totalStations;
+    final ratio = (player.points / maxPoints).clamp(0.0, 1.0);
+    final percent = (ratio * 100).round();
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -362,15 +382,22 @@ class _PlayerDetailsDialog extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             _DialogStatRow(
-              label: 'Gesamtpunkte:',
+              label: tr('Gesamtpunkte:', 'Total points:'),
               value: '${_fmtPoints(player.points)} p',
             ),
             _DialogStatRow(
-              label: '+ ${_fmtPoints(player.timeBonusPoints)} Zeitbonus',
+              label: tr(
+                '+ ${_fmtPoints(player.timeBonusPoints)} Zeitbonus',
+                '+ ${_fmtPoints(player.timeBonusPoints)} time bonus',
+              ),
               value: '',
             ),
-            _DialogStatRow(label: 'Gelöste Aufgaben:', value: '$solved'),
-            _DialogStatRow(label: 'Gesamtzeit:', value: player.totalTimeText),
+            _DialogStatRow(
+                label: tr('Gelöste Aufgaben:', 'Solved tasks:'),
+                value: '$solved'),
+            _DialogStatRow(
+                label: tr('Gesamtzeit:', 'Total time:'),
+                value: player.totalTimeText),
             const SizedBox(height: 10),
             Text(
               '$percent%',
@@ -401,7 +428,7 @@ class _PlayerDetailsDialog extends StatelessWidget {
                   right: 8,
                   top: 3,
                   child: Text(
-                    'max Points',
+                    'max 120 p',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
@@ -485,7 +512,8 @@ class _Player {
         (data['score'] as num?)?.toDouble() ??
         (data['Score'] as num?)?.toDouble() ??
         0.0;
-    final timeBonusPoints = (data['TimeBonusPoints'] as num?)?.toDouble() ?? 0.0;
+    final timeBonusPoints =
+        (data['TimeBonusPoints'] as num?)?.toDouble() ?? 0.0;
 
     final completedRaw = (data['CompletedStadions'] as List?) ?? const [];
     final completedCount = completedRaw.whereType<num>().length;
@@ -494,7 +522,9 @@ class _Player {
 
     final username = (data['Username'] as String?)?.trim();
     final email = (data['Email'] as String?)?.trim();
-    final fallback = email != null && email.contains('@') ? email.split('@').first : 'Player';
+    final fallback = email != null && email.contains('@')
+        ? email.split('@').first
+        : 'Player';
 
     return _Player(
       uid: uid,

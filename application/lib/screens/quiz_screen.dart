@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../theme/app_text.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({
@@ -31,11 +33,13 @@ class _QuizScreenState extends State<QuizScreen> {
     setState(() => _error = null);
 
     if (points == null) {
-      setState(() => _error = 'Bitte gültige Punkte eingeben.');
+      setState(() => _error =
+          tr('Bitte gültige Punkte eingeben.', 'Please enter valid points.'));
       return;
     }
     if (points < 0 || points > 10) {
-      setState(() => _error = 'Nur Werte von 0.0 bis 10.0 sind erlaubt.');
+      setState(() => _error = tr('Nur Werte von 0.0 bis 10.0 sind erlaubt.',
+          'Only values from 0.0 to 10.0 are allowed.'));
       return;
     }
 
@@ -56,7 +60,7 @@ class _QuizScreenState extends State<QuizScreen> {
               children: [
                 const SizedBox(height: 10),
                 Text(
-                  'Punkte vergeben',
+                  tr('Punkte vergeben', 'Rate points'),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -80,25 +84,28 @@ class _QuizScreenState extends State<QuizScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: scheme.onSurface.withOpacity(0.72),
+                    color: scheme.onSurface.withValues(alpha: 0.72),
                   ),
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'Punkte (0.0 bis 10.0, max. 1 Nachkommastelle)',
+                  tr('Punkte (0.0 bis 10.0, max. 1 Nachkommastelle)',
+                      'Points (0.0 to 10.0, max. 1 decimal place)'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: scheme.onSurface.withOpacity(0.82),
+                    color: scheme.onSurface.withValues(alpha: 0.82),
                   ),
                 ),
                 const SizedBox(height: 18),
                 TextField(
                   controller: _pointsC,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}([.,]\d?)?$')),
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d{0,2}([.,]\d?)?$')),
                   ],
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -107,16 +114,18 @@ class _QuizScreenState extends State<QuizScreen> {
                     color: scheme.onSurface,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'z.B. 8.5',
+                    hintText: tr('z.B. 8.5', 'e.g. 8.5'),
                     filled: true,
                     fillColor: scheme.surface,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: scheme.outline.withOpacity(0.5)),
+                      borderSide:
+                          BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: scheme.outline.withOpacity(0.5)),
+                      borderSide:
+                          BorderSide(color: scheme.outline.withValues(alpha: 0.5)),
                     ),
                   ),
                 ),
@@ -145,8 +154,8 @@ class _QuizScreenState extends State<QuizScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Punkte speichern',
+                    child: Text(
+                      tr('Punkte speichern', 'Save points'),
                       style: TextStyle(fontWeight: FontWeight.w900),
                     ),
                   ),
@@ -159,3 +168,4 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 }
+
