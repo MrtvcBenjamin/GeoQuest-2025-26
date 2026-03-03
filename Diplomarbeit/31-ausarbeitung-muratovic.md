@@ -36,7 +36,7 @@ Für das Schuljahr waren mehrere Fixtermine gegeben (Zwischenpräsentationen, Ab
 In Softwareprojekten entstehen Änderungswünsche fast zwangsläufig. Ohne Änderungsmanagement führt das schnell zu Scope Creep (schleichender Umfangserweiterung) und zu inkonsistenter Dokumentation. Daher wurde ein klarer Ablauf definiert: Änderungen werden zuerst besprochen, danach dokumentiert und anschließend in Projekthandbuch sowie Backlog nachgezogen. Dieses Vorgehen entspricht dem Grundprinzip, Änderungen kontrolliert zu behandeln und Entscheidungen nachvollziehbar festzuhalten [@european_commission_pm2_2018].
 
 **Umsetzung im Projekt:**
-- Der Ablauf „Vorgehen bei Änderungen“ ist im Projekthandbuch als Prozess beschrieben (Team-Besprechung → Änderungsprotokoll → Aktualisierung Handbuch/Backlog → Vorstellung im nächsten Meeting).
+- Der Ablauf „Vorgehen bei Änderungen“ ist im Projekthandbuch als Prozess beschrieben (Team-Besprechung -> Änderungsprotokoll -> Aktualisierung Handbuch/Backlog -> Vorstellung im nächsten Meeting).
 
 ### 5. Risikomanagement
 

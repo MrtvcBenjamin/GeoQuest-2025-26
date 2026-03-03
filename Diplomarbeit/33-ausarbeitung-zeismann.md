@@ -88,7 +88,7 @@ Der Splash-Screen (`splash_screen.dart`) ist nicht nur visuell, sondern logisch 
 
 Je nach Zustand navigiert der Code direkt zu `HomeScreen`, `AdminMapScreen`, `OnboardingFlow` oder `RoleSelectScreen`. Dadurch entsteht ein deterministischer Startprozess ohne Sackgassen.
 
-![GeoQuest-Branding im Frontend-Einstieg\label{fig:zeismann_logo_frontend}](../application/assets/logo.png){width=32%}
+![GeoQuest-Branding im Frontend-Einstieg\label{fig:zeismann_logo_frontend}](img/logo.png){width=32%}
 
 ### Onboarding als UX-Filter vor der Anmeldung
 
@@ -268,7 +268,7 @@ In manchen Situationen (GPS drift, ungünstige Umgebung) reicht Radius allein ni
 
 Bei Erfolg setzt die App `_qrUnlockedForStation = true`, wodurch die Aufgabenbewertung ebenfalls gestartet werden kann.
 
-![QR-Scan-Ansicht als Teil des Frontend-Flows\label{fig:zeismann_qr_frontend}](../application/ios_qr_webapp.png){width=62%}
+![QR-Scan-Ansicht als Teil des Frontend-Flows\label{fig:zeismann_qr_frontend}](img/ios_qr_webapp.png){width=62%}
 
 ### Anti-Cheat-Mechanik (Geschwindigkeit)
 
