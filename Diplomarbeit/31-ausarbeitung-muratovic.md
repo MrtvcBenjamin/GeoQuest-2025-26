@@ -131,7 +131,7 @@ Wenn der Solver auf einen Widerspruch stößt, muss er zurückgehen („backtrac
 Zwei Dependencies verlangen inkompatible Versionen derselben Library. Beispielprinzip:
 - Paket A verlangt `foo <2.0.0`
 - Paket B verlangt `foo >=2.0.0`
-→ keine Version erfüllt beides.
+-> keine Version erfüllt beides.
 
 #### 4.2 Transitive Konflikte („Dependency Hell“)
 Sehr häufig kollidieren nicht direkte, sondern **transitive** Anforderungen. Man sieht dann in der Fehlermeldung, dass ein Paket über mehrere Stufen eine bestimmte Version erzwingt [@dart_pub_dependencies_2026].  
