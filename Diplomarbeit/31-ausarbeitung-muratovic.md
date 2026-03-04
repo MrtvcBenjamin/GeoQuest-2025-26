@@ -91,8 +91,8 @@ Parallel dazu ist Qualitätssicherung ein laufender Bestandteil: Anforderungen u
 
 ## Praktischer Teil – Dependency Conflicts in Flutter-Projekten
 
-Ein wesentlicher Teil meiner praktischen Arbeit im Projekt bestand darin, **Dependency Conflicts** (Abhängigkeitskonflikte) zu analysieren und zu beheben. In Flutter/Dart werden externe Pakete über **pub** (Paketmanager) verwaltet und in der `pubspec.yaml` als Abhängigkeiten eingetragen [@flutter_using_packages_2026; @dart_pub_dependencies_2026].  
-In unserer Diplomarbeit traten Konflikte vor allem dann auf, wenn **die lokal installierte Flutter-/Dart-Version zu alt** war oder wenn **Dependencies zu neu gewählt** wurden und dadurch nicht mehr zur SDK-Version oder zu Flutter-spezifischen Einschränkungen passten (insbesondere bei „pinned packages“) [@dart_pubspec_2025; @dart_flutter_pinned_packages_2026].
+Ein wesentlicher Teil meiner praktischen Arbeit im Projekt bestand darin, **Dependency Conflicts** (Abhängigkeitskonflikte) zu analysieren und zu beheben. In Flutter/Dart werden externe Pakete über **pub** (Paketmanager) verwaltet und in der `pubspec.yaml` als Abhängigkeiten eingetragen [@flutter_using_packages_2026] [@dart_pub_dependencies_2026].  
+In unserer Diplomarbeit traten Konflikte vor allem dann auf, wenn **die lokal installierte Flutter-/Dart-Version zu alt** war oder wenn **Dependencies zu neu gewählt** wurden und dadurch nicht mehr zur SDK-Version oder zu Flutter-spezifischen Einschränkungen passten (insbesondere bei „pinned packages“) [@dart_pubspec_2025] [@dart_flutter_pinned_packages_2026].
 
 ### 1. Grundlagen: Was sind Dependencies und warum können sie kollidieren?
 
@@ -101,17 +101,17 @@ Eine **Dependency** ist ein externes Paket, das das Projekt benötigt. Pub unter
 - **Direkte Dependencies:** Pakete, die das Projekt unmittelbar in der `pubspec.yaml` angibt.
 - **Transitive Dependencies:** Pakete, die indirekt hineinkommen, weil eine direkte Dependency ihrerseits wiederum andere Pakete benötigt [@dart_pub_dependencies_2026].
 
-Ein **Dependency Conflict** liegt vor, wenn pub **keine Kombination von Paketversionen** finden kann, die alle Anforderungen gleichzeitig erfüllt. In der Praxis zeigt sich das meist als Fehler beim Ausführen von `flutter pub get`, typischerweise mit der Meldung **„version solving failed“** [@dart_pub_get_2025; @dart_pubgrub_solver_2026].  
+Ein **Dependency Conflict** liegt vor, wenn pub **keine Kombination von Paketversionen** finden kann, die alle Anforderungen gleichzeitig erfüllt. In der Praxis zeigt sich das meist als Fehler beim Ausführen von `flutter pub get`, typischerweise mit der Meldung **„version solving failed“** [@dart_pub_get_2025] [@dart_pubgrub_solver_2026].  
 Der Kern des Problems ist: Pub muss für das gesamte Projekt eine **konsistente Menge** von Paketversionen finden, sodass alle Versionseinschränkungen („Constraints“) zusammenpassen.
 
 ### 2. Wie Versionsangaben funktionieren: SemVer, Constraints und Caret-Syntax
 
-Damit Pakete unabhängig voneinander weiterentwickelt werden können, basiert das Ökosystem auf **Versionierung** und **Versionsbereichen** statt fixen Einzelversionen. Das zentrale Prinzip ist dabei „Semantic Versioning“ (MAJOR.MINOR.PATCH) [@semver_2013; @dart_pub_versioning_2025].
+Damit Pakete unabhängig voneinander weiterentwickelt werden können, basiert das Ökosystem auf **Versionierung** und **Versionsbereichen** statt fixen Einzelversionen. Das zentrale Prinzip ist dabei „Semantic Versioning“ (MAJOR.MINOR.PATCH) [@semver_2013] [@dart_pub_versioning_2025].
 
 In der `pubspec.yaml` werden Versionen meist als **Bereich** angegeben, z. B.:
 
 - `'>=1.2.0 <2.0.0'` (expliziter Bereich)
-- `^1.2.0` (Caret-Syntax, erlaubt kompatible Updates innerhalb desselben Major-Bereichs) [@dart_pub_dependencies_2026; @dart_pubspec_2025]
+- `^1.2.0` (Caret-Syntax, erlaubt kompatible Updates innerhalb desselben Major-Bereichs) [@dart_pub_dependencies_2026] [@dart_pubspec_2025]
 
 Diese Flexibilität ist gewollt (Updates und Bugfixes können automatisch genutzt werden), erhöht aber die Chance auf Konflikte, sobald mehrere Pakete unterschiedliche Anforderungen an dieselbe Dependency stellen.
 
@@ -163,7 +163,7 @@ Für uns war das praktisch ein wiederkehrendes Muster: **Dependency-Versionen wa
 Damit das Lösen nicht zum „Trial-and-Error“ wird, bin ich in der Praxis immer gleich vorgegangen:
 
 1. **Fehlermeldung von `flutter pub get` lesen**  
-   Die Meldung enthält fast immer den entscheidenden Hinweis: welches Paket welche Version verlangt und wo es kollidiert [@dart_pub_get_2025; @dart_pubgrub_solver_2026].
+   Die Meldung enthält fast immer den entscheidenden Hinweis: welches Paket welche Version verlangt und wo es kollidiert [@dart_pub_get_2025] [@dart_pubgrub_solver_2026].
 
 2. **Dependency-Graph prüfen (wer zieht was rein?)**  
    Mit `dart pub deps` lässt sich der Dependency-Tree darstellen, wodurch sichtbar wird, welches Paket die problematische transitive Dependency überhaupt hineinbringt [@dart_pub_deps_2025].
@@ -186,7 +186,7 @@ Das war bei uns oft die schnellste Lösung, wenn ein Package eine Mindest-Dart-V
 #### 6.2 Dependency-Versionen anpassen (typisch bei „Dependency zu neu“)
 Wenn ein Upgrade der SDK nicht möglich oder nicht sinnvoll ist, bleibt der Gegenweg:
 - Dependency-Version **downgraden** oder
-- Constraint **so anpassen**, dass sie kompatible Versionen zulässt [@dart_pub_dependencies_2026; @dart_pubspec_2025].
+- Constraint **so anpassen**, dass sie kompatible Versionen zulässt [@dart_pub_dependencies_2026] [@dart_pubspec_2025].
 
 Gerade bei pinned packages ist das entscheidend: Die eigene Constraint muss die gepinnte Version enthalten [@dart_flutter_pinned_packages_2026].
 
@@ -202,7 +202,7 @@ Dart empfiehlt außerdem Caret-Syntax als Standard, weil sie Updates zulässt, a
 - Wo möglich wurden Constraints erweitert, um den Solver nicht unnötig zu blockieren.
 
 #### 6.4 `dependency_overrides` (kurzfristige Notlösung)
-Mit `dependency_overrides` kann man pub zwingen, eine Version zu verwenden, auch wenn das nicht zu allen Constraints passt. Flutter/Dart warnen dabei ausdrücklich: Man konsumiert dann Kombinationen, die nicht gemeinsam getestet wurden, was zu Analyse- oder Runtime-Problemen führen kann [@dart_flutter_pinned_packages_2026; @dart_pub_dependencies_2026].
+Mit `dependency_overrides` kann man pub zwingen, eine Version zu verwenden, auch wenn das nicht zu allen Constraints passt. Flutter/Dart warnen dabei ausdrücklich: Man konsumiert dann Kombinationen, die nicht gemeinsam getestet wurden, was zu Analyse- oder Runtime-Problemen führen kann [@dart_flutter_pinned_packages_2026] [@dart_pub_dependencies_2026].
 
 **Umsetzung im Projekt**
 - Overrides wurden nur als kurzfristige Maßnahme betrachtet und sollten dokumentiert sowie später wieder entfernt werden.
@@ -228,10 +228,10 @@ Statt seltene „Mega-Upgrades“ ist es stabiler, regelmäßig zu prüfen:
 #### 7.3 Constraints sinnvoll setzen
 - nicht zu eng (führt unnötig zu Konflikten),
 - nicht „any“ (führt zu unkontrollierten Kombinationen),
-- bevorzugt Caret-/Range-Constraints [@dart_pub_dependencies_2026; @dart_pub_versioning_2025].
+- bevorzugt Caret-/Range-Constraints [@dart_pub_dependencies_2026] [@dart_pub_versioning_2025].
 
 #### 7.4 CI/Build stabilisieren (Lockfile erzwingen)
-Wenn ein Lockfile genutzt wird, kann man in automatisierten Builds verhindern, dass die Dependency-Auflösung plötzlich anders ausfällt. Dart dokumentiert dafür Optionen wie `--enforce-lockfile`, um sicherzustellen, dass die Auflösung exakt dem Lockfile entspricht [@dart_pub_dependencies_2026; @dart_pub_get_2025].
+Wenn ein Lockfile genutzt wird, kann man in automatisierten Builds verhindern, dass die Dependency-Auflösung plötzlich anders ausfällt. Dart dokumentiert dafür Optionen wie `--enforce-lockfile`, um sicherzustellen, dass die Auflösung exakt dem Lockfile entspricht [@dart_pub_dependencies_2026] [@dart_pub_get_2025].
 
 ### 8. Bezug zur Diplomarbeit: Warum bei uns fast immer „SDK vs. Dependency“ der Kern war
 
@@ -242,6 +242,4 @@ Im Projekt zeigte sich ein sehr typisches Flutter-Schulprojekt-Muster:
 
 Dadurch waren die praktisch wirksamen Lösungen in der Regel eindeutig:
 - entweder **Flutter upgraden**, wenn die SDK zu alt ist [@flutter_upgrade_2026],
-- oder **Dependency-Versionen/Constraints anpassen**, damit sie zur vorhandenen SDK- und Pinning-Situation passen [@dart_flutter_pinned_packages_2026; @dart_pub_dependencies_2026].
-environment:
-  sdk: ">=3.2.0 <4.0.0"
+- oder **Dependency-Versionen/Constraints anpassen**, damit sie zur vorhandenen SDK- und Pinning-Situation passen [@dart_flutter_pinned_packages_2026] [@dart_pub_dependencies_2026].
