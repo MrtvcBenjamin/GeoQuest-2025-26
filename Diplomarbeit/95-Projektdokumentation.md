@@ -211,3 +211,110 @@ Sowohl Planung als auch konkrete Umsetzung wurden aufgeschoben, wodurch es berei
 * Vorbereitung der Erstversion der App
 
 : Projektstatus Stand 20. Dezember 2025
+
+\newpage
+### Projektfortschritt 21. Dezember 2025 bis 09. Jänner 2026
+
+#### Gesamtstatus
+
+* Der Meilenstein „Erstversion der App“ wurde erreicht.
+* Die App ist durchgängig nutzbar, jedoch noch mit einzelnen Fehlern und offenen Verbesserungen.
+* Erste interne Tests wurden gestartet.
+
+| Dimension      | Status            | Maßnahmen |
+|:---------------|:------------------|:----------|
+| Leistungsziele | In Ordnung        | Offene Kernpunkte gezielt abschließen |
+| Terminziele    | Kritisch erreicht | Puffer für Test- und Bugfix-Phase einplanen |
+| Teamarbeit     | In Ordnung        | Abstimmung beibehalten |
+
+:Projektstatus am 2026-01-09
+
+#### Durchgeführte Arbeiten
+
+* Fertigstellung der Kernfunktionen für eine durchgängige Erstversion
+* Erstellung eines lauffähigen Builds für interne Tests
+* Erste interne Tests und Sammlung von Fehlern/Verbesserungspunkten
+
+#### Notwendige Entscheidungen
+
+* Priorisierung der offenen Fehler und Festlegung der kritischen Punkte für die Testphase.
+
+#### Nächste Schritte
+
+* Systemtests strukturiert durchführen
+* Kritische Fehler beheben
+* Usability und Design gezielt verbessern
+
+: Projektstatus Stand 09. Jänner 2026
+
+
+\newpage
+### Projektfortschritt 10. Jänner 2026 bis 15. Februar 2026
+
+#### Gesamtstatus
+
+* Das Projekt befindet sich in diesem Zeitraum im Plan.
+* Systemtests wurden durchgeführt und zentrale Fehler behoben.
+* Die Benutzerführung wurde verbessert.
+
+| Dimension      | Status     | Maßnahmen |
+|:---------------|:-----------|:----------|
+| Leistungsziele | In Ordnung | — |
+| Terminziele    | In Ordnung | — |
+| Teamarbeit     | In Ordnung | — |
+
+:Projektstatus am 2026-02-15
+
+#### Durchgeführte Arbeiten
+
+* Durchführung von Systemtests (Kernabläufe und Sonderfälle)
+* Bugfixing und Nachtests zur Verifikation
+* Feinschliff an UI und Benutzerführung
+
+#### Notwendige Entscheidungen
+
+* Festlegung, welche Verbesserungen „Nice-to-have“ sind und nicht mehr umgesetzt werden (Scope-Freeze).
+
+#### Nächste Schritte
+
+* Letzte Stabilitäts- und Konsistenzchecks
+* Dokumentation finalisieren
+* Vorbereitung der Endabgabe (Abgabepaket, Präsentation)
+
+: Projektstatus Stand 15. Februar 2026
+
+
+\newpage
+### Projektfortschritt 16. Februar 2026 bis 06. März 2026
+
+#### Gesamtstatus
+
+* Das Projekt befindet sich in der Finalisierungsphase.
+* Fokus liegt auf Stabilisierung, finalem Build und Abschluss der Dokumentation.
+* Die Endabgabe wird vorbereitet und abgeschlossen.
+
+| Dimension      | Status          | Maßnahmen |
+|:---------------|:----------------|:----------|
+| Leistungsziele | In Ordnung      | Nur noch Bugfixes und notwendige Anpassungen |
+| Terminziele    | Kritisch        | Abgabepaket frühzeitig finalisieren |
+| Teamarbeit     | In Ordnung      | Klare Zuständigkeiten je Abgabe-Teil |
+
+:Projektstatus am 2026-03-06
+
+#### Durchgeführte Arbeiten
+
+* Letzte Fehlerbehebungen und abschließende Tests
+* Erstellung des finalen Builds und Sicherung des Versionsstands
+* Abschluss und Zusammenstellung der Abgabe (Dokumentation, Anhänge)
+
+#### Notwendige Entscheidungen
+
+* Finaler Abgabeumfang und endgültiger Stand werden fixiert (keine neuen Features).
+
+#### Nächste Schritte
+
+* Letztes Korrekturlesen der Dokumentation
+* Endabgabe durchführen
+* Abgabeversion archivieren (Backup/Tag)
+
+: Projektstatus Stand 06. März 2026
