@@ -1,5 +1,5 @@
 # Projekthandbuch
-\textauthor{Muratovic}
+\textauthor{Benjamin Muratovic}
 
 ## Entwicklungsplan
 
