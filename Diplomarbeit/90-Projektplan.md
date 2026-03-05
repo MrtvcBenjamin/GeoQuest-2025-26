@@ -45,7 +45,7 @@ Projektauftraggeber ist Herr Klaus Kepplinger, der an der HTL Leoben für die Or
 #### Projekttermine
 
 | Termin     | Inhalt                          |
-|-----------:|:--------------------------------|
+|:-----------|:--------------------------------|
 | 2025-10-09 | Einreichung DA in Portal                     |
 | 2025-11-12 | Erste DA Zwischenpräsentation                    |
 | 2025-12-01 | 1. Zwischenstand an Betreuer präsentieren             |
@@ -66,7 +66,7 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 #### Projektrisiken
 
 | Risiko         | EW  | Auswirkungen     | Maßnahmen     |
-|:--------------:|:---:| :----------------|:--------------|
+|:--------------|---|:----------------|:--------------|
 | Ungenaue Schätzungen (Kosten, Zeit) | 30% | Zeit- oder Budgetplan passt nicht -> Deadlines könnten verfehlt werden | Schätzungen im Team absprechen, eher großzügig planen |
 | Unzureichend definierter Projektumfang / Anforderungen | 25% | Wir implementieren falsche oder zu viele Funktionen -> Nacharbeiten | Anforderungen klar dokumentieren, Fixpunkt mit Betreuern |
 | Scope Creep (schleichende Erweiterung des Umfangs) | 20% | Projekt wächst über das geplante Maß -> Überforderung und Zeitprobleme | Änderungswünsche kontrollieren, nur bei Zustimmung einbauen |
@@ -96,7 +96,7 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 #### Projektrollen
 
 | Projektrolle           | Rollenbeschreibung     | Name              |
-|------------------------|------------------------|-------------------|
+|:------------------------|:------------------------|:-------------------|
 | Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens sowie technischer Support in der Entwicklung | Benjamin Muratovic |
 | Auftraggeber | Auftraggeber der internen Diplomarbeit | K. Kepplinger |
 | Betreuer | Schulischer Betreuer | A. Weichbold |
