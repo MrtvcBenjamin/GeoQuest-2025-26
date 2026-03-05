@@ -13,9 +13,9 @@ da-author:
 - vorname: Benjamin 
   nachname: Muratovic
   klasse: 5BHWIN
-  thema: Projekt Management
+  thema: Projekt Management & Technischer Support
   ki-tools:
-  - name: ChatGPT5.1
+  - name: ChatGPT5.2
     zweck: Rehtschreibüberprüfung, Formatierungshilfe
 
 - vorname: Christian 
@@ -23,7 +23,7 @@ da-author:
   klasse: 5BHWIN
   thema: Entwicklung - Backend
   ki-tools:
-  - name: ChatGPT5.1
+  - name: ChatGPT5.2
     zweck: Boilerplate Codegenerierung, Informationsbeschaffung
   - name: Gemini Model 3
     zweck: Boilerplate Firebase Codegenerierung 
@@ -44,15 +44,4 @@ da-kurzfassung-de: Die Diplomarbeit befasst sich mit der Entwicklung der mobilen
 
 da-kurzfassung-en: This diploma thesis focuses on the development of the mobile application “GeoQuest”, a digital scavenger hunt designed for school events. The app guides users to real-world locations using GPS, where tasks must be completed on-site. To ensure fair gameplay, mechanisms such as location validation, time limits, and speed monitoring are implemented. The goal is a flexible and sustainable solution tailored to the specific needs of the school and suitable for long-term use.
 
-
-da-kiquellen:
-
-# Diplomarbeitsvereinbarungen müssen zum Schluss sein 
-
-- abschnitt: Diplomatbeitsvereinbarung Englisch
-  pdf-file: HTL-DA-Doku-EN.pdf
-
-- abschnitt: Diplomatbeitsvereinbarung Deutsch
-  pdf-file: HTL-DA-Doku-DE.pdf
-  
 ---
