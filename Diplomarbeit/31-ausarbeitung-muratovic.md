@@ -5,241 +5,143 @@
 
 In der Diplomarbeit „GeoQuest“ habe ich die Projektmanagement-Aufgaben übernommen. Dazu zählten insbesondere die Koordination im Team, Termin- und Qualitätsmanagement, die Abstimmung mit Auftraggeber und Betreuung sowie die laufende Pflege der Projektdokumentation. Ziel meines Vorgehens war ein leichtgewichtiges, aber nachvollziehbares Projektmanagement, das für ein Schulprojekt praktikabel ist und gleichzeitig eine saubere Grundlage für Entscheidungen, Änderungen und Qualitätskontrolle schafft [@european_commission_pm2_2018].
 
-Im Folgenden beschreibe ich die Methoden, die ich dafür verwendet habe, und wie sie im Projekt konkret umgesetzt wurden (siehe Projekthandbuch, Meilensteine, Anwendungsfälle und Fortschrittsdokumentation).
+Im Folgenden beschreibe ich die Methoden, die ich dafür verwendet habe, und wie sie im Projekt konkret umgesetzt wurden, etwa im Projekthandbuch, in den Meilensteinen, in den Anwendungsfällen und in der Fortschrittsdokumentation.
 
 ### 1. Iteratives Vorgehen und inkrementelle Umsetzung
 
-Im Projekt wurde bewusst iterativ gearbeitet: Anforderungen wurden in kleinere Pakete zerlegt, priorisiert umgesetzt und regelmäßig zusammengeführt. Dieses Vorgehen entspricht agilen Grundideen, bei denen funktionierende Zwischenergebnisse früh sichtbar werden und Anpassungen laufend möglich bleiben [@beck_manifesto_2001]. Für ein Projekt mit realem Auftraggeber ist das besonders wichtig, weil sich Details in der Praxis oft erst während der Umsetzung klären.
+Im Projekt wurde bewusst iterativ gearbeitet. Anforderungen wurden in kleinere Pakete zerlegt, priorisiert umgesetzt und regelmäßig zusammengeführt. Dieses Vorgehen entspricht agilen Grundideen, bei denen funktionierende Zwischenergebnisse früh sichtbar werden und Anpassungen laufend möglich bleiben [@beck_manifesto_2001]. Für ein Projekt mit realem Auftraggeber ist das besonders wichtig, weil sich Details in der Praxis oft erst während der Umsetzung klären.
 
-**Umsetzung im Projekt:**
-- Die schrittweise Umsetzung spiegelt sich in den Meilensteinen wider (z. B. zuerst „Anforderungsanalyse & Konzept“, danach „UI-Prototyp & Grundstruktur“, später „GPS- & Aufgabenlogik“ und „Systemtests & Feinschliff“; siehe Meilensteine).
-- Durch die regelmäßige Zusammenführung konnten Integrationsprobleme früher erkannt werden, anstatt erst am Ende „alles zusammenzuschieben“ (sichtbar u. a. in den Statusberichten).
+Im Projekt zeigte sich das im Meilensteinverlauf klar: Zuerst standen Anforderungsanalyse und Konzept im Fokus, danach UI-Prototyp und Grundstruktur, später GPS- und Aufgabenlogik sowie zuletzt Systemtests und Feinschliff. Durch die regelmäßige Zusammenführung konnten Integrationsprobleme früh erkannt werden, statt sie erst ganz am Ende zu bündeln, was auch in den Statusberichten sichtbar wurde.
 
 ### 2. Projektorganisation, Rollen und Stakeholder
 
-Damit Entscheidungen und Zuständigkeiten nicht „nebenbei“ passieren, wurde die Projektorganisation explizit dokumentiert. In kleinen Teams ist das oft unterschätzt – gleichzeitig verhindert eine klare Rollenverteilung Doppelarbeit und reduziert Kommunikationsfehler. In etablierten Projektmethoden (z. B. PM²) ist die klare Definition von Rollen, Verantwortlichkeiten und Stakeholdern ein zentraler Bestandteil der Projektführung [@european_commission_pm2_2018].
+Damit Entscheidungen und Zuständigkeiten nicht nebenbei passieren, wurde die Projektorganisation explizit dokumentiert. In kleinen Teams ist das oft unterschätzt, gleichzeitig verhindert eine klare Rollenverteilung Doppelarbeit und reduziert Kommunikationsfehler. In etablierten Projektmethoden wie PM² ist die klare Definition von Rollen, Verantwortlichkeiten und Stakeholdern ein zentraler Bestandteil der Projektführung [@european_commission_pm2_2018].
 
-**Umsetzung im Projekt:**
-- Projektbeteiligte und Stakeholder (Auftraggeber, Betreuer, Projektleiter) sind im Projekthandbuch dokumentiert.
-- Projektrollen wurden mit Aufgabenbeschreibung festgehalten, um Verantwortlichkeiten nachvollziehbar zu machen.
+Im Projekthandbuch wurden daher die Projektbeteiligten und Stakeholder wie Auftraggeber, Betreuer und Projektleiter festgehalten. Zusätzlich wurden die Rollen mit Aufgabenbeschreibung dokumentiert, damit Verantwortlichkeiten nachvollziehbar bleiben.
 
 ### 3. Terminplanung über Fixtermine und Meilensteine
 
-Für das Schuljahr waren mehrere Fixtermine gegeben (Zwischenpräsentationen, Abgaben). Um diese zuverlässig zu erreichen, habe ich mit einem Meilensteinplan gearbeitet: Meilensteine sind klar definierte Zwischenziele mit überprüfbaren Ergebnissen (Lieferobjekten). Dadurch wird Planung messbar und Fortschritt objektiv bewertbar [@european_commission_pm2_2018].
+Für das Schuljahr waren mehrere Fixtermine gegeben, etwa Zwischenpräsentationen und Abgaben. Um diese zuverlässig zu erreichen, habe ich mit einem Meilensteinplan gearbeitet. Meilensteine sind klar definierte Zwischenziele mit überprüfbaren Ergebnissen, wodurch Planung messbar und Fortschritt objektiv bewertbar wird [@european_commission_pm2_2018].
 
-**Umsetzung im Projekt:**
-- Fixtermine sind in der Projektterminübersicht erfasst.
-- Der Meilensteinplan beschreibt pro Datum konkrete Ergebnisse (z. B. „UI-Prototyp sichtbar“, „GPS-Funktion implementiert“), wodurch Abweichungen früh erkennbar wurden.
+Die Fixtermine wurden in der Projektterminübersicht erfasst, und der Meilensteinplan beschrieb pro Datum konkrete Ergebnisse wie einen sichtbaren UI-Prototyp oder eine implementierte GPS-Funktion. Dadurch waren Abweichungen früh erkennbar.
 
 ### 4. Änderungsmanagement (Change Control)
 
-In Softwareprojekten entstehen Änderungswünsche fast zwangsläufig. Ohne Änderungsmanagement führt das schnell zu Scope Creep (schleichender Umfangserweiterung) und zu inkonsistenter Dokumentation. Daher wurde ein klarer Ablauf definiert: Änderungen werden zuerst besprochen, danach dokumentiert und anschließend in Projekthandbuch sowie Backlog nachgezogen. Dieses Vorgehen entspricht dem Grundprinzip, Änderungen kontrolliert zu behandeln und Entscheidungen nachvollziehbar festzuhalten [@european_commission_pm2_2018].
+In Softwareprojekten entstehen Änderungswünsche fast zwangsläufig. Ohne Änderungsmanagement führt das schnell zu Scope Creep und zu inkonsistenter Dokumentation. Daher wurde ein klarer Ablauf definiert: Änderungen werden zuerst besprochen, danach dokumentiert und anschließend in Projekthandbuch sowie Backlog nachgezogen. Dieses Vorgehen entspricht dem Grundprinzip, Änderungen kontrolliert zu behandeln und Entscheidungen nachvollziehbar festzuhalten [@european_commission_pm2_2018].
 
-**Umsetzung im Projekt:**
-- Der Ablauf „Vorgehen bei Änderungen“ ist im Projekthandbuch als Prozess beschrieben (Team-Besprechung -> Änderungsprotokoll -> Aktualisierung Handbuch/Backlog -> Vorstellung im nächsten Meeting).
+Der konkrete Ablauf bei Änderungen wurde als Prozess im Projekthandbuch beschrieben, von der Team-Besprechung über das Änderungsprotokoll bis zur Aktualisierung von Handbuch und Backlog sowie zur Vorstellung im nächsten Meeting.
 
 ### 5. Risikomanagement
 
-Risikomanagement bedeutet, potenzielle Probleme früh zu erkennen und Maßnahmen zu planen, bevor sie eintreten. Gerade bei Diplomarbeiten sind typische Risiken z. B. ungenaue Aufwandsschätzungen, Lernkurven, Ressourcenausfälle oder unklare Anforderungen. Ein Risikoregister mit Eintrittswahrscheinlichkeit, Auswirkungen und Gegenmaßnahmen ist ein bewährtes Instrument zur Steuerung [@european_commission_pm2_2018].
+Risikomanagement bedeutet, potenzielle Probleme früh zu erkennen und Maßnahmen zu planen, bevor sie eintreten. Gerade bei Diplomarbeiten sind typische Risiken ungenaue Aufwandsschätzungen, Lernkurven, Ressourcenausfälle oder unklare Anforderungen. Ein Risikoregister mit Eintrittswahrscheinlichkeit, Auswirkungen und Gegenmaßnahmen ist ein bewährtes Instrument zur Steuerung [@european_commission_pm2_2018].
 
-**Umsetzung im Projekt:**
-- Projektrisiken wurden als Tabelle dokumentiert (inkl. Eintrittswahrscheinlichkeit, Auswirkungen, Maßnahmen).
-- Beispielhafte Gegenmaßnahmen waren u. a. Zeitpuffer, klare Fixpunkte mit Betreuung sowie frühe Prototypen/Tests zur technischen Absicherung.
+Im Projekt wurden Risiken tabellarisch dokumentiert, inklusive Wahrscheinlichkeit, Auswirkungen und Maßnahmen. Als Gegenmaßnahmen wurden unter anderem Zeitpuffer, klare Fixpunkte mit Betreuung sowie frühe Prototypen und Tests zur technischen Absicherung eingesetzt.
 
 ### 6. Anforderungsmanagement mit User Stories
 
-Um Anforderungen verständlich und nutzenorientiert zu erfassen, habe ich sie als User Stories formuliert. User Stories fokussieren auf „Wer braucht was und warum?“ und sind dadurch gut priorisierbar. Die bekannte Vorlage „As a … I want … so that …“ ist weit verbreitet und unterstützt die Kommunikation, weil sie Nutzen und Ziel explizit macht [@mountaingoat_user_stories_2025; @atlassian_user_stories_2026]. Wichtig ist dabei: Eine User Story ist bewusst kurz – Details entstehen in der gemeinsamen Klärung („conversation“) und werden anschließend durch überprüfbare Kriterien abgesichert [@mountaingoat_user_stories_2025].
+Um Anforderungen verständlich und nutzenorientiert zu erfassen, habe ich sie als User Stories formuliert. User Stories fokussieren auf „Wer braucht was und warum?“ und sind dadurch gut priorisierbar. Die bekannte Vorlage „As a … I want … so that …“ ist weit verbreitet und unterstützt die Kommunikation, weil sie Nutzen und Ziel explizit macht [@mountaingoat_user_stories_2025; @atlassian_user_stories_2026]. Wichtig ist dabei, dass eine User Story bewusst kurz bleibt, während Details in der gemeinsamen Klärung entstehen und anschließend durch überprüfbare Kriterien abgesichert werden [@mountaingoat_user_stories_2025].
 
-**Umsetzung im Projekt:**
-- Zentrale Funktionen wurden als Kurzbeschreibung in User-Story-Form dokumentiert (z. B. Karte & Standort, standortbasierte Aufgaben, Fortschritt).
-- Die Stories dienen als Grundlage für die Priorisierung in Meilensteinen und als „gemeinsame Sprache“ zwischen Team und Stakeholdern.
+Im Projekt wurden zentrale Funktionen wie Karte und Standort, standortbasierte Aufgaben und Fortschritt in User-Story-Form dokumentiert. Diese Stories dienten als Grundlage für die Priorisierung in Meilensteinen und als gemeinsame Sprache zwischen Team und Stakeholdern.
 
 ### 7. Use-Case-Struktur für Abläufe, Randfälle und Systemzustände
 
 Damit aus einer knappen User Story ein umsetzbarer Ablauf wird, habe ich die Anforderungen zusätzlich in einer Use-Case-ähnlichen Struktur dokumentiert. Diese Struktur macht den Ablauf prüfbar, weil Trigger, Vor- und Nachbedingungen, Akteure, Fehlersituationen und Systemzustände explizit genannt werden. Use Cases sind dafür ein etabliertes Mittel, um funktionale Abläufe klar zu beschreiben und Missverständnisse zu reduzieren [@cockburn_writing_2001].
 
-**Umsetzung im Projekt:**
-- In den Anwendungsfällen werden Trigger, Vor-/Nachbedingungen, Akteure, Fehlersituationen und Systemzustand im Fehlerfall strukturiert beschrieben.
-- Dadurch ist nachvollziehbar, was das System im Normalfall und in Fehlerfällen tun muss (z. B. bei verweigerten Berechtigungen oder Netzwerkproblemen).
+In den Anwendungsfällen wurden Trigger, Vor- und Nachbedingungen, Akteure, Fehlersituationen und der Systemzustand im Fehlerfall strukturiert beschrieben. Dadurch wurde nachvollziehbar, was das System im Normalfall und in Fehlerfällen tun muss, etwa bei verweigerten Berechtigungen oder Netzwerkproblemen.
 
 ### 8. Akzeptanzkriterien mit Given/When/Then (BDD/Gherkin-Stil)
 
-Ein häufiger Grund für Nacharbeit ist, dass „fertig“ subjektiv interpretiert wird. Akzeptanzkriterien definieren deshalb messbar, wann eine Anforderung erfüllt ist. Die Given/When/Then-Form (aus dem BDD-/Gherkin-Umfeld) ist dafür gut geeignet, weil sie Voraussetzungen, Aktion und erwartetes Ergebnis klar trennt und sich direkt zur Prüfung verwenden lässt [@cucumber_gherkin_reference_2025; @adzic_specification_2011]. Auch in der Projektpraxis werden Akzeptanzkriterien als Brücke zwischen Anforderungen und Testbarkeit genutzt [@atlassian_acceptance_criteria_2026].
+Ein häufiger Grund für Nacharbeit ist, dass „fertig“ subjektiv interpretiert wird. Akzeptanzkriterien definieren deshalb messbar, wann eine Anforderung erfüllt ist. Die Given/When/Then-Form aus dem BDD- und Gherkin-Umfeld ist dafür gut geeignet, weil sie Voraussetzungen, Aktion und erwartetes Ergebnis klar trennt und sich direkt zur Prüfung verwenden lässt [@cucumber_gherkin_reference_2025; @adzic_specification_2011]. Auch in der Projektpraxis werden Akzeptanzkriterien als Brücke zwischen Anforderungen und Testbarkeit genutzt [@atlassian_acceptance_criteria_2026].
 
-**Umsetzung im Projekt:**
-- Der Standardablauf vieler Use Cases wird explizit „durch Akzeptanzkriterien beschrieben“ (Given/When/Then).
-- Dadurch konnten Anforderungen auch ohne formale Testautomatisierung objektiv abgenommen werden (z. B. Karte zeigt Position, Marker im Radius, Verhalten bei verweigerter Standortfreigabe).
+Im Projekt wurde der Standardablauf vieler Use Cases explizit über Akzeptanzkriterien beschrieben. Dadurch konnten Anforderungen auch ohne formale Testautomatisierung objektiv abgenommen werden, etwa wenn die Karte die Position zeigt, Marker im Radius sichtbar sind oder die Standortfreigabe verweigert wird.
 
 ### 9. Offene Punkte und Entscheidungsfindung (Conversation Points)
 
-In frühen Phasen sind nicht alle Details entscheidbar – entscheidend ist, dass offene Fragen sichtbar bleiben und nicht „untergehen“. Dafür wurden Conversation Points genutzt: eine kurze Liste von Punkten, die noch zu klären sind (z. B. Update-Strategie Standort, Radius/Filter, Offline-Verhalten, Anti-Cheat-Ansatz). Das unterstützt die schrittweise Präzisierung der Anforderungen und entspricht dem Gedanken, dass Spezifikation und gemeinsame Klärung zusammengehören [@mountaingoat_user_stories_2025; @adzic_specification_2011].
+In frühen Phasen sind nicht alle Details sofort entscheidbar. Entscheidend ist, dass offene Fragen sichtbar bleiben und nicht untergehen. Dafür wurden Conversation Points genutzt, also kurze Listen von Punkten, die noch zu klären sind, zum Beispiel bei der Update-Strategie für Standorte, bei Radius und Filter, beim Offline-Verhalten oder beim Anti-Cheat-Ansatz. Das unterstützt die schrittweise Präzisierung der Anforderungen und entspricht dem Gedanken, dass Spezifikation und gemeinsame Klärung zusammengehören [@mountaingoat_user_stories_2025; @adzic_specification_2011].
 
-**Umsetzung im Projekt:**
-- Zu jedem Use Case wurden Conversation Points dokumentiert.
-- Diese Punkte wurden als Input für Teamentscheidungen und für die Priorisierung weiterer Arbeitsschritte genutzt.
+Zu jedem Use Case wurden diese offenen Punkte dokumentiert und als Input für Teamentscheidungen sowie für die Priorisierung der nächsten Arbeitsschritte verwendet.
 
 ### 10. Projektcontrolling, Statusberichte und Qualitätssicherung
 
-Damit Fortschritt nicht nur „gefühlt“, sondern objektiv sichtbar wird, habe ich regelmäßige Statusberichte verwendet. Projektcontrolling bedeutet dabei: Ist das Projekt im Plan? Wenn nicht – welche Maßnahmen folgen daraus? Dieses Prinzip wird auch in etablierten PM-Ansätzen über Monitoring/Control und Maßnahmenableitung betont [@european_commission_pm2_2018].
+Damit Fortschritt nicht nur gefühlt, sondern objektiv sichtbar wird, habe ich regelmäßige Statusberichte verwendet. Projektcontrolling bedeutet dabei, den Plan laufend mit dem Ist-Zustand zu vergleichen und bei Abweichungen Maßnahmen abzuleiten. Dieses Prinzip wird auch in etablierten PM-Ansätzen über Monitoring, Control und Maßnahmenableitung betont [@european_commission_pm2_2018].
 
-Parallel dazu ist Qualitätssicherung ein laufender Bestandteil: Anforderungen und Umsetzungen müssen geprüft werden, bevor sie als stabil gelten. Ein verbreiteter Grundgedanke im Testing ist, dass Tests nicht nur Fehler finden, sondern auch Anforderungen/Work Products (z. B. User Stories) evaluierbar machen und damit Qualität absichern [@istqb_ctfl_2024].
+Parallel dazu ist Qualitätssicherung ein laufender Bestandteil: Anforderungen und Umsetzungen müssen geprüft werden, bevor sie als stabil gelten. Ein verbreiteter Grundgedanke im Testing ist, dass Tests nicht nur Fehler finden, sondern auch Anforderungen und Work Products wie User Stories evaluierbar machen und damit Qualität absichern [@istqb_ctfl_2024].
 
-**Umsetzung im Projekt:**
-- In der Dokumentation werden Zeiträume mit fixem Schema berichtet (Gesamtstatus, durchgeführte Arbeiten, notwendige Entscheidungen, nächste Schritte). Dadurch werden Abweichungen und Gegenmaßnahmen transparent.
-- Interne Tests der Kernfunktionen sowie Fehlerbehebungen wurden als Teil der Umsetzung geführt (u. a. in Statusberichten sichtbar).
-- Meilensteine dienten zusätzlich als „Qualitäts-Gates“ (vor Präsentationen/Abgaben musste ein stabiler Zwischenstand existieren).
+In der Dokumentation wurden Zeiträume mit einem fixen Schema berichtet, bestehend aus Gesamtstatus, durchgeführten Arbeiten, notwendigen Entscheidungen und nächsten Schritten. Dadurch wurden Abweichungen und Gegenmaßnahmen transparent. Interne Tests der Kernfunktionen sowie Fehlerbehebungen waren ein fixer Teil der Umsetzung, und Meilensteine wurden zusätzlich als Qualitäts-Gates genutzt, sodass vor Präsentationen und Abgaben ein stabiler Zwischenstand vorliegen musste.
 
 ## Praktischer Teil – Dependency Conflicts in Flutter-Projekten
 
-Ein wesentlicher Teil meiner praktischen Arbeit im Projekt bestand darin, **Dependency Conflicts** (Abhängigkeitskonflikte) zu analysieren und zu beheben. In Flutter/Dart werden externe Pakete über **pub** (Paketmanager) verwaltet und in der `pubspec.yaml` als Abhängigkeiten eingetragen [@flutter_using_packages_2026] [@dart_pub_dependencies_2026].  
-In unserer Diplomarbeit traten Konflikte vor allem dann auf, wenn **die lokal installierte Flutter-/Dart-Version zu alt** war oder wenn **Dependencies zu neu gewählt** wurden und dadurch nicht mehr zur SDK-Version oder zu Flutter-spezifischen Einschränkungen passten (insbesondere bei „pinned packages“) [@dart_pubspec_2025] [@dart_flutter_pinned_packages_2026].
+Ein wesentlicher Teil meiner praktischen Arbeit im Projekt bestand darin, Dependency Conflicts zu analysieren und zu beheben. In Flutter und Dart werden externe Pakete über pub verwaltet und in der pubspec.yaml als Abhängigkeiten eingetragen [@flutter_using_packages_2026] [@dart_pub_dependencies_2026]. In unserer Diplomarbeit traten Konflikte vor allem dann auf, wenn die lokal installierte Flutter- oder Dart-Version zu alt war oder wenn Dependencies zu neu gewählt wurden und dadurch nicht mehr zur SDK-Version oder zu Flutter-spezifischen Einschränkungen passten, insbesondere bei pinned packages [@dart_pubspec_2025] [@dart_flutter_pinned_packages_2026].
 
 ### 1. Grundlagen: Was sind Dependencies und warum können sie kollidieren?
 
-Eine **Dependency** ist ein externes Paket, das das Projekt benötigt. Pub unterscheidet dabei:
+Eine Dependency ist ein externes Paket, das das Projekt benötigt. Pub unterscheidet direkte Dependencies, die im Projekt explizit eingetragen sind, und transitive Dependencies, die indirekt über andere Pakete hineinkommen [@dart_pub_dependencies_2026].
 
-- **Direkte Dependencies:** Pakete, die das Projekt unmittelbar in der `pubspec.yaml` angibt.
-- **Transitive Dependencies:** Pakete, die indirekt hineinkommen, weil eine direkte Dependency ihrerseits wiederum andere Pakete benötigt [@dart_pub_dependencies_2026].
-
-Ein **Dependency Conflict** liegt vor, wenn pub **keine Kombination von Paketversionen** finden kann, die alle Anforderungen gleichzeitig erfüllt. In der Praxis zeigt sich das meist als Fehler beim Ausführen von `flutter pub get`, typischerweise mit der Meldung **„version solving failed“** [@dart_pub_get_2025] [@dart_pubgrub_solver_2026].  
-Der Kern des Problems ist: Pub muss für das gesamte Projekt eine **konsistente Menge** von Paketversionen finden, sodass alle Versionseinschränkungen („Constraints“) zusammenpassen.
+Ein Dependency Conflict liegt vor, wenn pub keine Kombination von Paketversionen finden kann, die alle Anforderungen gleichzeitig erfüllt. In der Praxis zeigt sich das meist als Fehler bei flutter pub get, typischerweise mit der Meldung „version solving failed“ [@dart_pub_get_2025] [@dart_pubgrub_solver_2026]. Der Kern des Problems ist, dass pub für das gesamte Projekt eine konsistente Menge von Paketversionen finden muss, damit alle Constraints zusammenpassen.
 
 ### 2. Wie Versionsangaben funktionieren: SemVer, Constraints und Caret-Syntax
 
-Damit Pakete unabhängig voneinander weiterentwickelt werden können, basiert das Ökosystem auf **Versionierung** und **Versionsbereichen** statt fixen Einzelversionen. Das zentrale Prinzip ist dabei „Semantic Versioning“ (MAJOR.MINOR.PATCH) [@semver_2013] [@dart_pub_versioning_2025].
+Damit Pakete unabhängig voneinander weiterentwickelt werden können, basiert das Ökosystem auf Versionierung und Versionsbereichen statt auf fixen Einzelversionen. Das zentrale Prinzip ist Semantic Versioning mit MAJOR.MINOR.PATCH [@semver_2013] [@dart_pub_versioning_2025].
 
-In der `pubspec.yaml` werden Versionen meist als **Bereich** angegeben, z. B.:
-
-- `'>=1.2.0 <2.0.0'` (expliziter Bereich)
-- `^1.2.0` (Caret-Syntax, erlaubt kompatible Updates innerhalb desselben Major-Bereichs) [@dart_pub_dependencies_2026] [@dart_pubspec_2025]
-
-Diese Flexibilität ist gewollt (Updates und Bugfixes können automatisch genutzt werden), erhöht aber die Chance auf Konflikte, sobald mehrere Pakete unterschiedliche Anforderungen an dieselbe Dependency stellen.
+In der pubspec.yaml werden Versionen meist als Bereich angegeben, etwa als expliziter Bereich wie ">=1.2.0 <2.0.0" oder mit Caret-Syntax wie "^1.2.0", die kompatible Updates innerhalb desselben Major-Bereichs erlaubt [@dart_pub_dependencies_2026] [@dart_pubspec_2025]. Diese Flexibilität ist gewollt, erhöht aber die Chance auf Konflikte, sobald mehrere Pakete unterschiedliche Anforderungen an dieselbe Dependency stellen.
 
 ### 3. Warum „version solving failed“ passiert: PubGrub und das „eine Version pro Paket“-Prinzip
 
-Pub verwendet einen Version-Solver (PubGrub). Der Solver versucht, aus allen möglichen Versionen aller Pakete eine Auswahl zu treffen, sodass:
+Pub verwendet mit PubGrub einen Version-Solver. Dieser versucht, aus allen möglichen Versionen aller Pakete eine Auswahl zu treffen, bei der jede gewählte Version ihre Abhängigkeiten erfüllt, pro Paket im gesamten Projekt nur eine Version aktiv ist und keine unnötigen Pakete gewählt werden [@dart_pubgrub_solver_2026].
 
-- jede gewählte Version die Dependencies erfüllt,
-- **nur eine Version pro Paket** im gesamten Projekt ausgewählt wird,
-- und keine unnötigen Pakete dabei sind [@dart_pubgrub_solver_2026].
-
-Wenn der Solver auf einen Widerspruch stößt, muss er zurückgehen („backtracking“) und Alternativen probieren. Gibt es keine Lösung, wird der Konflikt als „version solving failed“ ausgegeben – inklusive einer Kette, **welches Paket welche Version verlangt** (diese Kette ist der wichtigste Diagnosehinweis) [@dart_pubgrub_solver_2026].
+Wenn der Solver auf einen Widerspruch stößt, geht er per Backtracking zurück und probiert Alternativen. Gibt es keine Lösung, wird der Konflikt als „version solving failed“ ausgegeben, inklusive einer Kette, welches Paket welche Version verlangt. Genau diese Kette ist meist der wichtigste Diagnosehinweis [@dart_pubgrub_solver_2026].
 
 ### 4. Typische Konfliktarten in Flutter (und warum sie in Schulprojekten so häufig sind)
 
 #### 4.1 Direkte Versionskonflikte
-Zwei Dependencies verlangen inkompatible Versionen derselben Library. Beispielprinzip:
-- Paket A verlangt `foo <2.0.0`
-- Paket B verlangt `foo >=2.0.0`
--> keine Version erfüllt beides.
+Direkte Versionskonflikte entstehen, wenn zwei Dependencies inkompatible Versionen derselben Library verlangen. Wenn etwa Paket A "foo <2.0.0" und Paket B "foo >=2.0.0" fordert, existiert keine Version, die beide Bedingungen gleichzeitig erfüllt.
 
 #### 4.2 Transitive Konflikte („Dependency Hell“)
-Sehr häufig kollidieren nicht direkte, sondern **transitive** Anforderungen. Man sieht dann in der Fehlermeldung, dass ein Paket über mehrere Stufen eine bestimmte Version erzwingt [@dart_pub_dependencies_2026].  
-Gerade in Flutter-Apps wird das durch Plugins verstärkt, weil diese oft viele transitive Abhängigkeiten mitbringen.
+Sehr häufig kollidieren nicht direkte, sondern transitive Anforderungen. In der Fehlermeldung sieht man dann, dass ein Paket über mehrere Stufen eine bestimmte Version erzwingt [@dart_pub_dependencies_2026]. Gerade in Flutter-Apps wird das durch Plugins verstärkt, weil diese oft viele transitive Abhängigkeiten mitbringen.
 
 #### 4.3 SDK-Constraints: Dart-/Flutter-Version passt nicht
-Pakete können Mindestanforderungen an die **Dart SDK** (und optional auch an **Flutter**) definieren:
-
-```yaml
-environment:
-  sdk: ^3.2.0
-  flutter: '>=3.22.0'
-```
-
-Wenn die lokal installierte SDK-Version darunter liegt, darf pub das Paket nicht auswählen. Pub sucht dann eine ältere Paketversion, die noch kompatibel wäre – wenn es diese nicht gibt, entsteht ein unlösbarer Konflikt [@dart_pubspec_2025].  
-Das war in unserem Projekt eine der häufigsten Ursachen: **Flutter/Dart war lokal veraltet**, während einzelne Packages bereits neuere SDK-Funktionen oder Constraints voraussetzten.
+Pakete können Mindestanforderungen an Dart und optional auch an Flutter definieren, zum Beispiel eine Dart-SDK ab Version 3.2.0 und Flutter ab Version 3.22.0. Wenn die lokal installierte SDK darunter liegt, darf pub das Paket nicht auswählen. Pub sucht dann eine ältere, noch kompatible Paketversion, und wenn es diese nicht gibt, entsteht ein unlösbarer Konflikt [@dart_pubspec_2025]. Das war in unserem Projekt eine der häufigsten Ursachen, weil die lokale Flutter- und Dart-Version zeitweise veraltet war, während einzelne Packages bereits neuere SDK-Funktionen oder Constraints voraussetzten.
 
 #### 4.4 Flutter „Pinned Packages“ (besonders relevant in unserem Projekt)
-Flutter pinnt bestimmte Paketversionen innerhalb des SDK auf konkrete Versionen. Zweck: Eine App, die mit einer bestimmten Flutter-Version gebaut wurde, soll nicht plötzlich durch neue Paket-Releases „von außen“ brechen [@dart_flutter_pinned_packages_2026].  
-Das hat eine direkte Auswirkung:
-
-- Wenn Flutter z. B. `package:path` auf eine bestimmte Version pinnt, muss die eigene `pubspec.yaml` diesen Bereich **einschließen**.
-- Das gilt **auch transitiv**: Wenn ein verwendetes Plugin eine inkompatible `path`-Constraint hat, scheitert der Solver [@dart_flutter_pinned_packages_2026].
-
-Für uns war das praktisch ein wiederkehrendes Muster: **Dependency-Versionen waren zu neu** (oder zu eng eingeschränkt), sodass sie die von Flutter gepinnten Versionen nicht mehr akzeptierten.
+Flutter pinnt bestimmte Paketversionen innerhalb des SDK auf konkrete Versionen, damit eine App mit einer bestimmten Flutter-Version nicht plötzlich durch externe Paket-Releases bricht [@dart_flutter_pinned_packages_2026]. Dadurch muss die eigene pubspec.yaml diese gepinnten Bereiche einschließen, und das gilt auch transitiv. Wenn also ein verwendetes Plugin eine inkompatible Constraint auf ein gepinntes Paket wie path hat, scheitert der Solver [@dart_flutter_pinned_packages_2026]. Für uns war das ein wiederkehrendes Muster, weil Dependency-Versionen teils zu neu oder zu eng eingeschränkt waren.
 
 ### 5. Vorgehensweise bei der Diagnose (wie ich Konflikte systematisch zerlegt habe)
 
-Damit das Lösen nicht zum „Trial-and-Error“ wird, bin ich in der Praxis immer gleich vorgegangen:
-
-1. **Fehlermeldung von `flutter pub get` lesen**  
-   Die Meldung enthält fast immer den entscheidenden Hinweis: welches Paket welche Version verlangt und wo es kollidiert [@dart_pub_get_2025] [@dart_pubgrub_solver_2026].
-
-2. **Dependency-Graph prüfen (wer zieht was rein?)**  
-   Mit `dart pub deps` lässt sich der Dependency-Tree darstellen, wodurch sichtbar wird, welches Paket die problematische transitive Dependency überhaupt hineinbringt [@dart_pub_deps_2025].
-
-3. **Update-Optionen objektiv prüfen statt blind updaten**  
-   `dart pub outdated` zeigt, welche Updates möglich wären (inkl. „resolvable“) und hilft, realistische Upgrade-Pfade zu finden [@dart_pub_outdated_2025].
-
-Diese drei Schritte haben in der Praxis meistens gereicht, um klar zu entscheiden, ob ein **SDK-Upgrade** nötig ist oder ob man nur eine **Dependency-Version anpassen** muss.
+Damit das Lösen nicht zum Trial-and-Error wird, bin ich in der Praxis immer gleich vorgegangen. Zuerst habe ich die Fehlermeldung von flutter pub get gelesen, weil sie fast immer zeigt, welches Paket welche Version verlangt und wo der Konflikt liegt [@dart_pub_get_2025] [@dart_pubgrub_solver_2026]. Danach habe ich mit dart pub deps den Dependency-Graph geprüft, um den Ursprung problematischer transitiver Dependencies zu sehen [@dart_pub_deps_2025]. Abschließend habe ich mit dart pub outdated die realistisch auflösbaren Update-Pfade geprüft, statt blind zu aktualisieren [@dart_pub_outdated_2025]. Diese drei Schritte reichten in der Praxis meist aus, um klar zwischen SDK-Upgrade und Dependency-Anpassung zu entscheiden.
 
 ### 6. Lösungsstrategien (Beheben von Dependency Conflicts)
 
 #### 6.1 Flutter-/Dart-SDK aktualisieren (sauberste Lösung bei „SDK zu alt“)
-Wenn Packages eine neuere SDK voraussetzen, ist ein SDK-Upgrade häufig der sinnvollste Weg, weil es die Kompatibilitätsbasis erweitert. Flutter dokumentiert den Update-Prozess über `flutter upgrade` [@flutter_upgrade_2026].  
-Das war bei uns oft die schnellste Lösung, wenn ein Package eine Mindest-Dart-Version verlangt hat, die wir lokal noch nicht erfüllt haben.
-
-**Umsetzung im Projekt**
-- Bei Konflikten mit zu hohen SDK-Constraints wurde die lokale Flutter-Version aktualisiert.
-- Danach wurden Dependencies erneut aufgelöst, um zu prüfen, ob sich der Konflikt „von selbst“ erledigt (was häufig der Fall war).
+Wenn Packages eine neuere SDK voraussetzen, ist ein SDK-Upgrade oft der sinnvollste Weg, weil es die Kompatibilitätsbasis erweitert. Flutter dokumentiert den Update-Prozess über den Befehl flutter upgrade [@flutter_upgrade_2026]. Im Projekt war das häufig die schnellste Lösung, wenn eine Mindest-Dart-Version lokal noch nicht erfüllt war. Konkret wurde bei zu hohen SDK-Constraints die lokale Flutter-Version aktualisiert und danach erneut aufgelöst, um zu prüfen, ob der Konflikt damit bereits verschwindet.
 
 #### 6.2 Dependency-Versionen anpassen (typisch bei „Dependency zu neu“)
-Wenn ein Upgrade der SDK nicht möglich oder nicht sinnvoll ist, bleibt der Gegenweg:
-- Dependency-Version **downgraden** oder
-- Constraint **so anpassen**, dass sie kompatible Versionen zulässt [@dart_pub_dependencies_2026] [@dart_pubspec_2025].
+Wenn ein SDK-Upgrade nicht möglich oder nicht sinnvoll ist, bleibt meist das Anpassen von Dependency-Versionen und Constraints [@dart_pub_dependencies_2026] [@dart_pubspec_2025]. In der Praxis bedeutete das, zu neue Paketversionen auf kompatible Stände zurückzusetzen und Constraints so zu wählen, dass Flutter-pinned Versionen nicht ausgeschlossen werden [@dart_flutter_pinned_packages_2026].
 
-Gerade bei pinned packages ist das entscheidend: Die eigene Constraint muss die gepinnte Version enthalten [@dart_flutter_pinned_packages_2026].
+#### 6.3 Constraints weiten statt unnötig fixieren
+Wenn eine Dependency zu eng eingetragen ist, kann das Konflikte verursachen, obwohl eigentlich kompatible Versionen existieren. Flutter nennt das explizit als Workaround bei Pinning-Problemen [@dart_flutter_pinned_packages_2026], und Dart empfiehlt die Caret-Syntax als Standard, weil sie Updates zulässt, aber trotzdem einen oberen Sicherheitsrahmen setzt [@dart_pub_dependencies_2026]. Im Projekt wurden Constraints deshalb wo möglich erweitert, um den Solver nicht unnötig zu blockieren.
 
-**Umsetzung im Projekt**
-- Zu neue Paketversionen wurden auf kompatible Versionen zurückgesetzt, wenn Flutter/Dart lokal nicht passend war.
-- Constraints wurden so gewählt, dass sie die Flutter-pinned Versionen nicht ausschließen.
-
-#### 6.3 Constraints „weiten“ (widen constraints) statt unnötig fixieren
-Wenn eine Dependency „zu eng“ eingetragen ist (z. B. ein sehr kleiner Bereich), kann das Konflikte erzeugen, obwohl eigentlich kompatible Versionen existieren. Flutter nennt das explizit als Workaround bei Pinning-Problemen [@dart_flutter_pinned_packages_2026].  
-Dart empfiehlt außerdem Caret-Syntax als Standard, weil sie Updates zulässt, aber trotzdem einen oberen Sicherheitsrahmen setzt [@dart_pub_dependencies_2026].
-
-**Umsetzung im Projekt**
-- Wo möglich wurden Constraints erweitert, um den Solver nicht unnötig zu blockieren.
-
-#### 6.4 `dependency_overrides` (kurzfristige Notlösung)
-Mit `dependency_overrides` kann man pub zwingen, eine Version zu verwenden, auch wenn das nicht zu allen Constraints passt. Flutter/Dart warnen dabei ausdrücklich: Man konsumiert dann Kombinationen, die nicht gemeinsam getestet wurden, was zu Analyse- oder Runtime-Problemen führen kann [@dart_flutter_pinned_packages_2026] [@dart_pub_dependencies_2026].
-
-**Umsetzung im Projekt**
-- Overrides wurden nur als kurzfristige Maßnahme betrachtet und sollten dokumentiert sowie später wieder entfernt werden.
+#### 6.4 dependency_overrides (kurzfristige Notlösung)
+Mit dependency_overrides kann man pub zwingen, eine Version zu verwenden, auch wenn sie nicht zu allen Constraints passt. Flutter und Dart warnen dabei ausdrücklich, weil solche Kombinationen nicht zwingend gemeinsam getestet wurden und Analyse- oder Runtime-Probleme verursachen können [@dart_flutter_pinned_packages_2026] [@dart_pub_dependencies_2026]. Im Projekt wurden Overrides deshalb nur als kurzfristige Maßnahme genutzt, dokumentiert und später wieder entfernt.
 
 #### 6.5 Lockfile bewusst nutzen (Reproduzierbarkeit im Team)
-Pub erzeugt ein `pubspec.lock`, das die konkret aufgelösten Versionen festhält. Für **Application Packages** empfiehlt Dart ausdrücklich, dieses Lockfile zu committen, damit transitive Updates nicht „unbemerkt“ passieren und alle Entwickler dieselben Versionen verwenden [@dart_private_files_2024].  
-Das reduziert typische Team-Probleme, bei denen derselbe Code auf zwei Rechnern unterschiedlich auflöst.
-
-**Umsetzung im Projekt**
-- `pubspec.lock` wurde als Stabilitätsanker betrachtet, um „bei mir geht’s, bei dir nicht“ zu vermeiden.
-- Änderungen an Dependencies wurden dadurch transparenter, weil sie im Diff sichtbar werden [@dart_private_files_2024].
+Pub erzeugt mit pubspec.lock die konkret aufgelösten Versionen. Für Application Packages empfiehlt Dart, dieses Lockfile zu committen, damit transitive Updates nicht unbemerkt passieren und alle Entwickler mit denselben Versionen arbeiten [@dart_private_files_2024]. Das reduziert typische Team-Probleme, bei denen derselbe Code auf zwei Rechnern unterschiedlich auflöst. Im Projekt wurde pubspec.lock daher als Stabilitätsanker genutzt, und Änderungen an Dependencies wurden dadurch im Diff transparent.
 
 ### 7. Prävention (Verhindern statt Reparieren)
 
 #### 7.1 Toolchain vereinheitlichen (Flutter-Version im Team fixieren)
-Viele Konflikte entstehen nicht durch „schlechte Dependencies“, sondern durch unterschiedliche lokale SDK-Stände. Präventiv hilft daher vor allem: **eine definierte Flutter-Version als Projektstandard** und Upgrades bewusst steuern [@flutter_upgrade_2026].
+Viele Konflikte entstehen nicht durch schlechte Dependencies, sondern durch unterschiedliche lokale SDK-Stände. Präventiv hilft daher vor allem eine definierte Flutter-Version als Projektstandard und ein bewusst gesteuertes Upgrade-Vorgehen [@flutter_upgrade_2026].
 
 #### 7.2 Updates geplant durchführen (kleine Schritte statt große Sprünge)
-Statt seltene „Mega-Upgrades“ ist es stabiler, regelmäßig zu prüfen:
-- was veraltet ist (`dart pub outdated`) [@dart_pub_outdated_2025]
-- welche Updates pub überhaupt sinnvoll auflösen kann [@dart_pub_dependencies_2026].
+Statt seltener Mega-Upgrades ist es stabiler, regelmäßig den Zustand zu prüfen, etwa was veraltet ist und welche Updates pub tatsächlich sinnvoll auflösen kann. Dafür sind dart pub outdated und die dokumentierten Abhängigkeitsregeln hilfreich [@dart_pub_outdated_2025] [@dart_pub_dependencies_2026].
 
 #### 7.3 Constraints sinnvoll setzen
-- nicht zu eng (führt unnötig zu Konflikten),
-- nicht „any“ (führt zu unkontrollierten Kombinationen),
-- bevorzugt Caret-/Range-Constraints [@dart_pub_dependencies_2026] [@dart_pub_versioning_2025].
+In der Praxis sollten Constraints weder unnötig eng noch komplett offen gewählt werden. Zu enge Bereiche erzeugen vermeidbare Konflikte, und "any" führt zu unkontrollierten Kombinationen. Sinnvoll sind meist Caret- oder Range-Constraints [@dart_pub_dependencies_2026] [@dart_pub_versioning_2025].
 
 #### 7.4 CI/Build stabilisieren (Lockfile erzwingen)
-Wenn ein Lockfile genutzt wird, kann man in automatisierten Builds verhindern, dass die Dependency-Auflösung plötzlich anders ausfällt. Dart dokumentiert dafür Optionen wie `--enforce-lockfile`, um sicherzustellen, dass die Auflösung exakt dem Lockfile entspricht [@dart_pub_dependencies_2026] [@dart_pub_get_2025].
+Wenn ein Lockfile genutzt wird, kann in automatisierten Builds verhindert werden, dass die Dependency-Auflösung plötzlich anders ausfällt. Dart dokumentiert dafür Optionen wie --enforce-lockfile, um sicherzustellen, dass die Auflösung exakt dem Lockfile entspricht [@dart_pub_dependencies_2026] [@dart_pub_get_2025].
 
 ### 8. Bezug zur Diplomarbeit: Warum bei uns fast immer „SDK vs. Dependency“ der Kern war
 
-Im Projekt zeigte sich ein sehr typisches Flutter-Schulprojekt-Muster:
+Im Projekt zeigte sich ein typisches Flutter-Schulprojekt-Muster: Die lokale Flutter- und Dart-Version war zeitweise hinter dem Ökosystem zurück, während einzelne Packages bereits neue Mindestanforderungen oder neue transitive Abhängigkeiten mitbrachten [@dart_pubspec_2025]. Zusätzlich entstanden Konflikte durch Flutter pinned packages, weil Flutter bestimmte Paketversionen festlegt, die in der gesamten Auflösung berücksichtigt werden müssen [@dart_flutter_pinned_packages_2026].
 
-- Eine lokale Flutter-/Dart-Version war zeitweise **hinter dem Ökosystem zurück**, während einzelne Packages bereits neue Mindestanforderungen oder neue transitive Abhängigkeiten mitbrachten [@dart_pubspec_2025].
-- Zusätzlich kamen Konflikte durch **Flutter pinned packages**, weil Flutter bestimmte Paketversionen festlegt und diese in der gesamten Auflösung berücksichtigt werden müssen [@dart_flutter_pinned_packages_2026].
-
-Dadurch waren die praktisch wirksamen Lösungen in der Regel eindeutig:
-- entweder **Flutter upgraden**, wenn die SDK zu alt ist [@flutter_upgrade_2026],
-- oder **Dependency-Versionen/Constraints anpassen**, damit sie zur vorhandenen SDK- und Pinning-Situation passen [@dart_flutter_pinned_packages_2026] [@dart_pub_dependencies_2026].
+Dadurch waren die wirksamen Lösungen in der Praxis meist eindeutig. Entweder musste Flutter aktualisiert werden, wenn die SDK zu alt war [@flutter_upgrade_2026], oder Dependency-Versionen und Constraints mussten so angepasst werden, dass sie zur vorhandenen SDK- und Pinning-Situation passen [@dart_flutter_pinned_packages_2026] [@dart_pub_dependencies_2026].
