@@ -3,367 +3,413 @@
 
 ## Theorie
 
-Dieses Kapitel dient als theoretische Grundlage für die im weiteren Verlauf beschriebene praktische Umsetzung einer standortbasierten Schnitzeljagd-Applikation. Ziel ist es, auch Leserinnen und Lesern ohne vertiefte Kenntnisse im Bereich mobiler App-Entwicklung ein grundlegendes Verständnis der eingesetzten Technologien, Konzepte und Architekturentscheidungen zu vermitteln.
+Dieses Kapitel dient als theoretische Grundlage für die im weiteren Verlauf beschriebene praktische Umsetzung einer standortbasierten Schnitzeljagd-Applikation. Ziel ist es, auch Leserinnen und Lesern ohne vertiefte Kenntnisse im Bereich mobiler App-Entwicklung ein grundlegendes Verständnis der eingesetzten Technologien, Konzepte und Architekturentscheidungen zu vermitteln. Die vorgestellten Inhalte bilden den notwendigen Kontext, um die praktischen Implementierungen nachvollziehen und bewerten zu können.
 
-Die vorgestellten Inhalte bilden den notwendigen Kontext, um die praktischen Implementierungen nachvollziehen und bewerten zu können.
+### 1. Grundlagen mobiler Applikationen
 
-### 2 Grundlagen mobiler Anwendungen
+Mobile Applikationen sind Softwareprogramme, die speziell für den Einsatz auf mobilen Endgeräten wie Smartphones oder Tablets entwickelt werden. Sie unterscheiden sich von klassischen Desktop-Anwendungen insbesondere durch eingeschränkte Hardware-Ressourcen (Akku, Rechenleistung), die Notwendigkeit energieeffizienter Programmierung, den Umgang mit Sensoren (z. B. GPS, Kamera), wechselnde Netzwerkverbindungen und asynchrone Abläufe.
 
-#### 2.1 Eigenschaften mobiler Software
+Insbesondere standortbasierte Anwendungen stellen hohe Anforderungen an Performance, Genauigkeit und Sicherheit, da sie kontinuierlich Sensordaten verarbeiten und oft personenbezogene Informationen speichern. Standortdaten gelten in der Praxis als besonders sensibel, weil sie Rückschlüsse auf Bewegungsprofile zulassen. Daraus ergeben sich erhöhte Anforderungen an Datensparsamkeit, Zugriffskontrolle und nachvollziehbare Sicherheitsmechanismen.
 
-Mobile Anwendungen unterscheiden sich in mehreren Punkten von
-klassischen Desktop‑Programmen. Während Desktop‑Programme meist auf
-leistungsstarker Hardware laufen, müssen mobile Anwendungen mit deutlich
-eingeschränkten Ressourcen arbeiten.
+#### 1.1 Standortbestimmung und Messfehler
 
-Typische Herausforderungen sind begrenzte Akkukapazität, geringere
-Rechenleistung, instabile Internetverbindungen, unterschiedliche
-Hardwareplattformen und der Zugriff auf Gerätesensoren.
+In der Alltagssprache wird häufig von „GPS“ gesprochen, technisch handelt es sich meist um GNSS (Global Navigation Satellite Systems). Smartphones kombinieren mehrere Quellen, um eine möglichst stabile Position zu liefern. Dazu gehören Satellitensignale, Mobilfunkzellen, WLAN-Informationen sowie Sensorfusion (z. B. Beschleunigungs- und Gyrosensor). In dicht bebauten Bereichen oder bei Abschattung (Gebäude, Wald) kann die Genauigkeit schwanken. Die Folge sind Positionen, die „springen“ oder sich trotz Stillstand leicht verändern.
 
-Insbesondere standortbasierte Anwendungen müssen kontinuierlich
-Positionsdaten verarbeiten. Diese Positionsdaten stammen aus
-verschiedenen Quellen wie GPS, Mobilfunknetz oder WLAN‑Ortung. Die
-Genauigkeit dieser Daten kann stark variieren, weshalb Anwendungen
-Mechanismen implementieren müssen, um mit ungenauen Standortdaten
-umgehen zu können.
+Für GeoQuest ist daher weniger die theoretisch exakteste Position entscheidend, sondern ein robustes Systemverhalten: Stationen werden innerhalb eines toleranten Radius freigeschaltet, und das System reduziert unnötige Updates, die nur durch Messrauschen entstehen.
 
-------------------------------------------------------------------------
+#### 1.2 Energieverbrauch und Effizienz
 
-### 3 Systemarchitektur der Anwendung
+Kontinuierliches Standorttracking zählt zu den energieintensivsten Funktionen mobiler Geräte. Hohe Genauigkeit führt zu höherem Akkuverbrauch, weil Sensoren häufiger aktiv sind. Zusätzlich können Netzwerkverkehr und Datenbankzugriffe entstehen, wenn Positionen gespeichert werden. Aus diesem Grund setzen mobile Anwendungen Filtermechanismen ein. Ein typischer Mechanismus ist ein Distanzfilter: Updates werden nur dann als relevant behandelt, wenn sich der Nutzer um mindestens eine bestimmte Distanz bewegt hat. Dadurch werden Rechenlast, Akkuverbrauch und Backend-Kosten reduziert.
 
-#### 3.1 Gesamtüberblick
+### 2. Flutter als Entwicklungsframework
 
-Die GeoQuest Anwendung basiert auf einer Client‑Server‑Architektur.
-Dabei wird zwischen zwei Hauptkomponenten unterschieden.
+Flutter ist ein von Google entwickeltes Open-Source-Framework zur plattformübergreifenden Entwicklung mobiler Applikationen. Mit einer einzigen Codebasis können Anwendungen für Android, iOS, Web und Desktop erstellt werden.
 
-Client: - Mobile App - Benutzeroberfläche - Standortermittlung -
-Spiellogik
+#### 2.1 Vorteile von Flutter
 
-Backend: - Authentifizierung - Datenbank - Zugriffskontrolle -
-Datenspeicherung
+- Plattformübergreifend: Ein Code für mehrere Betriebssysteme
+- Hohe Performance: Direkte Kompilierung zu nativen Maschinencode
+- Reaktive UI: Benutzeroberflächen werden deklarativ beschrieben
+- Hot Reload: Änderungen sind sofort sichtbar
+- Große Community: Umfangreiche Dokumentation und Paketlandschaft
 
-#### 3.2 Architekturdiagramm
+Die Programmiersprache Dart unterstützt asynchrone Programmierung durch `Future`, `async` und `await`, was für Netzwerk- und Standortabfragen essenziell ist.
 
-``` mermaid
-flowchart TD
+#### 2.2 Technischer Hintergrund: Dart, Futures und Streams
 
-User --> MobileApp
-MobileApp --> FirebaseAuth
-MobileApp --> FirestoreDB
+Dart verwendet ein Event-Loop-Prinzip. Damit bleibt die Benutzeroberfläche responsiv, auch wenn Netzwerkzugriffe oder Sensorabfragen laufen. Ein Future steht für ein einmaliges Ergebnis in der Zukunft (z. B. „Dokument aus Firestore laden“). Ein Stream steht für eine Folge von Ereignissen (z. B. Standortupdates). GeoQuest nutzt Streams, weil Standortdaten nicht einmalig, sondern fortlaufend anfallen. Dadurch ist das Programmiermodell klar: Der Code reagiert auf neue Events, statt aktiv ständig nach neuen Daten zu fragen.
 
-FirebaseAuth --> GoogleCloud
-FirestoreDB --> GoogleCloud
+### 3. Firebase als Backend-Plattform
 
-FirestoreDB --> Users
-FirestoreDB --> Hunts
-FirestoreDB --> PlayerLocation
-FirestoreDB --> Teams
-```
+Firebase ist eine Backend-as-a-Service-Plattform (BaaS), die eine Vielzahl von Diensten für mobile Anwendungen bereitstellt. In dieser Diplomarbeit werden insbesondere Firebase Authentication und Cloud Firestore verwendet.
 
-Dieses Architekturmodell bietet mehrere Vorteile. Dazu gehören eine
-klare Trennung zwischen Frontend und Backend, eine hohe Skalierbarkeit
-sowie eine einfache Wartbarkeit.
+Ein BaaS-Ansatz verschiebt typische Serveraufgaben in einen verwalteten Cloud-Dienst. Das reduziert Administrationsaufwand (Serverbetrieb, Updates, Skalierung) und erlaubt, sich stärker auf die Anwendungslogik zu konzentrieren. Gleichzeitig verschiebt sich Verantwortung in Richtung Konfiguration und Sicherheitsregeln: Security Rules ersetzen in vielen Fällen klassische serverseitige Zugriffskontrollen.
 
-------------------------------------------------------------------------
+#### 3.1 Firebase Authentication
 
-### 4 Flutter als Entwicklungsplattform
+Firebase Authentication ermöglicht eine sichere Benutzerregistrierung und -anmeldung. Nach erfolgreicher Authentifizierung erhält jeder Benutzer eine eindeutige Kennung (UID). Diese UID dient als zentrales Referenzelement für Benutzerprofile, Standortdaten und Spielfortschritt.
 
-Flutter ist ein Open‑Source Framework von Google zur Entwicklung
-plattformübergreifender Anwendungen. Mit Flutter kann eine einzige
-Codebasis verwendet werden, um Anwendungen für verschiedene Plattformen
-zu erstellen. Dazu gehören Android, iOS, Web und Desktop. Dadurch
-reduziert sich der Entwicklungsaufwand erheblich.
+Vorteile:
+- Keine eigene Passwortverwaltung notwendig
+- Sichere Token-basierte Authentifizierung
+- Unterstützung mehrerer Login-Methoden
 
-#### 4.2 Programmiersprache Dart
+Technisch basiert Firebase Authentication auf Tokens (ID Tokens, meist JWT). Beim Zugriff auf Firestore wird serverseitig geprüft, ob das Token gültig ist. In den Security Rules ist die Identität dann über `request.auth.uid` verfügbar. Damit kann Firestore ohne eigenen Server sicher entscheiden, ob ein Zugriff erlaubt ist.
 
-Flutter verwendet die Programmiersprache Dart. Dart ist eine
-objektorientierte Programmiersprache mit Eigenschaften wie starker
-Typisierung, Garbage Collection, asynchroner Programmierung und hoher
-Performance.
+#### 3.2 Cloud Firestore
 
-Ein Beispiel für eine asynchrone Datenbankabfrage in Dart:
+Cloud Firestore ist eine skalierbare NoSQL-Datenbank, die Daten in Form von Collections und Documents speichert.
 
-``` dart
-Future<void> loadUser() async {
-  final snapshot = await FirebaseFirestore.instance
-      .collection("Users")
-      .doc(userId)
-      .get();
-}
-```
+Eigenschaften von Firestore:
+- Dokumentenbasiertes Datenmodell
+- Echtzeit-Synchronisation
+- Offline-Unterstützung
+- Flexible Datenstrukturen
+- Integrierte Sicherheitsregeln
 
-------------------------------------------------------------------------
+Firestore eignet sich besonders für mobile Anwendungen, da gezielte Datenabfragen mit geringer Latenz möglich sind. Zusätzlich bietet Firestore einen lokalen Cache, wodurch Daten auch bei kurzzeitig schlechter Verbindung verfügbar bleiben. Wichtig ist dabei: Der Cache ersetzt nicht die serverseitige Sicherheitsprüfung. Security Rules werden serverseitig angewandt, bevor Writes final akzeptiert werden.
 
-### 5 Backend‑as‑a‑Service Architektur
+### 4. NoSQL-Datenmodellierung
 
-Bei klassischen Webanwendungen wird ein eigener Server betrieben. Dieser
-Server übernimmt Aufgaben wie API‑Bereitstellung, Authentifizierung,
-Datenbankzugriffe und Lastverteilung. Solche Systeme werden häufig mit
-Technologien wie Spring Boot, Node.js oder Django entwickelt.
+Im Gegensatz zu relationalen Datenbanken verwendet Firestore kein Tabellenmodell mit festen Beziehungen, sondern ein dokumentenorientiertes Schema.
 
-Backend‑as‑a‑Service Plattformen übernehmen diese Aufgaben automatisch.
-Bekannte Plattformen sind Firebase, Supabase oder AWS Amplify. In diesem
-Projekt wurde Firebase verwendet.
+Zentrale Konzepte:
+- Collection: Sammlung von Dokumenten
+- Document: JSON-ähnliche Datenstruktur
+- Subcollection: Verschachtelte Collection innerhalb eines Dokuments
 
-------------------------------------------------------------------------
+#### 4.1 Query-driven Data Modeling
 
-### 6 Firebase Plattform
+Ein wichtiger Unterschied zu relationalen Datenbanken ist, dass Firestore keine Joins wie in SQL unterstützt. Daraus folgt: Das Datenmodell wird stark nach den Abfragen gestaltet, die die Anwendung tatsächlich benötigt. Dieses Prinzip wird als query-driven data modeling bezeichnet. Für GeoQuest bedeutet das, dass häufig genutzte Zugriffe als „einfache“ Reads gestaltet sind (Point Reads oder wenige Collection Queries), um Latenz und Kosten gering zu halten.
 
-Firebase ist eine Cloudplattform von Google. Sie stellt verschiedene
-Dienste zur Verfügung, darunter Authentication, Firestore Database,
-Cloud Functions, Storage und Analytics.
+#### 4.2 Transaktionen und atomare Updates
 
-Für dieses Projekt wurden hauptsächlich zwei Dienste verwendet: -
-Firebase Authentication - Cloud Firestore
-
-------------------------------------------------------------------------
-
-### 7 Firebase Authentication
-
-Firebase Authentication ermöglicht eine sichere Anmeldung von Benutzern.
-Jeder Benutzer erhält eine eindeutige UID, die als Identifikator in der
-Datenbank verwendet wird.
-
-``` mermaid
-sequenceDiagram
-
-User->>App: Login
-App->>FirebaseAuth: Auth Request
-FirebaseAuth-->>App: ID Token
-App->>Firestore: Zugriff mit Token
-```
-
-Der Token bestätigt die Identität des Benutzers.
-
-------------------------------------------------------------------------
-
-### 8 Cloud Firestore
-
-Firestore ist eine dokumentenbasierte NoSQL‑Datenbank. Daten werden in
-Collections, Documents und Subcollections gespeichert.
-
-#### Firestore Datenbankdiagramm
-
-``` mermaid
-erDiagram
-
-USERS {
-string uid
-string username
-number totalPoints
-timestamp createdAt
-}
-
-HUNTS {
-string huntId
-string title
-string description
-number durationMinutes
-number totalStations
-string status
-}
-
-STATIONS {
-number stationIndex
-string title
-geopoint location
-}
-
-PLAYERLOCATION {
-string uid
-geopoint location
-timestamp timestamp
-}
-
-USERS ||--o{ PLAYERLOCATION : has
-HUNTS ||--o{ STATIONS : contains
-```
-
-------------------------------------------------------------------------
-
-### 9 Datenmodell
-
-Users Collection: `Users/{uid}`
-
-Felder: - username - totalPoints - createdAt
-
-Hunts Collection: `Hunts/{huntId}`
-
-Stations Subcollection: `Hunts/{huntId}/Stations`
-
-PlayerLocation Collection: `PlayerLocation/{uid}`
-
-------------------------------------------------------------------------
+Firestore unterstützt Transaktionen und Batched Writes. Transaktionen sind relevant, wenn mehrere Dokumente konsistent geändert werden müssen (z. B. Punkte und Fortschritt). Batched Writes erlauben mehrere Writes als Paket. Für eine spätere Härtung gegen Manipulation wäre es sinnvoll, Punkteupdates serverseitig zu validieren (z. B. via Cloud Functions). In der aktuellen Projektphase bleibt die Struktur aber so gewählt, dass eine solche Erweiterung möglich ist, ohne das komplette Datenmodell umzubauen.
 
 ## Praktische Arbeit
 
-### 10 Standortverarbeitung
+In diesem Kapitel wird die praktische Umsetzung der standortbasierten Schnitzeljagd-Applikation detailliert beschrieben. Ziel ist es, alle wesentlichen technischen Entscheidungen, Implementierungsschritte und Zusammenhänge so darzustellen, dass der gesamte Entwicklungsprozess auch ohne Einsicht in den Quellcode nachvollziehbar bleibt.
 
-Standortdaten werden mit der Bibliothek Geolocator ermittelt.
+Der praktische Teil orientiert sich an den im Projekthandbuch definierten Anforderungen und baut direkt auf den im Theorieteil beschriebenen Grundlagen auf.
 
-``` dart
-accuracy: LocationAccuracy.bestForNavigation
-distanceFilter: 10
-```
+### 1. Gesamtarchitektur der Anwendung
 
-Der Parameter distanceFilter stellt sicher, dass neue Standortdaten nur
-gespeichert werden, wenn sich der Benutzer mindestens zehn Meter bewegt
-hat. Dadurch werden Datenbankkosten, Netzwerktraffic und Akkuverbrauch
-reduziert.
+Die Anwendung folgt einer klaren Trennung der Verantwortlichkeiten und ist modular aufgebaut. Die wichtigsten Komponenten sind:
 
-------------------------------------------------------------------------
+- UI-Schicht (Flutter Widgets): Darstellung der Benutzeroberfläche, Kartenansicht und Dialoge
+- Logik-Schicht: Standortermittlung, Proximity-Erkennung, Spielfortschritt
+- Datenzugriffsschicht: Firebase Authentication und Cloud Firestore
 
-### 11 Proximity‑Erkennung
+Diese Trennung erleichtert Wartung, Erweiterung und Fehlersuche. Aus Backend-Sicht ist besonders relevant, dass die Datenzugriffsschicht klar gekapselt ist, damit Sicherheitsregeln, Query-Patterns und Kostenkontrolle konsistent umgesetzt werden können.
 
-Die Distanz zwischen Spieler und Zielstation wird mit folgender Methode
-berechnet.
+### 2. Benutzerverwaltung
 
-``` dart
-Geolocator.distanceBetween()
-```
+#### 2.1 Registrierung und Authentifizierung
 
-Wenn der Spieler einen Radius von fünfzig Metern unterschreitet, wird
-die Station als erreicht gewertet.
+Die Benutzerregistrierung erfolgt über Firebase Authentication. Jeder Benutzer meldet sich mit einer gültigen E-Mail-Adresse an und erhält nach erfolgreicher Anmeldung eine eindeutige Benutzer-ID (UID). Diese UID wird in der gesamten Anwendung als primärer Identifikator verwendet.
 
-------------------------------------------------------------------------
+#### 2.2 Speicherung des Benutzerprofils
 
-### 12 Sicherheitskonzept
+Nach der Registrierung wird ein Benutzerprofil in der Firestore-Collection `Users` gespeichert.
 
-Firestore verwendet deklarative Sicherheitsregeln.
+Datenmodell `Users`:
+- Collection: `Users`
+- Dokument-ID: `UID`
+- Felder:
+  - `username`
+  - `totalPoints`
+  - `createdAt`
 
-``` javascript
-match /Users/{userId} {
+Implementierung:
+```dart
+Future<void> saveUserInDatabase(String username) async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return;
 
-allow read: if true;
-
-allow write: if request.auth != null
-             && request.auth.uid == userId;
+  await FirebaseFirestore.instance
+      .collection('Users')
+      .doc(user.uid)
+      .set({
+        'username': username,
+        'totalPoints': 0,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 }
 ```
 
-#### Standortdaten
+Ein wichtiger Punkt aus Backend-Perspektive ist, dass `createdAt` serverseitig gesetzt wird. Dadurch kann der Client keine beliebigen Zeitstempel „fälschen“. Solche serverseitigen Werte sind ein einfaches, aber wirksames Mittel gegen Manipulation.
 
-``` javascript
-match /PlayerLocation/{docId} {
+#### 2.3 Query- und Access-Pattern der Benutzerverwaltung
 
-allow read: if request.auth != null;
+Für die Benutzerverwaltung wurden bewusst einfache und effiziente Zugriffsstrukturen gewählt, um sowohl Performance als auch Sicherheit zu gewährleisten.
 
-allow write: if request.auth != null
+Query Pattern:
+- Direkter Zugriff auf ein einzelnes Dokument über `Users/{uid}`
+- Point Read, in Firestore besonders performant
+
+Access Pattern:
+- Schreiben: nur der authentifizierte Benutzer darf sein eigenes Dokument ändern
+- Lesen: Benutzerinformationen dürfen gelesen werden (z. B. für Anzeigenamen)
+
+Dieses Access Pattern wird durch Firestore Security Rules abgesichert.
+
+### 3. Standortermittlung
+
+#### 3.1 Motivation und technische Umsetzung
+
+Für eine standortbasierte Schnitzeljagd ist kontinuierliche Standortüberwachung erforderlich. Ein einmaliger Standortabruf wäre unzureichend, da Bewegungen in Echtzeit erkannt werden müssen, um das Erreichen von Stationen korrekt zu erfassen. Daher wird ein Standort-Stream verwendet, der regelmäßig aktualisierte Positionsdaten liefert.
+
+Aus Backend-Sicht entsteht dadurch eine Kostenfrage: Wenn jeder Standortpunkt gespeichert würde, würden viele Writes entstehen. Deshalb wird die Speicherung nicht zeitbasiert, sondern bewegungsbasiert begrenzt.
+
+#### 3.2 Starten des Standort-Streams
+
+Der Standort-Stream wird mit abgestimmten Parametern gestartet. Im finalen Design wird ein Distanzfilter verwendet, der Updates nur nach relevanter Bewegung verarbeitet. Dadurch werden Kosten und Akkuverbrauch reduziert.
+
+```dart
+const locationSettings = LocationSettings(
+  accuracy: LocationAccuracy.bestForNavigation,
+  distanceFilter: 10,
+);
+```
+
+Bedeutung:
+- `bestForNavigation`: hohe Genauigkeit, sinnvoll im Außenbereich
+- `distanceFilter: 10`: Updates erst nach mindestens zehn Metern Bewegung
+
+#### 3.3 Verwaltung des Standort-Streams
+
+Zur sauberen Verwaltung des Streams wird eine StreamSubscription verwendet. Beim Verlassen der Ansicht wird der Stream beendet, um Akkuverbrauch und Speicherlecks zu vermeiden.
+
+```dart
+StreamSubscription<Position>? _positionStream;
+
+@override
+void dispose() {
+  _positionStream?.cancel();
+  super.dispose();
 }
 ```
 
-Administratoren können Hunts erstellen oder bearbeiten.
+### 4. Kartenintegration
 
-``` javascript
-function isAdmin() {
- return get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.role == "admin";
+#### 4.1 Darstellung mit OpenStreetMap
+
+Die Kartenansicht wird mit dem Paket `flutter_map` umgesetzt. Als Kartenquelle wird OpenStreetMap verwendet, da keine Lizenzkosten entstehen und keine Abhängigkeit von kommerziellen Anbietern besteht.
+
+```dart
+TileLayer(
+  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  userAgentPackageName: 'com.example.app',
+  tileProvider: NetworkTileProvider(),
+)
+```
+
+#### 4.2 Marker-Darstellung
+
+Zur besseren Orientierung werden unterschiedliche Markerfarben verwendet. Diese Darstellung hängt direkt mit dem Datenzustand (Fortschritt) zusammen und muss daher mit der Fortschrittslogik konsistent sein.
+
+### 5. Datenmodell und Firestore-Struktur
+
+#### 5.1 `Users`
+
+- Collection: `Users`
+- Dokument-ID: UID des Benutzers
+- Felder: `username`, `totalPoints`, `createdAt`
+
+#### 5.2 `Hunts` und `Stadions`
+
+- Pfad: `Hunts/{huntId}/Stadions`
+- Felder: `stadionIndex`, `title`, `stadionLocation` (GeoPoint)
+
+```dart
+Future<void> getAllStadionData(String huntId) async {
+  final snapshot = await FirebaseFirestore.instance
+      .collection("Hunts")
+      .doc(huntId)
+      .collection("Stadions")
+      .orderBy("stadionIndex")
+      .get();
+
+  setState(() {
+    allStadionData = snapshot.docs.map((doc) => doc.data()).toList();
+  });
 }
 ```
 
-------------------------------------------------------------------------
+Query Pattern:
+- Zugriff auf Subcollection
+- Sortierung nach `stadionIndex`
 
-### 13 Anti‑Cheat Mechanismen
+Diese Struktur ermöglicht eine sequentielle Freischaltung der Stationen und sorgt dafür, dass Änderungen an Stationen zentral im Backend vorgenommen werden können.
 
-Standortbasierte Spiele sind anfällig für Manipulation. Typische
-Manipulationsmethoden sind GPS‑Spoofing, Emulatoren oder manuelle
-API‑Requests. Mögliche Gegenmaßnahmen sind Plausibilitätsprüfungen der
-Geschwindigkeit, Mindestabstände zwischen Updates und serverseitige
-Validierung.
+#### 5.3 `PlayerLocation`
 
-------------------------------------------------------------------------
+- Collection: `PlayerLocation`
+- Dokument-ID: UID des Benutzers
 
-### 14 Skalierbarkeit
+```dart
+Future<void> saveLocationInDatabase(LatLng? position) async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (position == null || user == null) return;
 
-Firebase skaliert automatisch. Auch bei zehntausend Spielern
-gleichzeitig verteilt Firestore die Anfragen über mehrere Server.
-Dadurch entstehen keine Performanceprobleme.
-
-------------------------------------------------------------------------
-
-### 15 Kostenoptimierung
-
-Firestore berechnet Kosten pro Leseoperation, Schreiboperation und
-Datenübertragung. Optimierungen im Projekt sind Standortupdates nur alle
-zehn Meter, gezielte Dokumentzugriffe und das Vermeiden unnötiger
-Streams.
-
-------------------------------------------------------------------------
-
-### 16 Warum Firebase statt Spring Boot
-
-Eine alternative Architektur wäre ein eigener Server mit Spring Boot
-gewesen. Spring Boot bietet volle Kontrolle über das Backend,
-relationale Datenbanken und komplexe Geschäftslogik. Gleichzeitig
-erfordert es jedoch Serveradministration, eigene Skalierung und einen
-höheren Entwicklungsaufwand.
-
-Firebase bietet hingegen eine vollständig verwaltete Infrastruktur mit
-automatischer Skalierung und integrierter Authentifizierung. Für ein
-Schulprojekt mit begrenzter Entwicklungszeit stellte Firebase daher eine
-besonders geeignete Lösung dar.
-
-------------------------------------------------------------------------
-
-### 17 Firestore Query‑ und Access‑Patterns
-
-Bei der Entwicklung mit Cloud Firestore spielt die Gestaltung der
-Datenzugriffe eine entscheidende Rolle. Da Firestore keine Join‑Abfragen
-unterstützt, muss das Datenmodell bereits im Voraus so entworfen werden,
-dass häufig benötigte Abfragen effizient durchgeführt werden können.
-
-Dieses Konzept wird als Query‑driven Data Modeling bezeichnet. Dabei
-wird die Datenbankstruktur nach den tatsächlichen Zugriffsmustern der
-Anwendung gestaltet.
-
-#### Point Reads
-
-``` dart
-final snapshot = await FirebaseFirestore.instance
-    .collection("Users")
-    .doc(user.uid)
-    .get();
+  await FirebaseFirestore.instance
+      .collection("PlayerLocation")
+      .doc(user.uid)
+      .set({
+        'location': GeoPoint(position.latitude, position.longitude),
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+}
 ```
 
-Point Reads werden im Projekt verwendet für das Laden von
-Benutzerprofilen, Standortdaten und spezifischen Spielinformationen.
+Dieses Modell speichert bewusst nur die letzte Position. Damit bleibt die Datenbank klein, die Kosten bleiben gering, und es werden weniger sensible Bewegungsdaten gesammelt.
 
-#### Collection Queries
+### 6. Proximity-Erkennung (Stationslogik)
 
-``` dart
-final snapshot = await FirebaseFirestore.instance
-    .collection("Hunts")
-    .doc(huntId)
-    .collection("Stations")
-    .orderBy("stationIndex")
-    .get();
+Die Proximity-Erkennung wird nur einmal vollständig erklärt, um doppelte Beschreibungen zu vermeiden. Alle späteren Stellen beziehen sich auf diesen Abschnitt.
+
+#### 6.1 Distanzberechnung
+
+```dart
+double distanceInMeters = Geolocator.distanceBetween(
+  myPosition!.latitude,
+  myPosition!.longitude,
+  targetGeo.latitude,
+  targetGeo.longitude,
+);
 ```
 
-Diese Abfrage lädt alle Stationen einer Schnitzeljagd und sortiert sie
-nach ihrem Index.
+#### 6.2 Radius-Logik
 
-#### Realtime Updates
+```dart
+if (distanceInMeters < 50) {
+  _showDiscoveryDialog(aktuellesZiel['title'] ?? "Stadion");
+  saveLocationInDatabase(myPosition);
+}
+```
 
-``` dart
-FirebaseFirestore.instance
-.collection("Hunts")
-.snapshots()
-.listen((snapshot) {
-  // Änderungen werden automatisch empfangen
+Der Radius von 50 Metern stellt einen praxisnahen Kompromiss zwischen Genauigkeit und Benutzerfreundlichkeit dar. Der Radius berücksichtigt typische GPS-Ungenauigkeiten, ohne das Spielprinzip zu verwässern.
+
+### 7. Fortschritt und Benutzerinteraktion
+
+Beim Erreichen einer Station wird der Standort-Stream pausiert, um Mehrfachauslösungen zu verhindern. Nach der Bestätigung wird der Fortschritt erhöht und der Stream fortgesetzt.
+
+```dart
+_positionStream?.pause();
+// Dialog anzeigen
+_positionStream?.resume();
+```
+
+Dieses Muster reduziert außerdem unnötige Rechenlast während des Dialogs.
+
+### 8. Sicherheitskonzept
+
+#### 8.1 Firestore Security Rules
+
+```txt
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /Users/{userId} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read;
+    }
+
+    match /PlayerLocation/{docId} {
+      allow write: if request.auth != null;
+      allow read: if request.auth != null;
+    }
+  }
+}
+```
+
+Diese Regeln stellen sicher, dass Benutzer ausschließlich ihre eigenen Daten verändern können und Standortdaten nur für authentifizierte Nutzer zugänglich sind.
+
+#### 8.2 Erweiterung: Prinzipien sicherer Rules
+
+Security Rules sollten nicht nur Zugriffe erlauben/verbieten, sondern im Idealfall auch Daten validieren. Für produktive Systeme wären zusätzliche Prüfungen sinnvoll, etwa Längenbeschränkungen für Benutzernamen oder Einschränkungen bei Punktänderungen. Für die Diplomarbeit wurde der Fokus auf ein verständliches, korrektes Grundmodell gelegt, das sich schrittweise erweitern lässt.
+
+### 9. Erweiterte Standortlogik und kontinuierliches Tracking (konsolidiert)
+
+In der ursprünglichen Textfassung wurden Tracking-Initialisierung und Proximity-Erkennung mehrfach beschrieben. In dieser Ausarbeitung werden diese Themen konsolidiert, damit sie nicht doppelt vorkommen.
+
+Die Standortlogik wird beim Start der Kartenansicht initialisiert. Dabei ist wichtig, dass zuerst die Stationsdaten geladen werden. Erst danach startet das Tracking, damit Standortupdates nicht verarbeitet werden, bevor Zielpunkte vorhanden sind.
+
+```dart
+@override
+void initState() {
+  super.initState();
+  _loadMyLocation();
+  _initData();
+}
+
+Future<void> _initData() async {
+  await getAllStadionData("xISAk6mXjjEpDUHYyxZi");
+  await _startLocationTracking();
+
+  if (mounted) {
+    setState(() => isLoading = false);
+  }
+}
+```
+
+Die Verarbeitung erfolgt im Listener. Dabei wird die Position aktualisiert und anschließend die Proximity-Prüfung ausgeführt (siehe Abschnitt 6).
+
+```dart
+_positionStream = Geolocator.getPositionStream(
+  locationSettings: locationSettings,
+).listen((Position pos) {
+  if (mounted) {
+    setState(() {
+      myPosition = LatLng(pos.latitude, pos.longitude);
+    });
+    _checkProximity();
+  }
 });
 ```
 
-Realtime Updates ermöglichen zukünftige Erweiterungen wie
-Multiplayer‑Funktionen.
+### 10. Fehlerbehandlung und Robustheit
 
-------------------------------------------------------------------------
+Typische Fehlerquellen sind deaktivierter Standortdienst, fehlende Berechtigungen, ungenaue GPS-Daten und Netzwerkunterbrechungen. Defensive Programmierung reduziert Abstürze und sorgt für ein stabiles Systemverhalten.
 
-### Auswertung der Ergebnisse
+```dart
+if (position == null || user == null) return;
+```
 
-  Daten            Zugriffsmethode
-  ---------------- ---------------------
-  Benutzerprofil   Point Read
-  Stationsdaten    Subcollection Query
-  Standortdaten    Point Read
+### 11. Firestore Query- und Access-Patterns (Erweiterung ohne Wiederholung)
 
-Die entwickelte Datenbankarchitektur ermöglicht schnelle Datenzugriffe,
-geringe Betriebskosten und eine hohe Skalierbarkeit.
+Bei Firestore ist eine saubere Planung der Zugriffsmuster entscheidend, da komplexe Joins nicht verfügbar sind. GeoQuest folgt daher einem query-driven data modeling: Das Datenmodell ist so aufgebaut, dass häufige Zugriffe wenige, einfache Queries benötigen.
+
+Point Reads:
+- `Users/{uid}`
+- `PlayerLocation/{uid}`
+
+Collection Query:
+- `Hunts/{huntId}/Stadions` mit `orderBy("stadionIndex")`
+
+Diese Muster sind effizient, weil sie geringe Latenz und geringe Kosten verursachen. Zusätzlich sind sie leicht mit Security Rules abzusichern.
+
+### 12. Kosten- und Skalierungsbetrachtung (Erweiterung)
+
+Firestore berechnet Kosten pro Leseoperation, Schreiboperation und Datenübertragung. Daher ist die Reduktion unnötiger Writes ein zentraler Punkt. Die Entscheidung, Standortupdates nur bei relevanter Bewegung zu speichern (Distanzfilter 10 Meter), reduziert Writes deutlich.
+
+Skalierungsrisiken entstehen häufig durch Hot Documents, wenn viele Nutzer gleichzeitig in dasselbe Dokument schreiben. GeoQuest reduziert dieses Problem, weil Benutzer primär in ihre eigenen Dokumente schreiben. Dadurch verteilt sich die Last auf viele Dokumente.
+
+### 13. Anti-Cheat Mechanismen (Erweiterung)
+
+Standortbasierte Spiele sind anfällig für Manipulation (GPS Spoofing, Emulatoren, manuelle API Requests). Clientseitige Prüfungen können nur Hürden darstellen, nicht absolute Sicherheit. Eine mögliche Erweiterung wäre serverseitige Validierung über Cloud Functions, bei der Punkte und Fortschritt erst nach Prüfung geschrieben werden.
+
+Im Rahmen der Diplomarbeit ist wichtig, diese Grenze transparent zu machen: Ohne serverseitige Validierung bleibt ein Restrisiko, aber durch Security Rules und Kosten-/Update-Limits wird die Manipulation erschwert und das System bleibt stabil.
+
+### 14. Warum Firebase statt eigener Server (wissenschaftliche Einordnung)
+
+Firebase reduziert Infrastrukturaufwand und bietet automatische Skalierung sowie integrierte Authentifizierung. Ein eigener Server (z. B. Spring Boot) bietet zwar volle Kontrolle und klassische relationale Datenmodelle, bringt aber höheren Aufwand für Betrieb, Updates, Security und Skalierung mit sich. Für ein Schulprojekt mit begrenzter Zeit ist Firebase daher eine geeignete Wahl, weil die Implementierung auf die fachlichen Ziele fokussiert werden kann.
+
+### 15. Datenschutz und Datensparsamkeit (Erweiterung)
+
+Standortdaten sind sensibel. GeoQuest speichert daher nur die letzte Position und vermeidet eine komplette Verlaufshistorie. Dadurch werden Datenschutzrisiken reduziert. Für produktive Systeme wären zusätzliche Maßnahmen sinnvoll, etwa ein transparenter Datenschutzhinweis und optional deaktivierbare Standortpersistenz, sofern dies mit dem Spielkonzept vereinbar ist.
+
+### 16. Teststrategie (Erweiterung)
+
+Für Firebase ist die Emulator Suite ein wichtiger Bestandteil, um Firestore und Security Rules lokal zu testen. Gerade bei Security Rules können kleine Fehler große Auswirkungen haben. Deshalb ist ein systematisches Testen der wichtigsten Zugriffsszenarien notwendig, etwa: eigener User darf schreiben, fremder User darf nicht schreiben, nicht eingeloggter User darf nicht schreiben. Auch Standortlogik kann mit simulierten Koordinaten getestet werden, um Proximity-Erkennung zuverlässig zu prüfen.
