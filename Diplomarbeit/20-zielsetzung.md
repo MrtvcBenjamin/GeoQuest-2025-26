@@ -35,4 +35,4 @@ Herr Kovacs ist für das Backend verantwortlich, insbesondere für die Schnittst
 
 Herr Zeismann übernimmt das Frontend, also die Benutzeroberfläche und Nutzererfahrung der mobilen App.
 
-Herr Muratovic ist als Projektmanager für Planung, Organisation, Aufgabenverteilung und Qualitätssicherung verantwortlich.
+Herr Muratovic ist als Projektmanager für Planung, Organisation, Aufgabenverteilung und Qualitätssicherung verantwortlich und leistet zusätzlich technischen Support in der Entwicklung.

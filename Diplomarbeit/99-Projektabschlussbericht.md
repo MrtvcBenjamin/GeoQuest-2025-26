@@ -44,7 +44,7 @@ Beim **Zeit-/Aufwandsbudget** gab es jedoch Abweichungen:
   - Klare Priorisierung nach Nutzen und Umsetzbarkeit.
   - Dokumentierte Änderungsprozesse, um Scope Creep zu vermeiden.
 
-### Refelxion / Lessons Learned
+### Reflexion / Lessons Learned
 
 #### Teamarbeit
 **Was gut gelaufen ist**

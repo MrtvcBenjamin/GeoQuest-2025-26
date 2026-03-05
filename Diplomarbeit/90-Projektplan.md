@@ -13,32 +13,30 @@ Darüber hinaus unterstützt die Anwendung einen pädagogisch sinnvollen Ablauf 
 
 
 #### Projektziele
-
-- Entwicklung einer funktionsfähigen, stabilen und benutzerfreundlichen Anwendung zur Durchführung der jährlichen Schnitzeljagd.
-- Umsetzung einer modularen Architektur, die zukünftige Erweiterungen (z. B. neue Fragetypen, neue Spielmodi, Statistiken) ermöglicht.
-- Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben.
-- Integration einer Kartenansicht, um Stationen geographisch darzustellen.
-- Sicherstellung eines zuverlässigen Betriebs ohne Internetverbindung, sofern technisch möglich (z. B. Offline-Caching).
-- Entwicklung einer Lösung, die langfristig unabhängig von externen Softwareanbietern betrieben werden kann.
-- Bereitstellung einer klar dokumentierten Codebasis und Anwendung, damit zukünftiges Weiterentwickeln der App im Rahmen des Unterrichts möglich ist.
+Entwicklung einer funktionsfähigen, stabilen und benutzerfreundlichen Anwendung zur Durchführung der jährlichen Schnitzeljagd.
+Umsetzung einer modularen Architektur, die zukünftige Erweiterungen (z. B. neue Fragetypen, neue Spielmodi, Statistiken) ermöglicht.
+Bereitstellung eines Administrationsbereiches für Lehrende zur Erstellung, Bearbeitung und Verwaltung von Stationen sowie Aufgaben.
+Integration einer Kartenansicht, um Stationen geographisch darzustellen.
+Sicherstellung eines zuverlässigen Betriebs ohne Internetverbindung, sofern technisch möglich (z. B. Offline-Caching).
+Entwicklung einer Lösung, die langfristig unabhängig von externen Softwareanbietern betrieben werden kann.
+Bereitstellung einer klar dokumentierten Codebasis und Anwendung, damit zukünftiges Weiterentwickeln der App im Rahmen des Unterrichts möglich ist.
 
 #### Nicht-Ziele bzw. nicht Inhalte
-
-- Die App ist nicht als vollständig kommerzielles Produkt vorgesehen.
-- Es wird keine komplexe Analyseplattform entwickelt, die tiefgehende Statistiken über mehrere Jahre hinweg sammelt.
-- Eine Mehrspieler- oder Echtzeit-Online-Interaktion zwischen Teams ist nicht Teil des Grundumfangs.
-- Die App ist nicht für eine Nutzung außerhalb der HTL Leoben vorgesehen.
-- Eine vollständige Web-Version als Alternative zur Mobil-App ist nicht Projektbestandteil.
+Die App ist nicht als vollständig kommerzielles Produkt vorgesehen.
+Es wird keine komplexe Analyseplattform entwickelt, die tiefgehende Statistiken über mehrere Jahre hinweg sammelt.
+Eine Mehrspieler- oder Echtzeit-Online-Interaktion zwischen Teams ist nicht Teil des Grundumfangs.
+Die App ist nicht für eine Nutzung außerhalb der HTL Leoben vorgesehen.
+Eine vollständige Web-Version als Alternative zur Mobil-App ist nicht Projektbestandteil.
 
 #### Projektnutzen
 
 Der Hauptnutzen liegt darin, die jährliche Schnitzeljagd auf eine moderne, zuverlässige und schulinterne Lösung umzustellen.
 Dies bietet folgende Vorteile:
-- Unabhängigkeit von Drittanbietern – keine Lizenzkosten, keine externen Einschränkungen.
-- Langfristige Wiederverwendbarkeit – die App kann über Jahre hinweg genutzt und erweitert werden.
-- Flexibilität – Aufgaben, Stationen und Spielmodi können exakt an schulische Bedürfnisse angepasst werden.
-- Technisches Lernprojekt – die Schüler sammeln Erfahrungen in Projektmanagement, Softwareentwicklung, App-Design und Betreuung eines realen Kunden.
-- Verbesserte Durchführung der Schnitzeljagd ohne technische Hürden oder Ausfälle durch fremde Anbieter.
+Unabhängigkeit von Drittanbietern – keine Lizenzkosten, keine externen Einschränkungen.
+Langfristige Wiederverwendbarkeit – die App kann über Jahre hinweg genutzt und erweitert werden.
+Flexibilität – Aufgaben, Stationen und Spielmodi können exakt an schulische Bedürfnisse angepasst werden.
+Technisches Lernprojekt – die Schüler sammeln Erfahrungen in Projektmanagement, Softwareentwicklung, App-Design und Betreuung eines realen Kunden.
+Verbesserte Durchführung der Schnitzeljagd ohne technische Hürden oder Ausfälle durch fremde Anbieter.
 
 #### Projektauftraggeber/in
 
@@ -49,7 +47,7 @@ Projektauftraggeber ist Herr Klaus Kepplinger, der an der HTL Leoben für die Or
 | Termin     | Inhalt                          |
 |-----------:|:--------------------------------|
 | 2025-10-09 | Einreichung DA in Portal                     |
-| 2025-11-12 | Ertse DA Zwischenpräsentation                    |
+| 2025-11-12 | Erste DA Zwischenpräsentation                    |
 | 2025-12-01 | 1. Zwischenstand an Betreuer präsentieren             |
 | 2025-12-20 | 2. Zwischenstand an Betreuer präsentieren          |
 | 2026-01-09 | Elek. Erstversion Abgabe an Betreuer        |
@@ -99,73 +97,63 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 
 | Projektrolle           | Rollenbeschreibung     | Name              |
 |------------------------|------------------------|-------------------|
-| Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens | Benjamin Muratovic |
+| Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens sowie technischer Support in der Entwicklung | Benjamin Muratovic |
 | Auftraggeber | Auftraggeber der internen Diplomarbeit | K. Kepplinger |
 | Betreuer | Schulischer Betreuer | A. Weichbold |
 
 : Projektrollen
 
 ### Vorgehen bei Änderungen
-
-- Änderungen an Anforderungen oder Meilensteinen werden zuerst im Projektteam besprochen.
-- Der Projektleiter dokumentiert die Änderung im Änderungsprotokoll.
-- Die angepassten Inhalte werden im Projekthandbuch und Backlog aktualisiert.
-- Jede Änderung wird in den nächsten Meetings kurz vorgestellt.
+Änderungen an Anforderungen oder Meilensteinen werden zuerst im Projektteam besprochen.
+Der Projektleiter dokumentiert die Änderung im Änderungsprotokoll.
+Die angepassten Inhalte werden im Projekthandbuch und Backlog aktualisiert.
+Jede Änderung wird in den nächsten Meetings kurz vorgestellt.
 
 ## Meilensteine
 
 ### 2025-09-20: Projektvorbereitung abgeschlossen - Projektstart
-
-- Projektauftrag, Ziele und Nicht-Ziele sind definiert und dokumentiert
-- Projektorganisation (Rollen, Beteiligte, Betreuer) ist festgelegt
-- Grober Projektplan inklusive Meilensteine liegt vor
+Projektauftrag, Ziele und Nicht-Ziele sind definiert und dokumentiert
+Projektorganisation (Rollen, Beteiligte, Betreuer) ist festgelegt
+Grober Projektplan inklusive Meilensteine liegt vor
 
 ### 2025-09-30: Anforderungsanalyse & Konzept
-
-- Fachliche und technische Anforderungen sind vollständig erhoben und dokumentiert
-- Grobes System- und Anwendungskonzept (Architektur, Plattform, Technologien) ist erstellt
-- Zentrale Anwendungsfälle (Use Cases) sind definiert
+Fachliche und technische Anforderungen sind vollständig erhoben und dokumentiert
+Grobes System- und Anwendungskonzept (Architektur, Plattform, Technologien) ist erstellt
+Zentrale Anwendungsfälle (Use Cases) sind definiert
 
 ### 2025-10-20: UI-Prototyp & Grundstruktur
+UI-Prototyp ist erstellt
+Grundlegende Projektstruktur (z. B. App-Gerüst, Navigation) ist implementiert
+Erste Screens (Start, Login, Übersicht) sind sichtbar 
 
-- UI-Prototyp ist erstellt
-- Grundlegende Projektstruktur (z. B. App-Gerüst, Navigation) ist implementiert
-- Erste Screens (Start, Login, Übersicht) sind sichtbar 
-
-### 2025-11-11: Zwischenpräsentation
-
-- Aktueller Projektstand wird präsentiert und erklärt
-- UI-Prototyp und erste Funktionen werden demonstriert
-- Feedback von Betreuern und Auftraggeber wird aufgenommen
+### 2025-11-12: Zwischenpräsentation
+Aktueller Projektstand wird präsentiert und erklärt
+UI-Prototyp und erste Funktionen werden demonstriert
+Feedback von Betreuern und Auftraggeber wird aufgenommen
       
 ### 2025-11-30: Implementierung GPS- & Aufgabenlogik
-
-- GPS-Funktion zur Standortbestimmung ist implementiert
-- Aufgaben/Stationen können ortsabhängig freigeschaltet werden
-- Grundlegende Spiellogik (Reihenfolge, Punkte, Status) funktioniert
+GPS-Funktion zur Standortbestimmung ist implementiert
+Aufgaben/Stationen können ortsabhängig freigeschaltet werden
+Grundlegende Spiellogik (Reihenfolge, Punkte, Status) funktioniert
 
 ### 2025-12-20: Anti-Schummel-System & Erweiterungen
-
-- Maßnahmen gegen Standort-Manipulation sind implementiert (z. B. Plausibilitätsprüfungen)
-- Erweiterungen der Aufgabenlogik (z. B. Zeitlimits, Versuche) sind umgesetzt
-- Fehler- und Sonderfälle werden behandelt
+Maßnahmen gegen Standort-Manipulation sind implementiert (z. B. Plausibilitätsprüfungen)
+Erweiterungen der Aufgabenlogik (z. B. Zeitlimits, Versuche) sind umgesetzt
+Fehler- und Sonderfälle werden behandelt
 
 ### 2026-01-09: Erstversion der App
-
-- Alle geplanten Kernfunktionen sind implementiert
-- Die App ist durchgängig nutzbar (von Start bis Ende der Schnitzeljagd)
-- Erste interne Tests wurden durchgeführt
+Alle geplanten Kernfunktionen sind implementiert
+Die App ist durchgängig nutzbar (von Start bis Ende der Schnitzeljagd)
+Erste interne Tests wurden durchgeführt
 
 ### 2026-02-15: Systemtests & Feinschliff
-
-- Umfassende Tests (Funktion, Usability, Stabilität) sind durchgeführt
-- Gefundene Fehler wurden behoben
-- Benutzerführung und Design wurden optimiert
+Umfassende Tests (Funktion, Usability, Stabilität) sind durchgeführt
+Gefundene Fehler wurden behoben
+Benutzerführung und Design wurden optimiert
 
 ### 2026-03-06: Endabgabe
-
-- Finale Version der App ist fertiggestellt und stabil
-- Projektdokumentation (Diplomarbeit) ist vollständig und korrekt
+Finale Version der App ist fertiggestellt und stabil
+Projektdokumentation (Diplomarbeit) ist vollständig und korrekt
 
 ## Anwendungsfälle
 
@@ -178,42 +166,40 @@ Als **Spieler** möchte ich mich mit meiner schulischen E-Mail-Adresse registrie
 Der Spieler möchte an einer Schnitzeljagd teilnehmen und öffnet die App.
 
 #### Vorbedingung  
-- Die App ist installiert  
-- Eine Internetverbindung ist vorhanden  
-- Der Spieler besitzt eine gültige schulische E-Mail-Adresse  
+Die App ist installiert  
+Eine Internetverbindung ist vorhanden  
+Der Spieler besitzt eine gültige schulische E-Mail-Adresse  
 
 #### Nachbedingung  
 Der Spieler ist erfolgreich angemeldet und befindet sich auf der Startseite der App.
 
 #### Akteure  
-- Spieler  
+Spieler  
 
 #### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
 #### Akzeptanzkriterien  
-- **Given:** Ein Nutzer öffnet die App  
+**Given:** Ein Nutzer öffnet die App  
   **When:** Er klickt auf „Login“  
   **Then:** Wird er eingeloggt und zur Startseite weitergeleitet  
-
-- **Given:** Der Nutzer gibt eine ungültige E-Mail oder ein falsches Passwort ein  
+**Given:** Der Nutzer gibt eine ungültige E-Mail oder ein falsches Passwort ein  
   **When:** Er klickt auf „Anmelden“  
   **Then:** Erhält er eine Fehlermeldung „Ungültige Anmeldedaten“  
-
-- **Given:** Ein neuer Nutzer registriert sich  
+**Given:** Ein neuer Nutzer registriert sich  
   **When:** Er bestätigt die Registrierung  
   **Then:** Wird ein neuer Firestore-Eintrag unter `users` erstellt  
 
 #### Fehlersituationen  
-- Ungültige Anmeldedaten  
-- Abbruch des Login-Vorgangs  
+Ungültige Anmeldedaten  
+Abbruch des Login-Vorgangs  
 
 #### Systemzustand im Fehlerfall  
 Der Nutzer bleibt ausgeloggt, es wird kein Benutzerkonto erstellt oder verändert.
 
 #### Conversation Points  
-- E-Mail-Verifizierung notwendig?  
-- Passwort-Richtlinien?  
+E-Mail-Verifizierung notwendig?  
+Passwort-Richtlinien?  
 
 ### Karte & Standort
 
@@ -224,47 +210,44 @@ Als **Spieler** möchte ich auf einer Karte meine Position und nahegelegene Aufg
 Der Spieler öffnet die Kartenansicht.
 
 #### Vorbedingung  
-- Der Spieler ist angemeldet  
-- Die Standortfreigabe ist erteilt  
+Der Spieler ist angemeldet  
+Die Standortfreigabe ist erteilt  
 
 #### Nachbedingung  
 Die aktuelle Position sowie Aufgaben in der Umgebung werden auf der Karte angezeigt.
 
 #### Akteure  
-- Spieler  
-- Standortdienst des mobilen Endgeräts  
+Spieler  
+Standortdienst des mobilen Endgeräts  
 
 #### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
 #### Akzeptanzkriterien  
-- **Given:** Der Nutzer hat Standortfreigabe erteilt  
+**Given:** Der Nutzer hat Standortfreigabe erteilt  
   **When:** Er öffnet die Karte  
   **Then:** Wird seine Position korrekt mit einem Marker angezeigt  
-
-- **Given:** Aufgaben befinden sich in der Nähe  
+**Given:** Aufgaben befinden sich in der Nähe  
   **When:** Die Karte geladen wird  
   **Then:** Werden Marker für Aufgaben innerhalb eines 500 m Radius angezeigt  
-
-- **Given:** Der Nutzer lehnt die Standortfreigabe ab  
+**Given:** Der Nutzer lehnt die Standortfreigabe ab  
   **When:** Er öffnet die Karte  
   **Then:** Wird eine Hinweismeldung angezeigt („Standortzugriff erforderlich“)  
-
-- **Given:** Der Nutzer bewegt sich  
+**Given:** Der Nutzer bewegt sich  
   **When:** Seine Position ändert sich  
   **Then:** Aktualisiert sich der Positionsmarker in Echtzeit  
 
 #### Fehlersituationen  
-- Standortzugriff verweigert  
-- Ungenaue oder fehlende Standortdaten  
+Standortzugriff verweigert  
+Ungenaue oder fehlende Standortdaten  
 
 #### Systemzustand im Fehlerfall  
 Die Karte wird ohne Positionsdaten angezeigt, Aufgabenmarker werden nicht geladen.
 
 #### Conversation Points  
-- Echtzeit-Updates oder periodische Standortabfrage?  
-- Filter für Aufgabenradius?  
-- Karten-Styling (Standard, Dark Mode)?  
+Echtzeit-Updates oder periodische Standortabfrage?  
+Filter für Aufgabenradius?  
+Karten-Styling (Standard, Dark Mode)?  
 
 ### Standortbasierte Aufgaben
 
@@ -275,52 +258,48 @@ Als **Spieler** möchte ich automatisch Aufgaben erhalten, sobald ich mich einem
 Der Spieler betritt den definierten Umkreis eines Checkpoints.
 
 #### Vorbedingung  
-- Der Spieler ist angemeldet  
-- Eine aktive Schnitzeljagd ist gestartet  
-- Standortberechtigung ist erteilt  
+Der Spieler ist angemeldet  
+Eine aktive Schnitzeljagd ist gestartet  
+Standortberechtigung ist erteilt  
 
 #### Nachbedingung  
 Die Aufgabe wird angezeigt und kann bearbeitet werden.
 
 #### Akteure  
-- Spieler  
-- GPS-/Standortsystem  
+Spieler  
+GPS-/Standortsystem  
 
 #### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
 #### Akzeptanzkriterien  
-- **Given:** Der Spieler befindet sich in einer aktiven Schnitzeljagd  
+**Given:** Der Spieler befindet sich in einer aktiven Schnitzeljagd  
   **When:** Er betritt den definierten Umkreis eines Checkpoints  
   **Then:** Wird die zugehörige Aufgabe automatisch angezeigt  
-
-- **Given:** Ein Spieler hat eine Aufgabe bereits erledigt  
+**Given:** Ein Spieler hat eine Aufgabe bereits erledigt  
   **When:** Er betritt erneut den Checkpoint-Radius  
   **Then:** Erscheint keine neue Aufgabe, optional ein Hinweis „Checkpoint bereits abgeschlossen“  
-
-- **Given:** Eine Aufgabe wird ausgelöst  
+**Given:** Eine Aufgabe wird ausgelöst  
   **When:** Sie öffnet sich  
   **Then:** Wird sie in einem rein visuellen Format angezeigt  
-
-- **Given:** Der Spieler hat keine Standortberechtigung erteilt  
+**Given:** Der Spieler hat keine Standortberechtigung erteilt  
   **When:** Er startet die Runde  
   **Then:** Er erhält einen klaren Hinweis inklusive Möglichkeit zur Freigabe  
-
-- **Given:** Der Standort ist ungenau  
+**Given:** Der Standort ist ungenau  
   **When:** Der Spieler bewegt sich nahe des Radius  
   **Then:** Wird die Aufgabe nur einmal ausgelöst  
 
 #### Fehlersituationen  
-- Ungenaue Standortdaten  
-- Mehrfache Standortupdates  
+Ungenaue Standortdaten  
+Mehrfache Standortupdates  
 
 #### Systemzustand im Fehlerfall  
 Der Aufgabenstatus bleibt unverändert, keine doppelte Auslösung erfolgt.
 
 #### Conversation Points  
-- Optimale Radiusgröße  
-- GPS-Update-Intervall  
-- Speicherung des Aufgabenstatus  
+Optimale Radiusgröße  
+GPS-Update-Intervall  
+Speicherung des Aufgabenstatus  
 
 ### Stationsabschluss (GPS oder QR-Code)
 
@@ -328,63 +307,59 @@ Der Aufgabenstatus bleibt unverändert, keine doppelte Auslösung erfolgt.
 Als Spieler (Team) möchte ich eine Station abschließen und Punkte erhalten, entweder automatisch durch das Erreichen der Station (GPS-Radius) oder durch Scannen eines QR-Codes an der Station, damit die Schnitzeljagd flexibel und zuverlässig durchgeführt werden kann.
 
 #### Trigger  
-- Der Spieler betritt den definierten Radius einer Station (GPS-Trigger)  
+Der Spieler betritt den definierten Radius einer Station (GPS-Trigger)  
 oder
-- der Spieler scannt den QR-Code der Station (QR-Trigger)
+der Spieler scannt den QR-Code der Station (QR-Trigger)
 
 #### Vorbedingung  
-- Eine aktive Schnitzeljagd läuft  
-- Der Spieler ist angemeldet  
-- Die Station wurde vom Team noch nicht abgeschlossen  
-- Für GPS-Trigger Standortberechtigung ist erteilt und Standortdienst aktiv  
-- Für QR-Trigger Kameraberechtigung ist erteilt und ein gültiger QR-Code ist an der Station vorhanden  
+Eine aktive Schnitzeljagd läuft  
+Der Spieler ist angemeldet  
+Die Station wurde vom Team noch nicht abgeschlossen  
+Für GPS-Trigger Standortberechtigung ist erteilt und Standortdienst aktiv  
+Für QR-Trigger Kameraberechtigung ist erteilt und ein gültiger QR-Code ist an der Station vorhanden  
 
 #### Nachbedingung  
 Die Station wird als abgeschlossen markiert und die zugehörigen Punkte werden dem Team gutgeschrieben.
 
 #### Akteure  
-- Spieler (Team)  
-- GPS-/Standortsystem (für GPS-Trigger)  
-- Kamera/QR-Scanner (für QR-Trigger)  
-- System (App + Backend/Firestore)
+Spieler (Team)  
+GPS-/Standortsystem (für GPS-Trigger)  
+Kamera/QR-Scanner (für QR-Trigger)  
+System (App + Backend/Firestore)
 
 #### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
 #### Akzeptanzkriterien  
-- **Given:** Eine Station ist auf GPS-Trigger konfiguriert  
+**Given:** Eine Station ist auf GPS-Trigger konfiguriert  
   **When:** Das Team betritt den definierten Stationsradius  
   **Then:** Wird die Station automatisch als abgeschlossen markiert und Punkte werden gutgeschrieben  
-
-- **Given:** Eine Station ist auf QR-Trigger konfiguriert  
+**Given:** Eine Station ist auf QR-Trigger konfiguriert  
   **When:** Das Team scannt den QR-Code der Station  
   **Then:** Wird die Station als abgeschlossen markiert und Punkte werden gutgeschrieben  
-
-- **Given:** Eine Station ist auf QR-Trigger konfiguriert  
+**Given:** Eine Station ist auf QR-Trigger konfiguriert  
   **When:** Ein ungültiger oder nicht passender QR-Code wird gescannt  
   **Then:** Erscheint eine Fehlermeldung („Ungültiger QR-Code“) und es werden keine Punkte vergeben  
-
-- **Given:** Eine Station wurde bereits abgeschlossen  
+**Given:** Eine Station wurde bereits abgeschlossen  
   **When:** Das Team betritt erneut den Stationsradius oder scannt erneut den QR-Code  
   **Then:** Wird keine erneute Punktevergabe ausgelöst, optional erscheint ein Hinweis („Station bereits abgeschlossen“)  
-
-- **Given:** Standortdaten sind ungenau oder es erfolgen viele Updates  
+**Given:** Standortdaten sind ungenau oder es erfolgen viele Updates  
   **When:** Das Team bewegt sich nahe des Radius  
   **Then:** Wird der Abschluss nur einmal ausgelöst (Schutz vor Mehrfachauslösung)
 
 #### Fehlersituationen  
-- Standortzugriff verweigert oder Standortdienst deaktiviert (GPS-Trigger nicht möglich)  
-- Kamerazugriff verweigert oder Kamera nicht verfügbar (QR-Trigger nicht möglich)  
-- Netzwerkprobleme bei der Punktezuweisung / Synchronisation  
+Standortzugriff verweigert oder Standortdienst deaktiviert (GPS-Trigger nicht möglich)  
+Kamerazugriff verweigert oder Kamera nicht verfügbar (QR-Trigger nicht möglich)  
+Netzwerkprobleme bei der Punktezuweisung / Synchronisation  
 
 #### Systemzustand im Fehlerfall  
 Die Station bleibt als nicht abgeschlossen markiert und es werden keine Punkte vergeben. Der Nutzer erhält eine verständliche Fehlermeldung und kann den Vorgang erneut versuchen.
 
 #### Conversation Points  
-- Konfiguration pro Station: GPS-Trigger, QR-Trigger oder beides?  
-- Radiusgröße und Anti-Cheat-Strategie (z. B. Plausibilitätsprüfungen)  
-- QR-Code-Format/Inhalt (Station-ID, Hunt-ID, Signatur)  
-- Offline-Verhalten: Punkte lokal zwischenspeichern und später synchronisieren?
+Konfiguration pro Station: GPS-Trigger, QR-Trigger oder beides?  
+Radiusgröße und Anti-Cheat-Strategie (z. B. Plausibilitätsprüfungen)  
+QR-Code-Format/Inhalt (Station-ID, Hunt-ID, Signatur)  
+Offline-Verhalten: Punkte lokal zwischenspeichern und später synchronisieren?
 
 
 ### Aufgaben & Fortschritt
@@ -396,38 +371,36 @@ Als **Spieler** möchte ich meinen Fortschritt und meine erreichten Punkte sehen
 Der Spieler öffnet die Fortschrittsansicht.
 
 #### Vorbedingung  
-- Der Spieler ist angemeldet  
+Der Spieler ist angemeldet  
 
 #### Nachbedingung  
 Der aktuelle Fortschritt und die Gesamtpunkte werden angezeigt.
 
 #### Akteure  
-- Spieler  
+Spieler  
 
 #### Standardablauf  
 Der Standardablauf wird durch die Akzeptanzkriterien beschrieben.
 
 #### Akzeptanzkriterien  
-- **Given:** Der Spieler hat mindestens eine Aufgabe abgeschlossen  
+**Given:** Der Spieler hat mindestens eine Aufgabe abgeschlossen  
   **When:** Er öffnet die Fortschrittsseite  
   **Then:** Sieht er erledigte und offene Aufgaben getrennt  
-
-- **Given:** Aufgaben besitzen unterschiedliche Punktwerte  
+**Given:** Aufgaben besitzen unterschiedliche Punktwerte  
   **When:** Aufgaben abgeschlossen werden  
   **Then:** Wird die Gesamtsumme korrekt berechnet  
-
-- **Given:** Der Spieler aktualisiert die Seite  
+**Given:** Der Spieler aktualisiert die Seite  
   **When:** Neue Aufgaben erledigt wurden  
   **Then:** Aktualisiert sich der Fortschrittsbalken  
-
-- **Given:** Alle Aufgaben wurden erledigt  
+**Given:** Alle Aufgaben wurden erledigt  
   **When:** Die Fortschrittsseite geöffnet wird  
   **Then:** Wird „Schnitzeljagd abgeschlossen“ angezeigt  
 
 #### Fehlersituationen  
-- Fortschrittsdaten nicht verfügbar  
+Fortschrittsdaten nicht verfügbar  
 
 #### Systemzustand im Fehlerfall  
 Der letzte bekannte Fortschritt bleibt erhalten.
 
 /newpage
+

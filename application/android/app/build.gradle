@@ -10,8 +10,8 @@ plugins {
 
 android {
     namespace = "htl.le.application"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 36
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -25,9 +25,9 @@ android {
     defaultConfig {
         applicationId = "htl.le.application"
         minSdkVersion = flutter.minSdkVersion
-        targetSdk = 34
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0.0"
     }
 
 
