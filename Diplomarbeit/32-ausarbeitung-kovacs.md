@@ -1,288 +1,146 @@
-# Überarbeitete Ausarbeitung und Quellen
-
-## A) Vollständiger überarbeiteter Text
-
-```md
 # Teilaufgabe Schüler Kovacs
 \textauthor{Christian Kovacs}
 
 ## Theorie
 
-Dieses Kapitel bildet die theoretische Grundlage für die praktische Umsetzung des Backend-Teils einer standortbasierten Schnitzeljagd-Applikation. Der Text ist so aufgebaut, dass auch Leserinnen und Leser ohne vertiefte Kenntnisse in der App-Entwicklung die zentralen Entscheidungen nachvollziehen können. Wo Fachbegriffe notwendig sind, werden sie eingeführt und anschließend konsistent verwendet.
+Dieses Kapitel bildet die theoretische Grundlage für die praktische Umsetzung des Backend-Teils einer standortbasierten Schnitzeljagd-Applikation. Die Darstellung ist so aufgebaut, dass auch Leserinnen und Leser ohne vertiefte Kenntnisse in der App-Entwicklung die zentralen Entscheidungen nachvollziehen können. Wo Fachbegriffe notwendig sind, werden sie eingeführt und anschließend konsistent verwendet.
 
 ### 1. Grundlagen mobiler Applikationen
 
-Mobile Applikationen sind Softwareprogramme, die speziell für mobile Endgeräte entwickelt werden. Sie unterscheiden sich von klassischen Desktop-Anwendungen vor allem dadurch, dass sie mit begrenzten Ressourcen umgehen müssen und stark von Sensorik sowie Betriebssystemmechanismen beeinflusst werden. Gerade bei standortbasierten Anwendungen ist nicht nur die technische Umsetzung relevant, sondern auch der korrekte Umgang mit sensiblen Daten, weil Standortinformationen Rückschlüsse auf Bewegungsprofile zulassen können. In diesem Kontext sind Datensparsamkeit und Zugriffskontrolle nicht „Zusatzfeatures“, sondern fachliche Anforderungen, die bereits in der Architektur berücksichtigt werden müssen [@gdpr_2016_679].
+Mobile Applikationen sind Softwareprogramme, die speziell für mobile Endgeräte entwickelt werden. Sie unterscheiden sich von klassischen Desktop-Anwendungen insbesondere dadurch, dass sie mit begrenzten Ressourcen umgehen müssen und stark von Sensorik sowie Betriebssystemmechanismen beeinflusst werden. Gerade bei standortbasierten Anwendungen ist daher nicht nur die fachliche Funktionalität relevant, sondern auch der korrekte Umgang mit sensiblen Daten. Standortinformationen gelten als personenbezogene Daten, weil sie Rückschlüsse auf Bewegungsprofile zulassen können. Daraus ergeben sich Anforderungen an Datenminimierung, Zweckbindung und Zugriffskontrolle, die nicht als nachträgliche Erweiterung, sondern als Teil der Architektur verstanden werden müssen [@gdpr_2016_679] [@owasp_masvs_privacy].
 
-Die Standortbestimmung erfolgt in der Praxis über eine Kombination mehrerer Quellen. Umgangssprachlich wird häufig von GPS gesprochen, technisch ist meist GNSS gemeint. Zusätzlich können WLAN-Informationen und Mobilfunkdaten die Stabilität verbessern. In städtischen Gebieten oder bei Abschattungen kommt es zu Messfehlern, die sich als Positionssprünge oder Streuung äußern. Für Anwendungen wie GeoQuest ist deshalb weniger eine theoretisch maximale Genauigkeit entscheidend, sondern ein robustes Verhalten gegenüber Messrauschen, das den Spielablauf nicht verfälscht.
+Die Standortbestimmung erfolgt in der Praxis über eine Kombination mehrerer Quellen. Umgangssprachlich wird häufig von GPS gesprochen, technisch ist damit meist GNSS gemeint. Zusätzlich können WLAN-Informationen und Mobilfunkdaten die Stabilität verbessern. Insbesondere in städtischen Gebieten oder bei Abschattungen treten Messfehler auf, die sich als Positionssprünge oder Streuung äußern. Für Anwendungen wie GeoQuest ist deshalb weniger eine theoretisch maximale Genauigkeit entscheidend, sondern ein robustes Verhalten gegenüber Messrauschen. In einem Spielkontext soll eine Messabweichung nicht dazu führen, dass Stationen fälschlich ausgelöst werden oder ein korrektes Erreichen nicht erkannt wird. Daraus folgt die Notwendigkeit, Distanzschwellen, Filter und Zustandslogik so zu wählen, dass sie die physikalisch unvermeidbare Ungenauigkeit im Alltag abfedern.
 
-Ein weiterer zentraler Faktor ist der Energieverbrauch. Standorttracking gehört zu den energieintensiven Funktionen eines Smartphones. Hohe Genauigkeitsstufen und sehr häufige Updates erhöhen Akkuverbrauch und Rechenlast. Für die Backend-Perspektive kommt hinzu, dass häufige Standortupdates zu einer großen Anzahl an Datenbankoperationen führen können, die bei Cloud-Diensten direkte Kosten verursachen. Daraus folgt, dass ein standortbasiertes System nicht nur funktional, sondern auch effizient entworfen werden muss.
+Ein weiterer zentraler Faktor ist der Energieverbrauch. Standorttracking gehört zu den energieintensiven Funktionen eines Smartphones. Hohe Genauigkeitsstufen und sehr häufige Updates erhöhen Akkuverbrauch und Rechenlast. Aus Backend-Perspektive kommt hinzu, dass häufige Standortupdates eine große Anzahl an Datenbankoperationen auslösen können, die bei Cloud-Diensten direkte Kosten verursachen. Damit wird Effizienz zu einem fachlichen Kriterium: Ein standortbasiertes System muss nicht nur korrekt, sondern auch ressourcenschonend entworfen werden, um eine praktikable Nutzung im Schulkontext zu ermöglichen.
+
+Neben Energie und Genauigkeit beeinflussen Betriebssystemmechanismen die Nutzbarkeit. Moderne Betriebssysteme begrenzen Standortupdates im Hintergrund, um Akku zu sparen und Privatsphäre zu schützen. Android limitiert seit Android 8.0 die Häufigkeit von Standortupdates im Hintergrund deutlich [@android_background_location_limits]. iOS unterscheidet ebenfalls zwischen Berechtigungen wie „When In Use“ und „Always“ und koppelt deren Vergabe an transparente Nutzerzustimmung [@apple_request_location_authorization]. Für GeoQuest ist dies insofern relevant, als dass der Ablauf primär während aktiver Nutzung der App stattfindet und daher bewusst auf eine Minimierung von Hintergrundtracking ausgelegt werden kann, was sowohl Datenschutz- als auch Effizienzvorteile bringt.
 
 ### 2. Flutter als Entwicklungsframework und Dart als Sprache
 
-Flutter ist ein plattformübergreifendes Framework, das mit einer einzigen Codebasis Anwendungen für mehrere Zielplattformen ermöglicht. Für die Architektur ist relevant, dass Flutter ein reaktives UI-Modell verwendet: Die Benutzeroberfläche wird aus dem aktuellen Zustand der Anwendung abgeleitet und bei Zustandsänderungen neu aufgebaut. Diese Eigenschaft beeinflusst indirekt das Backend-Design, weil Datenmodelle und Zustandsübergänge klar beschrieben werden müssen, damit UI und Datenzugriff konsistent bleiben [@flutter_arch_overview] [@flutter_app_arch_guide].
+Flutter ist ein plattformübergreifendes Framework, das mit einer einzigen Codebasis Anwendungen für mehrere Zielplattformen ermöglicht. Für die Architektur ist relevant, dass Flutter ein deklaratives und reaktives UI-Modell verwendet. Die Benutzeroberfläche wird aus dem aktuellen Zustand der Anwendung abgeleitet und bei Zustandsänderungen neu aufgebaut. Diese Eigenschaft wirkt indirekt auf das Backend-Design, weil Datenmodelle, Zustandsübergänge und Datenzugriffe klar beschrieben werden müssen, damit UI und Persistenz konsistent bleiben [@flutter_arch_overview] [@flutter_app_arch_guide].
 
-Dart unterstützt asynchrone Programmierung, die im Mobile-Kontext essenziell ist, weil Netzwerkzugriffe und Sensorabfragen nicht sofort abgeschlossen werden. In der Praxis treten zwei Konzepte besonders häufig auf. Futures repräsentieren ein einmaliges Ergebnis in der Zukunft, etwa das Laden eines Dokuments aus einer Datenbank. Streams repräsentieren eine Folge von Ereignissen, etwa fortlaufende Standortupdates. Die Unterscheidung ist nicht nur eine Sprachdetailsfrage, sondern beeinflusst die Implementierung: Standorttracking ist als Stream modelliert, während das Laden von Stammdaten häufig über Futures erfolgt.
+Dart unterstützt asynchrone Programmierung, die im Mobile-Kontext essenziell ist, weil Netzwerkzugriffe und Sensorabfragen nicht sofort abgeschlossen werden. In der praktischen Umsetzung treten zwei Konzepte besonders häufig auf. Futures repräsentieren ein einmaliges Ergebnis in der Zukunft, etwa das Laden eines Dokuments aus einer Datenbank. Streams repräsentieren eine Folge von Ereignissen, etwa fortlaufende Standortupdates oder Realtime-Listener auf Datenbankänderungen. Diese Unterscheidung beeinflusst das Backend-Design, weil Abfragen von Stammdaten typischerweise als einzelne Ladevorgänge modelliert werden, während Standorttracking und Live-Updates den Charakter eines kontinuierlichen Datenstroms besitzen.
 
-Hot Reload ist ein wichtiger Bestandteil des Flutter-Entwicklungsprozesses und beschleunigt Iterationen, weil Änderungen während der Entwicklung schnell überprüfbar werden [@flutter_hot_reload]. Für eine Diplomarbeit ist dies insofern relevant, als dass es das Vorgehen bei Prototyping und Debugging beeinflusst, etwa bei der Abstimmung von Distanzfiltern oder Dialoglogik.
+Hot Reload ist ein wichtiger Bestandteil des Flutter-Entwicklungsprozesses und beschleunigt Iterationen, weil Änderungen während der Entwicklung unmittelbar überprüfbar sind [@flutter_hot_reload]. Im Rahmen der Diplomarbeit beeinflusst das Vorgehen insbesondere bei Prototyping und Debugging, etwa bei der Kalibrierung von Distanzfiltern, beim Testen von Dialogzuständen oder beim schrittweisen Verfeinern von Datenzugriffsmustern.
 
 ### 3. Firebase als Backend-Plattform
 
-Firebase ist eine Backend-as-a-Service-Plattform, die typische Backend-Funktionen als Cloud-Dienst bereitstellt. In GeoQuest werden insbesondere Firebase Authentication und Cloud Firestore genutzt. Der BaaS-Ansatz reduziert den Aufwand für Infrastruktur, weil kein eigener Server betrieben werden muss. Gleichzeitig bedeutet „serverlos“ nicht, dass keine Serverlogik existiert, sondern dass Autorisierung und Datenvalidierung in großen Teilen durch Security Rules und Managed Services abgebildet werden [@firebase_rules_get_started].
+Firebase ist eine Backend-as-a-Service-Plattform, die typische Backend-Funktionen als Cloud-Dienst bereitstellt. In GeoQuest werden insbesondere Firebase Authentication und Cloud Firestore genutzt. Der BaaS-Ansatz reduziert den Aufwand für Infrastruktur, weil kein eigener Server betrieben werden muss. Gleichzeitig bedeutet serverlos nicht, dass keine Serverlogik existiert, sondern dass Autorisierung und Datenvalidierung in großen Teilen durch Security Rules und Managed Services abgebildet werden [@firebase_rules_get_started]. Daraus folgt, dass korrekt formulierte Sicherheitsregeln, konsistente Dokumentpfade und ein kostenbewusstes Zugriffsmuster zentrale Bestandteile des Backend-Designs sind.
+
+Ein Vorteil von Firestore ist die starke Konsistenz von Reads. Standardmäßig liefern Reads den neuesten Datenstand, der alle bis zum Start des Reads abgeschlossenen Writes berücksichtigt [@firestore_understand_reads_writes_scale]. Zusätzlich unterstützt Firestore Realtime-Listener. Für Realtime-Abfragen beschreibt Firebase ein Konsistenzverhalten, bei dem Updates nicht in falscher Reihenfolge an Clients propagiert werden, sondern in der Reihenfolge der Commit-Operationen verarbeitet werden [@firestore_realtime_queries_scale]. Für GeoQuest ist dies relevant, weil Spielzustände, Fortschrittsanzeigen oder Leaderboards davon profitieren, wenn Änderungen konsistent und nachvollziehbar beim Client ankommen, ohne dass zusätzliche Synchronisationslogik implementiert werden muss.
 
 #### 3.1 Firebase Authentication
 
-Firebase Authentication ermöglicht Registrierung und Login. Nach erfolgreicher Anmeldung erhält jeder Benutzer eine eindeutige UID. Diese UID ist in der Architektur ein zentrales Element, weil sie als stabile Referenz für Benutzerprofile und benutzerspezifische Daten dient. Technisch basiert die Zugriffskette auf Tokens, die vom System geprüft werden. Firestore kann dadurch Anfragen identitätsbasiert auswerten und in Security Rules über request.auth Informationen wie die UID bereitstellen [@firebase_rules_get_started]. Die Tokenprüfung ist für den Client transparent, aber konzeptionell wichtig, weil sie den Unterschied zwischen „nur lokal sichtbar“ und „serverseitig autorisiert“ definiert.
+Firebase Authentication ermöglicht Registrierung und Login. Nach erfolgreicher Anmeldung erhält jeder Benutzer eine eindeutige UID. Diese UID ist in der Architektur ein zentrales Element, weil sie als stabile Referenz für Benutzerprofile und benutzerspezifische Daten dient. In Security Rules steht die Authentifizierungsinformation als Variable zur Verfügung. Firebase beschreibt, dass die auth-Variable unter anderem uid und Token-Informationen enthält, wodurch Regeln identitätsbasiert formuliert werden können [@firebase_rules_and_auth]. Für GeoQuest ist dies besonders hilfreich, weil Zugriffskontrolle über Dokumentpfade wie Users/{uid} oder PlayerLocation/{uid} präzise und ohne zusätzliche Suchabfragen umgesetzt werden kann.
+
+Darüber hinaus eröffnet Authentication die Möglichkeit, Rollenmodelle über Custom Claims zu realisieren. Auch wenn in GeoQuest zunächst ein bewusst schlankes Rollenmodell gewählt wurde, bleibt die Architektur prinzipiell erweiterbar. Über Custom Claims könnten in späteren Versionen beispielsweise Lehrkräfte oder Administratoren privilegierte Schreibrechte für Inhalte wie Hunts und Stationen erhalten, ohne dass diese Rechte in der App selbst hartkodiert werden müssen [@firebase_rules_and_auth]. Die klare Trennung zwischen Authentifizierung und Autorisierung ist hierbei zentral und entspricht typischen mobilen Sicherheitsanforderungen im OWASP-MASVS-Kontext [@owasp_masvs_auth].
 
 #### 3.2 Cloud Firestore
 
-Cloud Firestore ist eine dokumentenbasierte NoSQL-Datenbank. Daten werden in Collections organisiert, die Dokumente enthalten, und Dokumente können wiederum Subcollections besitzen. Dieses Modell erlaubt flexible Strukturen, erfordert aber eine bewusste Planung, weil es keine klassischen Joins wie in relationalen Datenbanken gibt. Stattdessen wird das Datenmodell häufig nach den Abfragen gestaltet, die tatsächlich benötigt werden. Diese Vorgehensweise wird als query-driven data modeling beschrieben und ist im Mobile-Kontext sinnvoll, weil typische Screens klar definierte Daten benötigen, die in wenigen Abfragen geladen werden sollen [@firestore_data_model].
+Cloud Firestore ist eine dokumentenbasierte NoSQL-Datenbank. Daten werden in Collections organisiert, die Dokumente enthalten, und Dokumente können wiederum Subcollections besitzen [@firestore_data_model]. Dieses Modell erlaubt flexible Strukturen, erfordert aber eine bewusste Planung, weil es keine klassischen Joins wie in relationalen Datenbanken gibt. Stattdessen wird das Datenmodell häufig nach den Abfragen gestaltet, die tatsächlich benötigt werden. Firebase beschreibt hierzu Modellierungsansätze, bei denen Dokumente und Collections so strukturiert werden, dass relevante Screens mit wenigen Reads versorgt werden können, was im Mobile-Kontext Latenz und Kosten reduziert [@firestore_data_model].
 
-Für konsistente Änderungen über mehrere Dokumente stellt Firestore Transaktionen und Batched Writes bereit. Diese Mechanismen sind relevant, wenn Integritätsanforderungen bestehen, etwa beim manipulationsarmen Aktualisieren von Punkteständen [@firestore_transactions]. Auch wenn in GeoQuest viele Abläufe clientseitig umgesetzt sind, beeinflusst das Wissen um diese Mechanismen die spätere Erweiterbarkeit.
+Für konsistente Änderungen über mehrere Dokumente stellt Firestore Transaktionen und Batched Writes bereit. Diese Mechanismen ermöglichen atomare Operationen, bei denen entweder alle Schritte erfolgreich sind oder keine Änderung angewendet wird [@firestore_transactions]. Aus Backend-Sicht ist dies dann entscheidend, wenn Integritätsanforderungen bestehen, etwa beim Aktualisieren von Punkteständen, beim Markieren einer Station als erreicht oder beim konsistenten Fortschrittsupdate über mehrere Datenobjekte hinweg.
+
+Ein weiterer zentraler Aspekt ist die Indexierung. Firestore nutzt automatische Single-Field-Indizes und für komplexere Abfragen manuelle beziehungsweise zusammengesetzte Indizes. Firebase dokumentiert, dass fehlende Indizes bei bestimmten Compound Queries als Fehler sichtbar werden und dann gezielt ergänzt werden können [@firestore_indexing] [@firestore_index_overview]. Daraus folgt für die Praxis, dass das Datenmodell nicht isoliert betrachtet werden kann. Zugriffsmuster, Indexkonfiguration und Kosten hängen zusammen und müssen gemeinsam geplant werden.
 
 ### 4. Abgrenzung und Zielsetzung des Backend-Umfangs
 
-Diese Teilaufgabe betrachtet das Backend als Kombination aus Datenmodell, Zugriffsmustern, Sicherheitsregeln und kostenbewusster Datenpersistenz. Im Fokus stehen die Verwaltung von Benutzerprofilen, Spielinhalten (Schnitzeljagden und Stationen) sowie die kontrollierte Speicherung von Standortdaten. Nicht Gegenstand dieser Teilaufgabe sind ein eigener API-Server, komplexe Serverlogik mit Cloud Functions oder ein vollständiges Anti-Cheat-System mit serverseitiger Distanzvalidierung, da dies den zeitlichen Rahmen des Schulprojekts überschreiten würde. Die Architektur wird jedoch so beschrieben, dass eine spätere Erweiterung in diese Richtung möglich bleibt, insbesondere durch klare Zuständigkeiten und konsistente Zugriffsmuster.
+Diese Teilaufgabe betrachtet das Backend als Kombination aus Datenmodell, Zugriffsmustern, Sicherheitsregeln und kostenbewusster Datenpersistenz. Im Fokus stehen die Verwaltung von Benutzerprofilen, Spielinhalten wie Schnitzeljagden und Stationen sowie die kontrollierte Speicherung von Standortdaten. Nicht Gegenstand dieser Teilaufgabe sind ein eigener API-Server, komplexe Serverlogik mit Cloud Functions oder ein vollständiges Anti-Cheat-System mit serverseitiger Distanzvalidierung, da dies den zeitlichen Rahmen eines Schulprojekts überschreiten würde. Die Architektur wird jedoch so beschrieben, dass spätere Erweiterungen möglich bleiben, insbesondere durch konsistente Dokumentpfade, klare Zuständigkeiten im Datenzugriff und eine Rules-Struktur, die mit Rollenmodellen erweitert werden kann.
 
 ## Praktische Arbeit
 
-Der praktische Teil beschreibt die konkrete Umsetzung des Backends in GeoQuest. Ziel ist es, die Implementierung so zu dokumentieren, dass sie nachvollziehbar bleibt und die wichtigsten Designentscheidungen begründet werden. Die Darstellung konzentriert sich auf die Backend-relevanten Aspekte, also Datenmodell, Zugriffskontrolle, Zugriffsmuster sowie Maßnahmen zur Kosten- und Risikoentwicklung.
+Der praktische Teil beschreibt die konkrete Umsetzung des Backends in GeoQuest. Ziel ist es, die Implementierung so zu dokumentieren, dass sie nachvollziehbar bleibt und die wichtigsten Designentscheidungen begründet werden. Die Darstellung konzentriert sich auf backend-relevante Aspekte, also Datenmodell, Zugriffskontrolle, Zugriffsmuster sowie Maßnahmen zur Kosten- und Risikoentwicklung.
 
 ### 1. Vorgehensmodell und Traceability der Artefakte
 
-Die Umsetzung erfolgte iterativ. Aus Anforderungen wurden zunächst grobe Datenobjekte abgeleitet, anschließend wurden Zugriffsmuster entworfen und erst danach die konkrete Speicherung in Firestore umgesetzt. Diese Reihenfolge ist im NoSQL-Kontext besonders wichtig, weil die Datenstruktur stark von den benötigten Queries abhängt. Die Artefaktkette lässt sich im Projekt wie folgt nachvollziehen: Anforderungen definieren benötigte Entitäten (Benutzer, Hunt, Station, Position), daraus entsteht das Datenmodell, daraus ergeben sich Security Rules und Zugriffsmuster, und diese werden schließlich in der App über definierte Datenzugriffsfunktionen realisiert. Die Tests konzentrieren sich darauf, dass die Rules die beabsichtigten Zugriffe erlauben und unzulässige blockieren [@firebase_rules_emulator_test].
+Die Umsetzung erfolgte iterativ. Aus Anforderungen wurden zunächst die fachlichen Entitäten abgeleitet, anschließend wurden Zugriffsmuster entworfen und erst danach die konkrete Speicherung in Firestore umgesetzt. Diese Reihenfolge ist im NoSQL-Kontext besonders wichtig, weil die Datenstruktur stark von den benötigten Queries abhängt. Aus den Anforderungen ergeben sich Entitäten wie Benutzer, Hunt, Station, Fortschritt und Position. Aus diesen Entitäten entsteht ein Datenmodell, aus dem wiederum Security Rules und konkrete Zugriffsmuster abgeleitet werden. Diese werden schließlich in der App über zentralisierte Datenzugriffsfunktionen realisiert.
+
+Die Überprüfung konzentriert sich darauf, dass die Rules die beabsichtigten Zugriffe erlauben und unzulässige zuverlässig blockieren. Firebase beschreibt hierfür explizit, dass Rules über Emulatoren und Unit Tests validiert werden können, bevor sie produktiv eingesetzt werden [@firebase_rules_unit_tests] [@firebase_rules_emulator_test]. Dadurch werden Sicherheitsannahmen als wiederholbare Testfälle formuliert, statt ausschließlich über manuelle Tests in der App implizit zu bleiben.
 
 ### 2. Gesamtarchitektur der Anwendung aus Backend-Sicht
 
-Die Anwendung folgt einer klaren Trennung zwischen Benutzeroberfläche, Anwendungslogik und Datenzugriff. Aus Backend-Perspektive ist entscheidend, dass Datenzugriffe zentralisiert werden, damit Sicherheits- und Kostenregeln konsistent umgesetzt werden. Die App kommuniziert direkt mit Firebase Authentication und Firestore. Dadurch entfällt ein eigener Server, und die Autorisierung wird über Firestore Security Rules abgebildet. Für Diplomarbeitskontext ist relevant, dass diese Lösung den Infrastrukturbetrieb reduziert, jedoch eine präzise Konfiguration erfordert, weil Fehlkonfigurationen unmittelbare Auswirkungen auf Datenschutz und Integrität haben können [@firebase_rules_get_started].
+Die Anwendung folgt einer Trennung zwischen Benutzeroberfläche, Anwendungslogik und Datenzugriff. Aus Backend-Perspektive ist entscheidend, dass Datenzugriffe zentralisiert werden, damit Sicherheits- und Kostenregeln konsistent umgesetzt werden. Die App kommuniziert direkt mit Firebase Authentication und Firestore. Dadurch entfällt ein eigener Server, und Autorisierung sowie Teile der Validierung werden über Firestore Security Rules abgebildet [@firebase_rules_get_started]. Für den Diplomarbeitskontext ist relevant, dass diese Lösung den Infrastrukturbetrieb reduziert, jedoch eine präzise Konfiguration erfordert, weil Fehlkonfigurationen unmittelbare Auswirkungen auf Datenschutz und Integrität haben können.
+
+In einer serverlosen Architektur verschiebt sich damit die klassische Backend-Verantwortung. Während in klassischen Architekturen ein Server API-Endpoints, Validierung und Autorisierung umsetzt, übernimmt in GeoQuest die Kombination aus Datenmodell, dokumentierten Zugriffspfaden und Security Rules diese Rolle. Für die Umsetzung bedeutet das, dass die Datenstruktur so gestaltet sein muss, dass Regeln einfach formulierbar sind. UID-basierte Dokumentpfade sind hierfür besonders geeignet, weil sie eine direkte, identitätsgebundene Autorisierung ermöglichen und unnötige Querabhängigkeiten zwischen Dokumenten reduzieren.
 
 ### 3. Toolchain, Reproduzierbarkeit und Build-Stabilität
 
-Für die Reproduzierbarkeit ist im Softwarekontext wichtig, dass die Toolchain konsistent ist. Flutter-Projekte binden Abhängigkeiten über pub ein, wodurch feste Versionen dokumentierbar sind. Für das Backend bedeutet dies, dass verwendete Firebase-Pakete und Firestore-APIs in definierten Versionen vorliegen müssen, um Laufzeitunterschiede und Inkonsistenzen zu vermeiden. Zusätzlich wurde die Firebase Emulator Suite als lokales Testwerkzeug genutzt, um Rules-Änderungen reproduzierbar zu validieren, bevor sie in eine produktive Umgebung gelangen [@firebase_emulator_setup] [@firebase_rules_emulator_test]. Dieses Vorgehen reduziert das Risiko, dass die Datenbank in der Entwicklung versehentlich zu offen konfiguriert wird.
+Für die Reproduzierbarkeit ist im Softwarekontext wesentlich, dass die Toolchain konsistent ist. Flutter-Projekte binden Abhängigkeiten über pub ein, wodurch verwendete Paketversionen dokumentierbar sind. Für das Backend bedeutet dies insbesondere, dass Firebase-Pakete und Firestore-APIs in definierten Versionen vorliegen müssen, um Laufzeitunterschiede und Inkonsistenzen zu vermeiden. Die Reproduzierbarkeit betrifft hier nicht nur den Build der App, sondern auch die Stabilität des Datenzugriffs, da API-Veränderungen in Abhängigkeiten die Semantik von Firestore-Operationen beeinflussen können.
 
-### 4. Benutzerverwaltung
+Zusätzlich wurde die Firebase Emulator Suite als lokales Testwerkzeug genutzt, um Änderungen an Security Rules reproduzierbar zu validieren, bevor sie in eine produktive Umgebung gelangen [@firebase_emulator_setup] [@firebase_rules_emulator_test]. Firebase weist außerdem darauf hin, dass serverseitige Client Libraries Security Rules umgehen und stattdessen über IAM authentifizieren. Daraus folgt, dass Rules-Tests bewusst mit den passenden Client-SDKs gegen den Emulator erfolgen müssen, wenn die Rules-Schicht tatsächlich verifiziert werden soll [@firebase_rules_emulator_test].
 
-Die Benutzerverwaltung basiert auf Firebase Authentication und einer ergänzenden Speicherung eines Benutzerprofils in Firestore. Jedes Benutzerprofil wird als eigenes Dokument abgelegt, dessen Dokument-ID der UID entspricht. Dadurch entsteht ein direkter Zugriffspfad, der sowohl performanz- als auch sicherheitsrelevant ist, weil Security Rules ohne zusätzliche Suche auf request.auth.uid prüfen können.
+### 4. Datenmodell und Namenskonventionen
 
-Die Speicherung enthält einen Anzeigenamen, einen Punktestand und einen serverseitigen Erstellungszeitpunkt. Der serverseitige Zeitstempel ist ein bewusstes Design, um Manipulationen durch clientseitig gesetzte Werte zu reduzieren. Aus wissenschaftlicher Sicht ist hier wichtig, dass nicht behauptet wird, Manipulation sei unmöglich, sondern dass konkrete Kontrollpunkte im System identifiziert und angemessen behandelt werden.
+Im Projekt wurde das Datenmodell so gewählt, dass es einerseits den Spielablauf abbildet und andererseits effiziente Reads in der App ermöglicht. Firestore ist für große Collections kleiner Dokumente optimiert, weshalb die Daten so strukturiert wurden, dass typische Screens ohne komplexe Aggregationen auskommen [@firestore_data_model]. Für GeoQuest bedeutet dies, dass Inhalte der Schnitzeljagd als eigene Dokumente organisiert sind und Stationen als logisch zugehörige Unterstruktur abgelegt werden, während benutzerspezifische Daten über UID-basierte Dokumentpfade adressiert werden.
 
-Ein minimales Codebeispiel ist für die Nachvollziehbarkeit sinnvoll, weil es zeigt, wie UID-basierte Dokumentpfade umgesetzt werden:
+Für die Wartbarkeit ist eine konsistente Benennung von Collections und Feldern wichtig, weil sie als Schnittstelle zwischen App-Logik, Rules und Datenstruktur wirkt. Eine inkonsistente Benennung führt dazu, dass Zugriffe in Rules und App auseinanderdriften, wodurch Fehler schwerer nachvollziehbar werden. Aus diesem Grund wurden Indexfelder, Koordinatenfelder und Zeitstempel semantisch eindeutig gehalten, damit Queries, Sortierungen und Validierungen in Rules nachvollziehbar bleiben.
 
-```dart
-Future<void> saveUserInDatabase(String username) async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return;
+### 5. Benutzerverwaltung
 
-  await FirebaseFirestore.instance
-      .collection('Users')
-      .doc(user.uid)
-      .set({
-        'username': username,
-        'totalPoints': 0,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-}
-```
+Die Benutzerverwaltung basiert auf Firebase Authentication und einer ergänzenden Speicherung eines Benutzerprofils in Firestore. Jedes Benutzerprofil wird als eigenes Dokument abgelegt, dessen Dokument-ID der UID entspricht. Dadurch entsteht ein direkter Zugriffspfad, der sowohl performanz- als auch sicherheitsrelevant ist, weil Security Rules ohne zusätzliche Suche auf request.auth.uid prüfen können [@firebase_rules_and_auth].
 
-Das Zugriffsmuster ist ein Point Read beziehungsweise ein gezielter Write auf Users/{uid}. Dieses Muster ist effizient, weil Firestore Dokumente direkt über ihren Pfad adressiert. Für die spätere Skalierung ist zudem relevant, dass Schreiblast über viele Benutzer verteilt ist, statt auf ein einzelnes Dokument zu konzentrieren.
+Im Benutzerprofil werden ein Anzeigename, ein Punktestand und ein serverseitiger Erstellungszeitpunkt gespeichert. Der serverseitige Zeitstempel ist ein bewusstes Design, um Manipulationen durch clientseitig gesetzte Werte zu reduzieren. Entscheidend ist dabei eine präzise Formulierung der Zielsetzung. Es wird nicht behauptet, dass Manipulation unmöglich ist, sondern dass kritische Kontrollpunkte identifiziert und angemessen behandelt werden, indem Zeitpunkte und bestimmte Zustandsmarker nicht ausschließlich aus dem Client stammen. Für spätere Erweiterungen bleibt zudem die Möglichkeit offen, Punkteschreibvorgänge stärker zu kontrollieren, etwa über Transaktionen oder über eine spätere serverseitige Logikschicht [@firestore_transactions].
 
-### 5. Verwaltung von Schnitzeljagden und Stationen
+Falls Benutzerprofile für ein Leaderboard sichtbar sein sollen, ist aus Datenschutzsicht wichtig, dass nur dafür notwendige Felder öffentlich gemacht werden. Ein gängiges Muster ist die Trennung in ein öffentlich lesbares Profil mit minimalen Angaben und eine private Struktur mit sensiblen Feldern, die ausschließlich für den eigenen Benutzer zugänglich ist. Dadurch lässt sich eine Rangliste realisieren, ohne dass mehr personenbezogene Daten als erforderlich zugänglich werden [@gdpr_2016_679] [@owasp_masvs_privacy].
 
-Schnitzeljagden werden als Dokumente in einer Hunt-Collection abgelegt. Die Stationen werden als Subcollection unter einem Hunt gespeichert. Diese Struktur spiegelt die fachliche Zugehörigkeit wider und vermeidet, dass Stationen verschiedener Hunts vermischt werden. Die App lädt Stationen für eine konkrete Schnitzeljagd und sortiert diese über einen Index. Dadurch kann die Reihenfolge zentral im Backend gepflegt werden, ohne dass eine neue App-Version erforderlich ist, wenn Stationen geändert werden.
+### 6. Verwaltung von Schnitzeljagden und Stationen
 
-Das Laden der Stationen erfolgt über eine Collection Query auf Hunts/{huntId}/Stations, kombiniert mit einer Sortierung. Für Firestore ist dies ein typisches Zugriffsmuster, das durch Indizes unterstützt wird [@firestore_data_model]. Ein kurzes Codebeispiel ist hier gerechtfertigt, weil es das zentrale Query-Pattern demonstriert:
+Schnitzeljagden werden als Dokumente in einer Hunts-Collection abgelegt. Stationen werden als Unterstruktur unter einer konkreten Schnitzeljagd gespeichert. Diese Struktur spiegelt die fachliche Zugehörigkeit wider und verhindert, dass Stationen verschiedener Hunts vermischt werden. Die App lädt Stationen für eine konkrete Schnitzeljagd und nutzt ein Indexfeld zur Sortierung, sodass die Reihenfolge zentral gepflegt werden kann, ohne dass eine neue App-Version erforderlich ist, wenn Stationen geändert werden.
 
-```dart
-final snapshot = await FirebaseFirestore.instance
-    .collection("Hunts")
-    .doc(huntId)
-    .collection("Stadions")
-    .orderBy("stadionIndex")
-    .get();
-```
+Das Laden der Stationen erfolgt über Queries, die Filter und Sortierungen kombinieren können. Firestore unterstützt hierfür einfache und zusammengesetzte Abfragen, die im Regelfall über Indexstrukturen beantwortet werden [@firestore_queries]. Wenn sich aus dem Projektverlauf neue Filter- oder Sortierkombinationen ergeben, kann die Indexkonfiguration angepasst werden. Firebase dokumentiert, dass fehlende Indizes bei bestimmten Queries als Fehler sichtbar werden und dann gezielt ergänzt werden können, wobei Indexkonfigurationen auch deploybar sind [@firestore_indexing]. Aus Projektperspektive stärkt dies die Reproduzierbarkeit, weil neben Rules auch Indexdefinitionen als Teil der Backend-Konfiguration versionierbar werden.
 
-### 6. Speicherung von Standortdaten und Kostenkontrolle
+Für die Kostenkontrolle ist zudem relevant, welche Daten in Stationen gespeichert werden. Dokumentgröße und Antwortgröße wirken sich auf Bandbreite und damit auf Kosten aus. Firebase beschreibt, dass neben Operationen auch Netzwerkbandbreite, Storage und Index-Overhead in die Abrechnung einfließen können [@firestore_pricing] [@firestore_billing_example]. Daraus folgt, dass Stationen die für den Ablauf notwendigen Felder enthalten, während große Medieninhalte besser über geeignete Speicherdienste referenziert werden.
 
-Die Speicherung von Standortdaten ist sowohl technisch als auch organisatorisch sensibel. Technisch muss die App den Standort fortlaufend aktualisieren, organisatorisch soll die Menge gespeicherter Daten minimiert werden, um Kosten und Datenschutzrisiken zu reduzieren. Firestore berechnet Kosten pro Lese- und Schreiboperation sowie für Datenübertragung [@firestore_billing_example] [@firestore_pricing]. Zusätzlich existieren Quotas und Limits, die insbesondere für Entwicklungs- und Free-Tier-Szenarien relevant sind [@firestore_quotas]. Daraus folgt die Entscheidung, Standortupdates nicht zeitbasiert, sondern bewegungsbasiert zu speichern.
+### 7. Speicherung von Standortdaten, Datenschutz und Kostenkontrolle
 
-Im Projekt wird ein Distanzfilter genutzt, der Updates erst ab einer Bewegung von etwa zehn Metern als relevant betrachtet. Zusätzlich wird nicht eine vollständige Verlaufshistorie gespeichert, sondern nur die letzte bekannte Position pro Benutzer. Dieses Modell reduziert die Anzahl der Dokumente und damit langfristig auch die Verwaltungs- und Datenschutzkomplexität. Der serverseitige Zeitstempel dient dazu, das Ereignis zeitlich einzuordnen, ohne dass der Client den Wert selbst setzen muss.
+Die Speicherung von Standortdaten ist sowohl technisch als auch organisatorisch sensibel. Technisch muss die App den Standort aktualisieren, organisatorisch soll die Menge gespeicherter Daten minimiert werden, um Kosten und Datenschutzrisiken zu reduzieren. Firestore berechnet Kosten pro Lese- und Schreiboperation sowie für Datenübertragung. Zusätzlich können auch Reads entstehen, die zur Auswertung von Security Rules notwendig sind [@firestore_billing_example]. Daraus folgt, dass Standorttracking nicht nur als Sensorproblem, sondern als Kombination aus Sensorik, Persistenz und Kostenmodell zu betrachten ist.
 
-Ein minimales Beispiel für die Speicherung der letzten Position ist für die Reproduzierbarkeit hilfreich:
+Im Projekt wurde ein Distanzfilter verwendet, der Updates erst ab einer Bewegung von etwa zehn Metern als relevant betrachtet. Zusätzlich wird keine vollständige Verlaufshistorie gespeichert, sondern nur die letzte bekannte Position pro Benutzer. Dieses Modell reduziert die Anzahl der Dokumente und die Anzahl der Writes. Gleichzeitig wirkt es datenschutzfördernd, weil keine detaillierte Bewegungsverlaufshistorie entsteht. Das Vorgehen ist damit mit dem Grundsatz der Datenminimierung vereinbar [@gdpr_2016_679] [@owasp_masvs_privacy].
 
-```dart
-Future<void> saveLocationInDatabase(LatLng? position) async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (position == null || user == null) return;
+Für die langfristige Datenhaltung ist zudem eine Löschstrategie relevant. Firestore unterstützt Time-to-Live-Policies, mit denen Dokumente anhand eines Ablaufzeitpunkts automatisiert gelöscht werden können. Firebase beschreibt, dass Daten typischerweise innerhalb eines begrenzten Zeitfensters nach Ablauf gelöscht werden und damit ein Mechanismus zur automatisierten Datenbereinigung entsteht [@firestore_ttl]. Auch wenn in GeoQuest primär nur der jeweils letzte Standort gespeichert wird, ist TTL als Erweiterungsoption relevant, um temporäre Ereignisdaten oder alte Spielstände automatisiert zu bereinigen.
 
-  await FirebaseFirestore.instance
-      .collection("PlayerLocation")
-      .doc(user.uid)
-      .set({
-        'location': GeoPoint(position.latitude, position.longitude),
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-}
-```
+Aus Sicht von Limits und Quotas ist zu berücksichtigen, dass Firestore Beschränkungen auf Anfragen und auf die Auswertung von Rules besitzt. Beispielsweise sind exists(), get() und getAfter() in Rules pro Request limitiert, wobei für Single-Document-Requests und Query-Requests niedrigere Grenzwerte gelten als für Multi-Document-Reads, Transaktionen und Batch Writes [@firestore_quotas]. Diese Grenzen sind ein zusätzlicher Grund, Rules so zu entwerfen, dass Autorisierung primär über Pfade und request.auth.uid funktioniert und möglichst wenig zusätzliche Dokumentzugriffe in der Rules-Schicht benötigt.
 
-### 7. Proximity-Erkennung und Stationsfortschritt
+### 8. Proximity-Erkennung und Stationsfortschritt
 
-Die Proximity-Erkennung ist die fachliche Kernlogik der Schnitzeljagd. Sie bestimmt, ob sich ein Spieler nahe genug an einer Station befindet, um diese als erreicht zu markieren. Die Distanz wird als Luftlinie zwischen aktueller Position und Zielkoordinate berechnet. Da GNSS-Daten in der Praxis schwanken, wird ein Radius verwendet, der Spielbarkeit und Robustheit vereint. Im Projekt wurde ein Radius von etwa fünfzig Metern gewählt, weil dieser Wert typische Ungenauigkeiten abfedert, ohne das Spielprinzip zu verlieren.
+Die Proximity-Erkennung ist die fachliche Kernlogik der Schnitzeljagd. Sie bestimmt, ob sich ein Spieler nahe genug an einer Station befindet, um diese als erreicht zu markieren. Die Distanz wird als Luftlinie zwischen aktueller Position und Zielkoordinate berechnet. Da GNSS-Daten in der Praxis schwanken, wird ein Radius verwendet, der Spielbarkeit und Robustheit vereint. Im Projekt wurde ein Radius gewählt, der typische Ungenauigkeiten abfedert, ohne das Spielprinzip zu verlieren. Für die Robustheit ist dabei nicht nur der Radius selbst relevant, sondern auch die Zustandslogik, die Mehrfachauslösungen verhindert und den Ablauf für Benutzer nachvollziehbar macht.
 
-Für die Distanzberechnung reicht ein einziges, kurzes Codefragment aus, um die Funktionsweise zu verdeutlichen:
+Die Fortschrittsverwaltung kann auf unterschiedliche Weise modelliert werden. Ein Minimalmodell speichert lediglich, welche Stationen bereits erreicht wurden, oder welcher Index als nächstes freizuschalten ist. Ein erweiterbares Modell trennt zwischen statischen Inhalten, die für alle Benutzer gelten, und benutzerspezifischem Zustand wie erreichten Stationen, Punkten und Zeitstempeln. Diese Trennung verhindert, dass statische Inhalte bei jedem Benutzerfortschritt überschrieben werden, und reduziert dadurch sowohl Kosten als auch Risiko von Inkonsistenzen. Aus Integritätssicht ist zudem relevant, dass Fortschrittsschritte nicht durch Race Conditions mehrfach gezählt werden. Firestore bietet hierfür atomare Operationen, etwa über Transaktionen oder Batch Writes [@firestore_transactions].
 
-```dart
-double distanceInMeters = Geolocator.distanceBetween(
-  myPosition.latitude,
-  myPosition.longitude,
-  targetGeo.latitude,
-  targetGeo.longitude,
-);
-```
+### 9. Sicherheitskonzept mit Firestore Security Rules
 
-Wird der Schwellwert unterschritten, wird die Station als erreicht behandelt und der Fortschritt erhöht. Um Mehrfachauslösungen zu vermeiden, wird während der Dialoganzeige die Verarbeitung der Standortupdates pausiert. Dieses Vorgehen ist nicht nur funktional, sondern reduziert auch unnötige Rechenlast.
+Security Rules sind in einer serverlosen Architektur der zentrale Mechanismus zur Zugriffskontrolle. Jede Datenbankoperation wird serverseitig gegen Regeln geprüft, bevor sie ausgeführt wird. Damit bildet die Rules-Schicht einen Kernteil des Backends und ersetzt in vielen Punkten klassische serverseitige Autorisierungslogik [@firebase_rules_get_started]. Jede Anfrage wird vor einem Read oder Write gegen die Rules evaluiert und bei Ablehnung vollständig abgebrochen. Firebase beschreibt dieses Verhalten im Kontext des Rules-Emulators und weist darauf hin, dass denied requests in bestimmten Abrechnungsaspekten anders behandelt werden als erfolgreiche Requests, der Sicherheitsgewinn jedoch primär durch korrekt restriktive Regeln entsteht [@firebase_rules_emulator_test] [@firestore_pricing].
 
-### 8. Sicherheitskonzept mit Firestore Security Rules
+Ein zentrales Prinzip im Projekt ist Least Privilege. Nutzer sollen nur jene Daten lesen und schreiben können, die für den Spielablauf notwendig sind. Identitätsgebundene Pfade sind dafür besonders geeignet, weil sie eine einfache Regel ermöglichen. Zugriff ist erlaubt, wenn request.auth.uid mit dem im Pfad verwendeten userId übereinstimmt [@firebase_rules_and_auth]. Für Inhalte wie Hunts und Stationen ergibt sich typischerweise ein anderes Muster, weil diese Daten in vielen Fällen öffentlich lesbar sein können, während Schreibzugriffe restriktiv bleiben müssen. In späteren Ausbaustufen kann dies über Rollen gelöst werden, etwa indem Administratoren über Custom Claims identifiziert werden [@firebase_rules_and_auth].
 
-Security Rules sind in einer serverlosen Architektur der zentrale Mechanismus zur Zugriffskontrolle. Jede Datenbankoperation wird serverseitig gegen die Regeln geprüft, bevor sie ausgeführt wird. Damit bildet die Rules-Schicht einen Kernteil des Backends und ersetzt in vielen Punkten klassische serverseitige Autorisierungslogik [@firebase_rules_get_started] [@firebase_rules_conditions].
+Rules dienen nicht nur Autorisierung, sondern auch Datenvalidierung. Firebase dokumentiert, dass Bedingungen nicht nur Authentifizierung prüfen, sondern auch eingehende Daten auf Typen, Grenzen oder Feldvorhandensein validieren können [@firebase_rules_conditions]. Für GeoQuest ist dies insbesondere für Felder relevant, die spielrelevante Zustände beeinflussen, etwa Punktestände, Stationenstatus oder Positionsobjekte. Eine typische Validierungsstrategie ist die Prüfung, dass nur erwartete Felder geschrieben werden, dass Wertebereiche plausibel sind und dass Clients keine unerwarteten Strukturen einschleusen können.
 
-Für GeoQuest gilt als Grundprinzip, dass Benutzer nur ihre eigenen Profildaten verändern dürfen. Standortdaten werden als sensibel betrachtet und sind nur für authentifizierte Nutzer zugänglich. Ein minimales Rules-Beispiel verdeutlicht dieses Least-Privilege-Prinzip:
+Zur Qualitätssicherung ist die Testbarkeit der Rules entscheidend. Firebase empfiehlt explizit emulatorgestützte Tests und beschreibt Unit-Testing-Ansätze, mit denen erlaubte und unerlaubte Zugriffe reproduzierbar geprüft werden können [@firebase_rules_unit_tests] [@firebase_rules_emulator_test]. Dieses Vorgehen ist für GeoQuest besonders relevant, weil Rules-Fehler im schlimmsten Fall Datenschutzverletzungen oder manipulationsanfällige Zustände verursachen können.
 
-```txt
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
+### 10. Qualitätssicherung und Evaluationslogik
 
-    match /Users/{userId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
+Die Frage, wann eine Backend-Implementierung als abgeschlossen gilt, muss operationalisiert werden. In diesem Projekt wurde Backend-Funktionalität als erfüllt betrachtet, wenn die zentralen Anforderungen nachweisbar sind. Benutzer können sich authentifizieren, ein Profil kann gespeichert und gelesen werden, Spielinhalte wie Hunts und Stationen sind ladbar, Standortdaten werden kontrolliert persistiert, und Security Rules verhindern unzulässige Schreibzugriffe. Das zentrale Kriterium ist dabei nicht, dass keine Fehler mehr möglich wären, sondern dass der definierte Funktionsumfang bei realistischen Nutzungsszenarien stabil funktioniert und Sicherheitsannahmen in Form von Rules wirksam umgesetzt werden.
 
-    match /PlayerLocation/{docId} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
+Für Security Rules ist manuelles Testen in der App allein nicht ausreichend. Deshalb wurden Rules im Emulator gezielt getestet und als Testfälle formuliert, um Zugriffserwartungen reproduzierbar zu validieren [@firebase_rules_emulator_test]. Ergänzend wurde OWASP MASVS als Referenzrahmen für Authentifizierung, Autorisierung und Datenschutz herangezogen, um sicherheitsrelevante Kategorien systematisch abzudecken, ohne ein vollständiges Security Audit zu behaupten [@owasp_masvs] [@owasp_masvs_auth] [@owasp_masvs_privacy].
 
-Für eine wissenschaftliche Darstellung ist entscheidend, dass Regeln nicht nur als „Schalter“ betrachtet werden. Rules können zusätzlich Datenvalidierung durchführen, etwa Längen- und Typprüfungen oder constraints auf Felder. Solche Bedingungen werden in Firestore über allow-Expressions formuliert, die sowohl Authentifizierung als auch Dateninhalte prüfen können [@firebase_rules_conditions]. Für GeoQuest wurde der Fokus zunächst auf korrektes Identitäts- und Pfadmodell gelegt, weil dies die Grundlage für spätere, feinere Validierung ist.
+### 11. Kostenmodell, Monitoring und Skalierungsaspekte
 
-### 9. Qualitätssicherung und Evaluationslogik
+Ein zentrales Kostenrisiko bei Firestore entsteht durch eine hohe Anzahl an Reads und Writes. Firebase dokumentiert, dass Kosten primär pro Dokumentoperation anfallen und dass auch Indexreads sowie Reads zur Auswertung von Security Rules Kosten verursachen können [@firestore_pricing] [@firestore_billing_example]. Für GeoQuest war dies insbesondere bei Standortupdates relevant, weshalb Updates gefiltert und die Persistenz auf den jeweils letzten Standort reduziert wurde.
 
-Die Frage, wann eine Implementierung als „fertig“ gilt, muss im Softwarekontext operationalisiert werden. In diesem Projekt wurde Backend-Funktionalität als erfüllt betrachtet, wenn die folgenden Eigenschaften nachweisbar sind: Benutzer können sich anmelden und ein Profil wird gespeichert, Stationen können aus Firestore geladen werden, Standortdaten werden kontrolliert persistiert und Sicherheitsregeln verhindern unzulässige Schreibzugriffe. Die Überprüfung erfolgt nicht nur durch manuelle Tests in der App, sondern durch das gezielte Testen der Security Rules mit Emulator- und Simulator-Werkzeugen, weil gerade Rules-Fehler schwerwiegende Sicherheitsfolgen haben können [@firebase_rules_emulator_test].
+Neben Operationen spielt Bandbreite eine Rolle, da die Antwortgröße in die Berechnung einfließt [@firestore_pricing]. Daraus folgt ein weiterer Designgrundsatz. Dokumente sollten nicht unnötig groß werden, und Inhalte sollten so gestaltet werden, dass typische Reads im Spielbetrieb möglichst kompakt bleiben. Indizes sind ebenfalls ein Skalierungsfaktor. Wenn zusätzliche Filter- und Sortierkombinationen entstehen, müssen gegebenenfalls zusammengesetzte Indizes ergänzt werden, die wiederum Speicher und Index-Overhead beeinflussen [@firestore_index_overview] [@firestore_indexing].
 
-Zusätzlich wurde bei der Sicherheitsbetrachtung ein praxisnaher Referenzrahmen herangezogen. OWASP MASVS beschreibt Anforderungen an mobile Anwendungen, insbesondere in Bezug auf Authentifizierung, Autorisierung und Datenschutz. Für GeoQuest ist dieser Rahmen hilfreich, um die relevanten Kategorien zu strukturieren, ohne ein vollständiges Penetration-Testing zu behaupten [@owasp_masvs].
+Für die praktische Projektsteuerung ist Monitoring wichtig. Firebase stellt Werkzeuge bereit, um Reads, Writes, Bandbreite und Speicher zu beobachten und damit früh zu erkennen, ob Zugriffsmuster unerwartet teuer werden [@firestore_pricing]. In einem Schulprojekt dient Monitoring weniger dem operativen Betrieb als vielmehr der Plausibilitätsprüfung. Es soll verhindert werden, dass Entwicklungsentscheidungen unbeabsichtigte Kostenfolgen erzeugen, etwa durch zu viele Realtime-Listener oder unnötige Polling-Muster.
 
-### 10. Risiken, Blocker und präventive Maßnahmen
+### 12. Risiken, Blocker und präventive Maßnahmen
 
-Das zentrale Kostenrisiko bei Firestore entsteht durch eine hohe Anzahl an Reads und Writes. Daher wurden Standortupdates begrenzt und es wird nur die letzte Position gespeichert. Zusätzlich ist zu berücksichtigen, dass Security Rules selbst Kosten verursachen können, weil Regelprüfungen zusätzliche Reads auslösen können, wenn die Regel Logik Daten aus anderen Dokumenten liest [@firestore_billing_example]. Deshalb wurde das Rollenmodell im Projekt bewusst einfach gehalten und administrative Abfragen in Rules nur dort vorgesehen, wo sie zwingend erforderlich sind.
+Die wesentlichen Risiken lassen sich in Kosten-, Sicherheits- und Qualitätsrisiken einteilen. Kostenrisiken entstehen durch hohe Read- und Write-Frequenzen sowie durch umfangreiche Dokumente. Diese Risiken wurden durch Reduktion der Standortwrites, durch ein klares Datenmodell und durch die Vermeidung unnötiger Querreads in Rules adressiert. Sicherheitsrisiken entstehen insbesondere durch Fehlkonfiguration der Security Rules oder durch zu breite Lesezugriffe auf personenbezogene Daten. Diese Risiken wurden durch ein Least-Privilege-Design, durch UID-gebundene Pfade und durch emulatorgestützte Tests reduziert [@firebase_rules_emulator_test].
 
-Ein technisches Risiko ist die Ungenauigkeit der Standortdaten, die zu falschen Auslösungen führen kann. Hier wirkt der Radius als Puffer, und die Dialoglogik verhindert Mehrfachauslösungen. Ein organisatorisches Risiko ist eine Fehlkonfiguration der Rules. Diese Gefahr wird durch Emulator-gestützte Tests reduziert, die sowohl erlaubte als auch unerlaubte Zugriffe abprüfen [@firebase_rules_emulator_test].
+Technische Risiken ergeben sich aus der Ungenauigkeit der Standortdaten, die zu falschen Auslösungen führen kann. Der gewählte Radius wirkt als Puffer, und die Zustandslogik verhindert Mehrfachauslösungen. Zusätzlich sind mobile Plattformrestriktionen zu berücksichtigen, etwa Hintergrundlimits bei Standortupdates. GeoQuest ist bewusst auf aktive Nutzung ausgelegt, wodurch diese Restriktionen weniger stark ins Gewicht fallen [@android_background_location_limits].
 
-Ein datenschutzbezogenes Risiko liegt in der Verarbeitung von Standortdaten. Als präventive Maßnahme wurde Datenminimierung umgesetzt, indem nur die letzte Position gespeichert wird. Diese Maßnahme ist mit dem Grundprinzip der Zweckbindung und Datenminimierung vereinbar, wie es in der DSGVO als Leitlinie angelegt ist [@gdpr_2016_679].
+Ein datenschutzbezogenes Risiko liegt in der Verarbeitung von Standortdaten. Als präventive Maßnahme wurde Datenminimierung umgesetzt, indem nur die letzte Position gespeichert wird. Dies ist mit dem Grundsatz der Datenminimierung und Zweckbindung vereinbar, wie er in der DSGVO verankert ist [@gdpr_2016_679]. Ergänzend fordert MASVS-PRIVACY, den Zugriff auf sensitive Daten auf das Notwendige zu beschränken [@owasp_masvs_privacy]. Für GeoQuest bedeutet das, dass Standortdaten nur dort verarbeitet und gespeichert werden, wo sie für den Spielablauf zwingend erforderlich sind.
 
-### 11. Praxisfall: Ablauf einer Station als End-to-End-Nachweis
+### 13. Praxisfall: Ablauf einer Station als End-to-End-Nachweis
 
-Ein praxisnaher Ablauf verdeutlicht die Wechselwirkung zwischen Client und Backend. Ein Benutzer meldet sich an und erhält eine UID. Anschließend lädt die App die Stationen einer ausgewählten Schnitzeljagd aus der Subcollection. Während der Benutzer sich bewegt, erhält die App Standortupdates. Sobald die Distanz zu einer Station unter den Schwellwert fällt, wird die Station als erreicht erkannt. Der Fortschritt wird lokal erhöht, und die letzte Position kann persistiert werden. Jede dieser Operationen wird serverseitig durch Security Rules geprüft. Damit ergibt sich ein konsistenter End-to-End-Fluss, der die zentralen Backend-Entscheidungen zusammenführt: UID-basierte Dokumentpfade, query-driven Datenstruktur, kostenbewusste Writes und regelbasierte Zugriffskontrolle.
-```
+Ein praxisnaher Ablauf verdeutlicht die Wechselwirkung zwischen Client und Backend. Ein Benutzer meldet sich an und erhält eine UID. Anschließend lädt die App die Stationen einer ausgewählten Schnitzeljagd. Während der Benutzer sich bewegt, erhält die App Standortupdates. Sobald die Distanz zu einer Station unter den Schwellwert fällt, wird die Station als erreicht erkannt. Der Fortschritt wird im benutzerspezifischen Zustand aktualisiert, und die letzte Position wird kontrolliert persistiert. Jede dieser Operationen wird serverseitig durch Security Rules geprüft. Bei einem fehlerhaften Zugriff, etwa einem Schreibversuch auf fremde Benutzerpfade, wird die Anfrage vollständig abgelehnt, wodurch ein klarer Schutzmechanismus entsteht [@firebase_rules_emulator_test].
 
-## B) BibTeX-Einträge für literatur.bib
-
-```bibtex
-@online{flutter_arch_overview,
-  title        = {Flutter architectural overview},
-  organization = {Flutter Documentation},
-  url          = {https://docs.flutter.dev/resources/architectural-overview},
-  urldate      = {2026-03-05}
-}
-
-@online{flutter_app_arch_guide,
-  title        = {Guide to app architecture},
-  organization = {Flutter Documentation},
-  url          = {https://docs.flutter.dev/app-architecture/guide},
-  urldate      = {2026-03-05}
-}
-
-@online{flutter_hot_reload,
-  title        = {Hot reload},
-  organization = {Flutter Documentation},
-  url          = {https://docs.flutter.dev/tools/hot-reload},
-  urldate      = {2026-03-05}
-}
-
-@online{firebase_rules_get_started,
-  title        = {Get started with Cloud Firestore Security Rules},
-  organization = {Firebase Documentation},
-  url          = {https://firebase.google.com/docs/firestore/security/get-started},
-  urldate      = {2026-03-05}
-}
-
-@online{firebase_rules_conditions,
-  title        = {Writing conditions for Cloud Firestore Security Rules},
-  organization = {Firebase Documentation},
-  url          = {https://firebase.google.com/docs/firestore/security/rules-conditions},
-  urldate      = {2026-03-05}
-}
-
-@online{firebase_rules_emulator_test,
-  title        = {Test your Cloud Firestore Security Rules},
-  organization = {Firebase Documentation},
-  url          = {https://firebase.google.com/docs/firestore/security/test-rules-emulator},
-  urldate      = {2026-03-05}
-}
-
-@online{firebase_emulator_setup,
-  title        = {Set up the Local Emulator Suite},
-  organization = {Firebase Documentation},
-  url          = {https://firebase.google.com/docs/rules/emulator-setup},
-  urldate      = {2026-03-05}
-}
-
-@online{firestore_data_model,
-  title        = {Cloud Firestore Data model},
-  organization = {Firebase Documentation},
-  url          = {https://firebase.google.com/docs/firestore/data-model},
-  urldate      = {2026-03-05}
-}
-
-@online{firestore_transactions,
-  title        = {Transactions and batched writes},
-  organization = {Firebase Documentation},
-  url          = {https://firebase.google.com/docs/firestore/manage-data/transactions},
-  urldate      = {2026-03-05}
-}
-
-@online{firestore_quotas,
-  title        = {Usage and limits},
-  organization = {Firebase Documentation},
-  url          = {https://firebase.google.com/docs/firestore/quotas},
-  urldate      = {2026-03-05}
-}
-
-@online{firestore_billing_example,
-  title        = {Billing example},
-  organization = {Google Cloud Documentation},
-  url          = {https://docs.cloud.google.com/firestore/native/docs/billing-example},
-  urldate      = {2026-03-05}
-}
-
-@online{firestore_pricing,
-  title        = {Firestore pricing},
-  organization = {Google Cloud},
-  url          = {https://cloud.google.com/firestore/pricing},
-  urldate      = {2026-03-05}
-}
-
-@online{owasp_masvs,
-  title        = {OWASP Mobile Application Security Verification Standard (MASVS)},
-  organization = {OWASP},
-  url          = {https://mas.owasp.org/MASVS/},
-  urldate      = {2026-03-05}
-}
-
-@online{gdpr_2016_679,
-  title        = {Verordnung (EU) 2016/679 (Datenschutz-Grundverordnung)},
-  organization = {EUR-Lex},
-  url          = {https://eur-lex.europa.eu/eli/reg/2016/679/oj?locale=de},
-  urldate      = {2026-03-05}
-}
-```
+Dieser End-to-End-Fluss führt die zentralen Backend-Entscheidungen zusammen. UID-basierte Dokumentpfade ermöglichen identitätsgebundene Autorisierung, ein query-driven Datenmodell unterstützt effiziente Reads, Bewegungsfilter reduzieren Writes und damit Kosten, und Security Rules sichern Zugriff und Datenintegrität ab. Damit ist die Backend-Architektur nicht nur als technische Implementierung, sondern als nachvollziehbare Antwort auf Anforderungen an Datenschutz, Kostenkontrolle und Robustheit dokumentiert.
