@@ -45,9 +45,7 @@ da-kurzfassung-de: Die Diplomarbeit befasst sich mit der Entwicklung der mobilen
 da-kurzfassung-en: This diploma thesis focuses on the development of the mobile application “GeoQuest”, a digital scavenger hunt designed for school events. The app guides users to real-world locations using GPS, where tasks must be completed on-site. To ensure fair gameplay, mechanisms such as location validation, time limits, and speed monitoring are implemented. The goal is a flexible and sustainable solution tailored to the specific needs of the school and suitable for long-term use.
 
 
-da-kiquellen:
-
-# Diplomarbeitsvereinbarungen müssen zum Schluss sein 
+da-appendix:
 
 - abschnitt: Diplomatbeitsvereinbarung Englisch
   pdf-file: HTL-DA-Doku-EN.pdf
