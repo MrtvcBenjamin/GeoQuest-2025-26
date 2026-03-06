@@ -111,7 +111,7 @@ Sowohl Planung als auch konkrete Umsetzung wurden aufgeschoben, wodurch es berei
 : Projektstatus Stand 20. Oktober 2025
 
 \newpage
-### Projektfortschritt 21. Oktober bis 11. November 2025 
+### Projektfortschritt 21. Oktober bis 12. November 2025 
 
 #### Gesamtstatus
 
@@ -125,7 +125,7 @@ Sowohl Planung als auch konkrete Umsetzung wurden aufgeschoben, wodurch es berei
 | Terminziele    | Kritisch erreicht | Bessere Planung |
 | Teamarbeit     | Situativ       | Frühere Abstimmung |
 
-:Projektstatus am 2025-11-11
+:Projektstatus am 2025-11-12
 
 #### Durchgeführte Arbeiten
 
@@ -142,7 +142,7 @@ Sowohl Planung als auch konkrete Umsetzung wurden aufgeschoben, wodurch es berei
 * Strukturierter Start der Implementierungsphase
 * Einhaltung des nächsten Meilensteins (30.11.2025)
 
-: Projektstatus Stand 11. November 2025
+: Projektstatus Stand 12. November 2025
 
 \newpage
 ### Projektfortschritt 12. November bis 30. November 2025
