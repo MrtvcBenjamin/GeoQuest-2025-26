@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:ui';
 
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/splash_screen.dart';
+import 'services/telemetry_service.dart';
 import 'theme/app_settings.dart';
 
 void main() async {
@@ -14,12 +17,40 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
 
   if (kIsWeb) {
     await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
   }
+  await TelemetryService.init();
+  await TelemetryService.setUserId(FirebaseAuth.instance.currentUser?.uid);
 
   await AppSettings.load();
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('FlutterError: ${details.exceptionAsString()}');
+    final stack = details.stack ?? StackTrace.current;
+    TelemetryService.recordError(
+      details.exception,
+      stack,
+      reason: 'flutter_error',
+    );
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('UnhandledError: $error');
+    debugPrintStack(stackTrace: stack);
+    TelemetryService.recordError(
+      error,
+      stack,
+      reason: 'platform_dispatcher_error',
+      fatal: true,
+    );
+    return true;
+  };
 
   runApp(const GeoQuestApp());
 }

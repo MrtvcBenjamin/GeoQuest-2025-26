@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Optional: set this field via trusted backend/admin process.
+    function isAdmin() {
+      return isSignedIn() &&
+          get(/databases/$(database)/documents/Users/$(request.auth.uid))
+              .data
+              .isAdmin == true;
+    }
+
+    match /Users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Owner can only update non-critical profile fields.
+      allow update: if isOwner(userId)
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'Username',
+            'UsernameLower',
+            'Email',
+            'CurrentStadionIndexByHunt',
+            'StationOrderByHunt',
+            'updatedAt'
+          ]);
+
+      // Critical game fields should be written by trusted backend only.
+      allow create: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    match /PlayerLocation/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+    }
+
+    match /Hunts/{huntId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+
+      match /Stadions/{stadionId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+      }
+    }
+
+    match /Teams/{teamId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}
+

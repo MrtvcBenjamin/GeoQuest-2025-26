@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../services/telemetry_service.dart';
 import '../theme/app_settings.dart';
 import '../theme/app_text.dart';
 import 'role_select_screen.dart';
@@ -73,7 +74,9 @@ class _MenuRootScreen extends StatelessWidget {
     );
     if (confirm != true) return;
 
+    await TelemetryService.logEvent('logout');
     await FirebaseAuth.instance.signOut();
+    await TelemetryService.setUserId(null);
     await AppSettings.clearLoginMode();
     if (!context.mounted) return;
 

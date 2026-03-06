@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../auth/admin_access.dart';
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 import 'menu_tab.dart';
 
 class AdminMapScreen extends StatefulWidget {
@@ -252,13 +253,14 @@ class _AdminMapScreenState extends State<AdminMapScreen> {
       stream: FirebaseFirestore.instance.collection('Users').snapshots(),
       builder: (context, usersSnapshot) {
         if (usersSnapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppLoadingState();
         }
         if (usersSnapshot.hasError) {
-          return Center(
-            child: Text(
-              tr('Benutzer konnten nicht geladen werden.',
-                  'Users could not be loaded.'),
+          return AppMessageCard(
+            title: tr('Fehler', 'Error'),
+            body: tr(
+              'Benutzer konnten nicht geladen werden.',
+              'Users could not be loaded.',
             ),
           );
         }
@@ -272,13 +274,14 @@ class _AdminMapScreenState extends State<AdminMapScreen> {
               FirebaseFirestore.instance.collection('PlayerLocation').snapshots(),
           builder: (context, locationSnapshot) {
             if (locationSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const AppLoadingState();
             }
             if (locationSnapshot.hasError) {
-              return Center(
-                child: Text(
-                  tr('Standorte konnten nicht geladen werden.',
-                      'Locations could not be loaded.'),
+              return AppMessageCard(
+                title: tr('Fehler', 'Error'),
+                body: tr(
+                  'Standorte konnten nicht geladen werden.',
+                  'Locations could not be loaded.',
                 ),
               );
             }

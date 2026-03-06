@@ -38,8 +38,8 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         _OnboardingPage(
           title: tr('Löse Aufgaben vor Ort', 'Solve tasks on site'),
           body: tr(
-            'Textfragen, Multiple Choice\noder kleine Bilderrätsel\nwarten auf dich.\nRichtig gelöst = Punkte!\nÜberspringen kostet Punkte.',
-            'Text questions, multiple choice\nor image puzzles await you.\nSolve them correctly to earn\npoints. Skipping costs points.',
+            'Je nach Station musst du\neinen QR-Code scannen\noder Aufgaben bei der\nLehrperson lösen.\nSo sammelst du Punkte.',
+            'Depending on the station,\nyou either scan a QR code\nor solve tasks with the\nteacher.\nThat is how you earn points.',
           ),
           button: tr('Weiter', 'Continue'),
         ),

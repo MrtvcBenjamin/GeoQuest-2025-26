@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import '../services/station_cache_service.dart';
+import '../services/telemetry_service.dart';
 
 /// Backend-connected GameState using YOUR Firestore schema (from your screenshots).
 ///
@@ -52,6 +54,7 @@ class GameState {
   static StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _stadionsSub;
 
   static List<Map<String, dynamic>> _stadionsCache = [];
+  static bool _loadedFromCache = false;
 
   /// Call this if you already know the huntId (simple).
   /// Example: await GameState.initWithHuntId("xISAk6mXjjEpDUHYyxZi");
@@ -63,6 +66,7 @@ class GameState {
     }
 
     _huntId = huntId;
+    _loadedFromCache = false;
 
     _bindHunt(huntId);
     _bindStadions(huntId);
@@ -186,6 +190,13 @@ class GameState {
 
   static void _bindStadions(String huntId) {
     _stadionsSub?.cancel();
+    StationCacheService.load(huntId).then((cached) {
+      if (cached.isEmpty || _loadedFromCache) return;
+      _stadionsCache = cached;
+      _loadedFromCache = true;
+      _applyCurrentStadionFromCache();
+      _recomputeDistance();
+    });
     _stadionsSub = FirebaseFirestore.instance
         .collection('Hunts')
         .doc(huntId)
@@ -194,8 +205,20 @@ class GameState {
         .snapshots()
         .listen((snap) async {
       _stadionsCache = await _orderStadionsForUser(huntId, snap);
+      _loadedFromCache = false;
+      await StationCacheService.save(huntId, _stadionsCache);
       _applyCurrentStadionFromCache();
       _recomputeDistance();
+      await TelemetryService.logEvent(
+        'game_state_stations_updated',
+        params: {'count': _stadionsCache.length},
+      );
+    }, onError: (Object error, StackTrace stack) {
+      TelemetryService.recordError(
+        error,
+        stack,
+        reason: 'game_state_bind_stadions',
+      );
     });
   }
 
@@ -328,5 +351,6 @@ class GameState {
     _targetGeo = null;
     _startedAt = null;
     _stadionsCache = [];
+    _loadedFromCache = false;
   }
 }

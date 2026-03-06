@@ -123,13 +123,6 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
     GameState.initWithHuntId(widget.huntId);
   }
 
-  String _fmtTime(Duration d) {
-    final totalSeconds = d.inSeconds.clamp(0, 999999);
-    final m = (totalSeconds ~/ 60).toString();
-    final s = (totalSeconds % 60).toString().padLeft(2, '0');
-    return '$m:$s';
-  }
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -225,9 +218,7 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                         QuerySnapshot<Map<String, dynamic>>>(
                                     stream: FirebaseFirestore.instance
                                         .collection('Users')
-                                        .snapshots(
-                                          includeMetadataChanges: true,
-                                        ),
+                                        .snapshots(),
                                     builder: (context, usersSnap) {
                                       final points = _readPoints(data);
                                       final timeBonus = _readTimeBonus(data);
@@ -446,34 +437,7 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                               ),
                                               const SizedBox(height: 12),
                                             ],
-                                            Center(
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(Icons.circle,
-                                                      size: 10,
-                                                      color: Color(0xFFFFC107)),
-                                                  const SizedBox(width: 8),
-                                                  ValueListenableBuilder<
-                                                      Duration>(
-                                                    valueListenable:
-                                                        GameState.remainingTime,
-                                                    builder: (_, t, ___) => Text(
-                                                      '${tr('Verbleibende Zeit', 'Remaining time')}: ${_fmtTime(t)}',
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w900,
-                                                        color: scheme.onSurface
-                                                            .withValues(
-                                                                alpha: 0.85),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(height: 14),
+                                            const SizedBox(height: 2),
                                             SizedBox(
                                               width: double.infinity,
                                               height: 46,

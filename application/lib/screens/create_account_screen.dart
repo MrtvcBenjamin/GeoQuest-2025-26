@@ -1,7 +1,9 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../auth/auth_validators.dart';
+import '../services/telemetry_service.dart';
+import '../services/user_repository.dart';
 import '../theme/app_text.dart';
 import '../theme/app_ui.dart';
 import 'change_password_screen.dart';
@@ -31,6 +33,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   bool _hidePasswordConfirm = true;
   bool _loading = false;
   String? _error;
+  bool _showRetry = false;
+  final UserRepository _users = UserRepository();
 
   @override
   void initState() {
@@ -49,15 +53,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   bool _isValidUsername(String value) {
-    final username = value.trim();
-    final re = RegExp(r'^[A-Za-z0-9._-]{3,24}$');
-    return re.hasMatch(username);
+    return AuthValidators.isValidUsername(value);
   }
 
   bool _isValidEmail(String value) {
-    final email = value.trim();
-    final re = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    return re.hasMatch(email);
+    return AuthValidators.isValidEmail(value);
   }
 
   Future<void> _create() async {
@@ -66,7 +66,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final password = _pwC.text;
     final passwordConfirm = _pwConfirmC.text;
 
-    setState(() => _error = null);
+    setState(() {
+      _error = null;
+      _showRetry = false;
+    });
 
     if (!_isValidUsername(username)) {
       setState(() => _error = tr(
@@ -79,7 +82,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           tr('Bitte gültige E-Mail eingeben.', 'Please enter a valid email.'));
       return;
     }
-    if (password.length < 6) {
+    if (!AuthValidators.isValidPassword(password)) {
       setState(() => _error = tr('Passwort muss mindestens 6 Zeichen haben.',
           'Password must have at least 6 characters.'));
       return;
@@ -95,14 +98,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
     try {
       final usernameLower = username.toLowerCase();
-      final usernameTaken = await FirebaseFirestore.instance
-          .collection('Users')
-          .where('UsernameLower', isEqualTo: usernameLower)
-          .limit(1)
-          .get();
-      if (usernameTaken.docs.isNotEmpty) {
+      final usernameTaken = await _users.isUsernameTaken(usernameLower);
+      if (usernameTaken) {
         setState(() => _error =
             tr('Username existiert bereits.', 'Username already exists.'));
+        await TelemetryService.logEvent('signup_username_taken');
         return;
       }
 
@@ -114,11 +114,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await user.sendEmailVerification();
-        await FirebaseFirestore.instance.collection('Users').doc(user.uid).set({
-          'Username': username,
-          'UsernameLower': usernameLower,
-          'Email': email,
-        }, SetOptions(merge: true));
+        await _users.upsertBasicProfile(
+          user.uid,
+          username: username,
+          email: email,
+        );
+        await TelemetryService.logEvent('signup_verification_sent');
       }
 
       await FirebaseAuth.instance.signOut();
@@ -129,21 +130,30 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             role: LoginRole.player,
             prefilledUsername: username,
             infoText: tr(
-              'Verifizierungs-E-Mail gesendet. Bitte zuerst E-Mail bestätigen und dann anmelden. Bitte auch den Spam-Ordner prüfen.',
-              'Verification email sent. Please verify your email first, then sign in. Please also check your spam folder.',
+              'Verifizierungs-E-Mail gesendet. Bitte zuerst E-Mail bestätigen und dann anmelden. Bitte auch den Spam-Ordner prüfen. Bei Schul-E-Mails (z. B. @o365.htl-leoben.at) kann die Zustellung einige Minuten dauern.',
+              'Verification email sent. Please verify your email first, then sign in. Please also check your spam folder. For school emails (e.g. @o365.htl-leoben.at), delivery can take a few minutes.',
             ),
           ),
         ),
         (_) => false,
       );
     } on FirebaseAuthException catch (e) {
+      await TelemetryService.logEvent(
+        'signup_failed',
+        params: {'code': e.code},
+      );
       if (e.code == 'network-request-failed') {
-        setState(() => _error = tr(
-            'Keine Internetverbindung. Bitte Verbindung prüfen.',
-            'No internet connection. Please check your connection.'));
+        setState(() {
+          _error = tr('Keine Internetverbindung. Bitte Verbindung prüfen.',
+              'No internet connection. Please check your connection.');
+          _showRetry = true;
+        });
       } else {
-        setState(() => _error = e.message ??
-            tr('Registrierung fehlgeschlagen.', 'Registration failed.'));
+        setState(() {
+          _error = e.message ??
+              tr('Registrierung fehlgeschlagen.', 'Registration failed.');
+          _showRetry = true;
+        });
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -270,6 +280,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  if (_showRetry) ...[
+                    const SizedBox(height: 6),
+                    TextButton(
+                      onPressed: _loading ? null : _create,
+                      child: Text(tr('Erneut versuchen', 'Try again')),
+                    ),
+                  ],
                 ],
                 const SizedBox(height: 16),
                 SizedBox(
@@ -346,4 +363,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     );
   }
 }
+
+
 

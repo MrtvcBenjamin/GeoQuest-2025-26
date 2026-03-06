@@ -9,6 +9,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../models/app_nav.dart';
+import '../services/station_cache_service.dart';
+import '../services/telemetry_service.dart';
 import '../theme/app_text.dart';
 import 'quiz_intro_screen.dart';
 import 'qr_scan_screen.dart';
@@ -224,6 +226,10 @@ class _MapTabState extends State<MapTab> {
       _popupType = type;
       _popupMessage = message;
     });
+    TelemetryService.logEvent(
+      'map_popup',
+      params: {'type': type.name, 'message': message},
+    );
     _popupTimer = Timer(const Duration(seconds: 3), () {
       if (!mounted) return;
       setState(() => _popupType = MapPopupType.none);
@@ -265,6 +271,7 @@ class _MapTabState extends State<MapTab> {
           .get();
 
       final list = await _loadRandomizedStations(snapshot.docs);
+      await StationCacheService.save(huntId, list);
 
       if (mounted) {
         setState(() {
@@ -278,20 +285,52 @@ class _MapTabState extends State<MapTab> {
         });
       }
       _stationStartedAt ??= DateTime.now();
+      await TelemetryService.logEvent(
+        'stations_loaded',
+        params: {'count': list.length, 'source': 'firestore'},
+      );
     } catch (e) {
       debugPrint('Firestore Load Error (Stadions): $e');
-      _showPopup(
-        MapPopupType.network,
-        tr('Keine Internetverbindung.', 'No internet connection.'),
-      );
-      if (mounted) {
-        setState(() {
-          allStadionData = [];
-          _statusHint = tr(
-            'Stations could not be loaded. Please check your internet connection.',
-            'Stations could not be loaded. Please check your internet connection.',
-          );
-        });
+      final cached = await StationCacheService.load(huntId);
+      if (cached.isNotEmpty) {
+        if (mounted) {
+          setState(() {
+            allStadionData = cached;
+            _statusHint = tr(
+              'Offline-Modus: Gespeicherte Stationen werden verwendet.',
+              'Offline mode: Using cached stations.',
+            );
+            if (_stadionIndex >= allStadionData.length) {
+              _stadionIndex =
+                  allStadionData.isEmpty ? 0 : allStadionData.length - 1;
+            }
+          });
+        }
+        _showPopup(
+          MapPopupType.network,
+          tr(
+            'Keine Internetverbindung. Offline-Stationen geladen.',
+            'No internet connection. Loaded cached stations.',
+          ),
+        );
+        await TelemetryService.logEvent(
+          'stations_loaded',
+          params: {'count': cached.length, 'source': 'cache'},
+        );
+      } else {
+        _showPopup(
+          MapPopupType.network,
+          tr('Keine Internetverbindung.', 'No internet connection.'),
+        );
+        if (mounted) {
+          setState(() {
+            allStadionData = [];
+            _statusHint = tr(
+              'Stations could not be loaded. Please check your internet connection.',
+              'Stations could not be loaded. Please check your internet connection.',
+            );
+          });
+        }
       }
     }
   }
@@ -633,6 +672,10 @@ class _MapTabState extends State<MapTab> {
   void _startBlock() {
     if (_isBlocked) return;
     _blockTimer?.cancel();
+    TelemetryService.logEvent(
+      'anti_cheat_block_started',
+      params: {'station': _currentStationNumber(), 'warnings': _warnings},
+    );
     AppNav.mapBlocked.value = true;
     _applyBlockPenalty();
     setState(() {
@@ -780,6 +823,13 @@ class _MapTabState extends State<MapTab> {
     if (!mounted || scanned == null || scanned.trim().isEmpty) return;
 
     final ok = _normalizeQr(scanned) == _normalizeQr(expectedCode);
+    await TelemetryService.logEvent(
+      'qr_scan_result',
+      params: {
+        'ok': ok,
+        'station': _currentStationNumber(),
+      },
+    );
     if (ok) {
       await _completeCurrentStationWithPoints(10.0, applyTimeBonus: false);
     }
@@ -903,6 +953,13 @@ class _MapTabState extends State<MapTab> {
     );
 
     if (!mounted || teacherPoints == null) return;
+    await TelemetryService.logEvent(
+      'teacher_quiz_scored',
+      params: {
+        'station': _currentStationNumber(),
+        'points': teacherPoints,
+      },
+    );
     await _completeCurrentStationWithPoints(teacherPoints);
   }
 
@@ -935,6 +992,13 @@ class _MapTabState extends State<MapTab> {
 
     AppNav.stationActive.value = false;
     AppNav.selectedIndex.value = 0;
+    await TelemetryService.logEvent(
+      'station_completed',
+      params: {
+        'station': _currentStationNumber(),
+        'finished_hunt': isFinished,
+      },
+    );
   }
 
   Future<void> _awardPointsForCurrentStadion(

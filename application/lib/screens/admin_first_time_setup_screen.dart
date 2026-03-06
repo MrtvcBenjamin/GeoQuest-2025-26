@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 
 import '../auth/admin_access.dart';
+import '../auth/auth_validators.dart';
+import '../services/telemetry_service.dart';
 import '../theme/app_text.dart';
 import '../theme/app_ui.dart';
 import 'login_screen.dart';
@@ -24,6 +26,7 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
   bool _loading = false;
   String? _error;
   String? _info;
+  bool _showRetry = false;
 
   @override
   void dispose() {
@@ -34,9 +37,7 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
   }
 
   bool _isValidEmail(String value) {
-    final email = value.trim();
-    final re = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    return re.hasMatch(email);
+    return AuthValidators.isValidEmail(value);
   }
 
   Future<void> _setupAdmin() async {
@@ -47,6 +48,7 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
     setState(() {
       _error = null;
       _info = null;
+      _showRetry = false;
     });
 
     if (!_isValidEmail(email)) {
@@ -63,7 +65,7 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
           ));
       return;
     }
-    if (pw.length < 6) {
+    if (!AuthValidators.isValidPassword(pw)) {
       setState(() => _error = tr(
             'Passwort muss mindestens 6 Zeichen haben.',
             'Password must have at least 6 characters.',
@@ -98,8 +100,10 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
       final user = cred.user;
       if (user != null && !user.emailVerified) {
         await user.sendEmailVerification();
+        await TelemetryService.logEvent('admin_verification_sent');
       }
       await FirebaseAuth.instance.signOut();
+      await TelemetryService.setUserId(null);
 
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
@@ -108,14 +112,18 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
             role: LoginRole.admin,
             prefilledUsername: email,
             infoText: tr(
-              'Verifizierungs-E-Mail gesendet. Bitte zuerst bestätigen und danach als Admin anmelden. Bitte auch den Spam-Ordner prüfen.',
-              'Verification email sent. Please verify first, then sign in as admin. Please also check your spam folder.',
+              'Verifizierungs-E-Mail gesendet. Bitte zuerst bestätigen und danach als Admin anmelden. Bitte auch den Spam-Ordner prüfen. Bei Schul-E-Mails (z. B. @o365.htl-leoben.at) kann die Zustellung einige Minuten dauern.',
+              'Verification email sent. Please verify first, then sign in as admin. Please also check your spam folder. For school emails (e.g. @o365.htl-leoben.at), delivery can take a few minutes.',
             ),
           ),
         ),
         (_) => false,
       );
     } on FirebaseAuthException catch (e) {
+      await TelemetryService.logEvent(
+        'admin_setup_failed',
+        params: {'code': e.code},
+      );
       String message;
       switch (e.code) {
         case 'wrong-password':
@@ -130,6 +138,7 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
             'Keine Internetverbindung. Bitte Verbindung prüfen.',
             'No internet connection. Please check your connection.',
           );
+          _showRetry = true;
           break;
         default:
           message = e.message ??
@@ -137,15 +146,19 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
                 'Admin-Setup fehlgeschlagen.',
                 'Admin setup failed.',
               );
+          _showRetry = true;
       }
       if (mounted) setState(() => _error = message);
     } catch (_) {
       if (mounted) {
         setState(
-          () => _error = tr(
-            'Admin-Setup fehlgeschlagen.',
-            'Admin setup failed.',
-          ),
+          () {
+            _error = tr(
+              'Admin-Setup fehlgeschlagen.',
+              'Admin setup failed.',
+            );
+            _showRetry = true;
+          },
         );
       }
     } finally {
@@ -264,7 +277,14 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                     ),
-                  ),
+                    ),
+                    if (_showRetry) ...[
+                      const SizedBox(height: 6),
+                      TextButton(
+                        onPressed: _loading ? null : _setupAdmin,
+                        child: Text(tr('Erneut versuchen', 'Try again')),
+                      ),
+                    ],
                 ],
                 if (_info != null) ...[
                   const SizedBox(height: 10),
@@ -323,4 +343,5 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
     );
   }
 }
+
 

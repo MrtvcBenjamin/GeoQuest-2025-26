@@ -1,8 +1,10 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../auth/admin_access.dart';
+import '../auth/auth_validators.dart';
+import '../services/telemetry_service.dart';
+import '../services/user_repository.dart';
 import '../theme/app_text.dart';
 import '../theme/app_ui.dart';
 import 'admin_first_time_setup_screen.dart';
@@ -34,12 +36,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final UserRepository _users = UserRepository();
 
   bool _obscure = true;
   bool _isLoading = false;
   String? _errorText;
   String? _infoText;
   bool _wrongPasswordState = false;
+  bool _showRetry = false;
   bool get _adminMode => widget.role == LoginRole.admin;
 
   @override
@@ -62,32 +66,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isValidUsernameOrEmail(String value) {
     final input = value.trim();
     if (_adminMode) {
-      final emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-      return emailRe.hasMatch(input);
+      return AuthValidators.isValidEmail(input);
     }
     if (input.contains('@')) {
-      final emailRe = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-      return emailRe.hasMatch(input);
+      return AuthValidators.isValidEmail(input);
     }
-    final usernameRe = RegExp(r'^[A-Za-z0-9._-]{3,24}$');
-    return usernameRe.hasMatch(input);
+    return AuthValidators.isValidUsername(input);
   }
 
   Future<String?> _resolveEmailForLogin(String input) async {
     final trimmed = input.trim();
     if (trimmed.contains('@') || _adminMode) return trimmed.toLowerCase();
-
-    final snap = await FirebaseFirestore.instance
-        .collection('Users')
-        .where('UsernameLower', isEqualTo: trimmed.toLowerCase())
-        .limit(1)
-        .get();
-    if (snap.docs.isEmpty) return null;
-
-    final data = snap.docs.first.data();
-    final email = data['Email'] as String?;
-    if (email == null || email.isEmpty) return null;
-    return email.toLowerCase();
+    return _users.emailForUsername(trimmed.toLowerCase());
   }
 
   String _legacyAuthEmailFromUsername(String username) {
@@ -104,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorText = null;
       _infoText = null;
       _wrongPasswordState = false;
+      _showRetry = false;
     });
 
     if (!_isValidUsernameOrEmail(usernameOrEmail)) {
@@ -147,17 +138,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
       final currentUser = FirebaseAuth.instance.currentUser;
+      await TelemetryService.setUserId(currentUser?.uid);
       final signedInEmail = currentUser?.email?.trim().toLowerCase();
       final isLegacyUser =
           signedInEmail != null && signedInEmail.endsWith('@geoquest.local');
       if (currentUser != null && !isLegacyUser && !currentUser.emailVerified) {
         await currentUser.sendEmailVerification();
+        await TelemetryService.logEvent('login_verification_resent');
         await FirebaseAuth.instance.signOut();
+        await TelemetryService.setUserId(null);
         if (mounted) {
           setState(
             () => _errorText = tr(
-              'E-Mail ist noch nicht verifiziert. Wir haben einen neuen Verifizierungslink gesendet. Bitte auch den Spam-Ordner prüfen.',
-              'Email is not verified yet. We sent a new verification link. Please also check your spam folder.',
+              'E-Mail ist noch nicht verifiziert. Wir haben einen neuen Verifizierungslink gesendet. Bitte auch den Spam-Ordner prüfen. Bei Schul-E-Mails (z. B. @o365.htl-leoben.at) kann die Zustellung einige Minuten dauern.',
+              'Email is not verified yet. We sent a new verification link. Please also check your spam folder. For school emails (e.g. @o365.htl-leoben.at), delivery can take a few minutes.',
             ),
           );
         }
@@ -181,6 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
         _adminMode ? AppLoginMode.admin : AppLoginMode.player,
       );
       await AppSettings.setOnboardingDone(true);
+      await TelemetryService.logEvent(
+        'login_success',
+        params: {'role': _adminMode ? 'admin' : 'player'},
+      );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -190,6 +188,10 @@ class _LoginScreenState extends State<LoginScreen> {
         (_) => false,
       );
     } on FirebaseAuthException catch (e) {
+      await TelemetryService.logEvent(
+        'login_failed',
+        params: {'code': e.code, 'role': _adminMode ? 'admin' : 'player'},
+      );
       String message;
       switch (e.code) {
         case 'invalid-credential':
@@ -206,13 +208,16 @@ class _LoginScreenState extends State<LoginScreen> {
         case 'too-many-requests':
           message = tr('Zu viele Versuche. Bitte später erneut probieren.',
               'Too many attempts. Please try again later.');
+          _showRetry = true;
           break;
         case 'network-request-failed':
           message = tr('Keine Internetverbindung. Bitte Verbindung prüfen.',
               'No internet connection. Please check your connection.');
+          _showRetry = true;
           break;
         default:
           message = e.message ?? tr('Login fehlgeschlagen.', 'Login failed.');
+          _showRetry = true;
       }
       if (mounted) {
         setState(() => _errorText = message);
@@ -359,6 +364,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    if (_showRetry) ...[
+                      const SizedBox(height: 6),
+                      TextButton(
+                        onPressed: _isLoading ? null : _login,
+                        child: Text(tr('Erneut versuchen', 'Try again')),
+                      ),
+                    ],
                   ],
                   if (_infoText != null) ...[
                     const SizedBox(height: 10),
@@ -489,4 +501,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+
+
 

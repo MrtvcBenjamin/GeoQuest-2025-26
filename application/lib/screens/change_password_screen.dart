@@ -1,7 +1,9 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../auth/auth_validators.dart';
+import '../services/telemetry_service.dart';
+import '../services/user_repository.dart';
 import '../theme/app_text.dart';
 import '../theme/app_ui.dart';
 import 'create_account_screen.dart';
@@ -21,10 +23,12 @@ class ChangePasswordScreen extends StatefulWidget {
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _userC = TextEditingController();
+  final UserRepository _users = UserRepository();
 
   bool _loading = false;
   String? _msg;
   String? _err;
+  bool _showRetry = false;
 
   @override
   void dispose() {
@@ -38,6 +42,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     setState(() {
       _err = null;
       _msg = null;
+      _showRetry = false;
     });
 
     if (usernameOrEmail.isEmpty) {
@@ -50,16 +55,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     try {
       String? email;
       if (usernameOrEmail.contains('@')) {
+        if (!AuthValidators.isValidEmail(usernameOrEmail)) {
+          setState(() => _err = tr(
+              'Bitte gültige E-Mail eingeben.', 'Please enter a valid email.'));
+          return;
+        }
         email = usernameOrEmail.toLowerCase();
       } else {
-        final snap = await FirebaseFirestore.instance
-            .collection('Users')
-            .where('UsernameLower', isEqualTo: usernameOrEmail.toLowerCase())
-            .limit(1)
-            .get();
-        if (snap.docs.isNotEmpty) {
-          email = snap.docs.first.data()['Email'] as String?;
-        }
+        email = await _users.emailForUsername(usernameOrEmail.toLowerCase());
       }
 
       if (email == null || email.isEmpty) {
@@ -71,19 +74,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         return;
       }
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await TelemetryService.logEvent('password_reset_email_sent');
       setState(
         () => _msg = tr(
-            'Reset-E-Mail gesendet. Bitte Link in der E-Mail öffnen und auch den Spam-Ordner prüfen.',
-            'Reset email sent. Please open the link in your email and also check your spam folder.'),
+            'Reset-E-Mail gesendet. Bitte Link in der E-Mail öffnen und auch den Spam-Ordner prüfen. Bei Schul-E-Mails (z. B. @o365.htl-leoben.at) kann die Zustellung einige Minuten dauern.',
+            'Reset email sent. Please open the link in your email and also check your spam folder. For school emails (e.g. @o365.htl-leoben.at), delivery can take a few minutes.'),
       );
     } on FirebaseAuthException catch (e) {
+      await TelemetryService.logEvent(
+        'password_reset_failed',
+        params: {'code': e.code},
+      );
       if (e.code == 'network-request-failed') {
-        setState(() => _err = tr(
-            'Keine Internetverbindung. Bitte Verbindung prüfen.',
-            'No internet connection. Please check your connection.'));
+        setState(() {
+          _err = tr('Keine Internetverbindung. Bitte Verbindung prüfen.',
+              'No internet connection. Please check your connection.');
+          _showRetry = true;
+        });
       } else {
-        setState(() => _err = e.message ??
-            tr('Passwort-Reset fehlgeschlagen.', 'Password reset failed.'));
+        setState(() {
+          _err = e.message ??
+              tr('Passwort-Reset fehlgeschlagen.', 'Password reset failed.');
+          _showRetry = true;
+        });
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -164,6 +177,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  if (_showRetry) ...[
+                    const SizedBox(height: 6),
+                    TextButton(
+                      onPressed: _loading ? null : _continue,
+                      child: Text(tr('Erneut versuchen', 'Try again')),
+                    ),
+                  ],
                 ],
                 if (_msg != null) ...[
                   const SizedBox(height: 10),
@@ -263,4 +283,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 }
+
+
+
 

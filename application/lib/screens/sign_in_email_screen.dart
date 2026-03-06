@@ -1,6 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 
+import '../auth/auth_validators.dart';
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 import 'create_account_screen.dart';
 import 'login_screen.dart';
 import 'role_select_screen.dart';
@@ -22,17 +24,11 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     super.dispose();
   }
 
-  bool _isValidEmail(String value) {
-    final email = value.trim();
-    final re = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    return re.hasMatch(email);
-  }
-
   void _continue() {
     final email = _emailController.text.trim();
     setState(() => _errorText = null);
 
-    if (!_isValidEmail(email)) {
+    if (!AuthValidators.isValidEmail(email)) {
       setState(() => _errorText = tr(
           'Bitte gib eine gültige E-Mail ein.', 'Please enter a valid email.'));
       return;
@@ -47,29 +43,10 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
   }
 
   InputDecoration _emailDecoration(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return InputDecoration(
-      hintText: 'email@domain.com',
+    return buildAppFieldDecoration(
+      context: context,
+      hint: 'email@domain.com',
       errorText: _errorText,
-      filled: true,
-      fillColor: isDark
-          ? scheme.surface.withValues(alpha: 0.65)
-          : scheme.onSurface.withValues(alpha: 0.06),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: scheme.primary, width: 1),
-      ),
     );
   }
 
@@ -189,4 +166,3 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     );
   }
 }
-
