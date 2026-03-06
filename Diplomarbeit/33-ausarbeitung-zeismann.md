@@ -19,7 +19,7 @@ Die Qualität wurde zusätzlich über nicht-funktionale Kriterien abgesichert: k
 
 Die App wurde mit Flutter und Dart umgesetzt. Flutter erlaubt eine gemeinsame Codebasis für mehrere Plattformen und passt gut zu einem UI-lastigen Projekt mit vielen Zustandsänderungen [@flutterDocs]. Der Einstiegspunkt liegt in application/lib/main.dart. Dort werden Firebase und App-Einstellungen initialisiert, bevor die UI startet: Firebase.initializeApp(...) lädt die Plattformkonfiguration, auf Web wird Persistence.LOCAL aktiviert, AppSettings.load() lädt Theme, Sprache, Login-Modus und Onboarding-Status.
 
-Als Backend-Dienste wurden Firebase Authentication und Cloud Firestore eingesetzt [@firebaseAuthDocs; @firestoreDocs]. Die Kartenansicht basiert auf OpenStreetMap-Daten über flutter_map [@flutterMapDocs; @openstreetmapCopyright]. Die Standortdaten kommen über geolocator [@geolocatorPkg]. Die Flutter-Dokumentation fasst den technischen Kern dieses Vorgehens prägnant zusammen: "Build apps for any screen." [@flutterWebsite]. Damit ist eine gemeinsame UI-Codebasis mit konsistentem Verhalten gemeint.
+Als Backend-Dienste wurden Firebase Authentication und Cloud Firestore eingesetzt [@firebaseAuthDocs]. Die Kartenansicht basiert auf OpenStreetMap-Daten über flutter_map [@flutterMapDocs]. Die Standortdaten kommen über geolocator [@geolocatorPkg]. Die Flutter-Dokumentation fasst den technischen Kern dieses Vorgehens prägnant zusammen: "Build apps for any screen." [@flutterWebsite]. Damit ist eine gemeinsame UI-Codebasis mit konsistentem Verhalten gemeint.
 
 ### Entwicklungsumgebung und Arbeitsprozess
 
@@ -29,7 +29,7 @@ Zusätzlich wurden frühe Funktionsstände auf echten Geräten geprüft, da GPS-
 
 ### Aufbau der Frontend-Architektur
 
-Die Architektur trennt die App in wenige klare Schichten. Dazu gehören der Start- und Auth-Flow mit Splash, Onboarding, Rollenwahl, Login und Registrierung, der Spiel-Flow mit Dashboard, Karte und Bewertungslogik, der Meta-Flow mit Progress, Menü, Datenschutz, Impressum und Einstellungen sowie ein Admin-Flow mit Live-Karte für Lehrkräfte [@flutter_app_arch_guide_2026; @flutter_arch_overview_2025].
+Die Architektur trennt die App in wenige klare Schichten. Dazu gehören der Start- und Auth-Flow mit Splash, Onboarding, Rollenwahl, Login und Registrierung, der Spiel-Flow mit Dashboard, Karte und Bewertungslogik, der Meta-Flow mit Progress, Menü, Datenschutz, Impressum und Einstellungen sowie ein Admin-Flow mit Live-Karte für Lehrkräfte [@flutterDocs].
 
 Wesentliche Bausteine sind AppSettings für dauerhaft gespeicherte UI- und Session-Einstellungen, AppNav für globale Navigation und Sperrzustände, GameState als reaktiver Spielfeld-Zustand sowie die Firestore-Collections Users, PlayerLocation, Hunts und Hunts/{huntId}/Stadions.
 
@@ -135,9 +135,9 @@ Die Karte basiert auf flutter_map mit OSM-Tiles. Zusätzlich wird ein MapControl
 
 ### Standortstream und Berechtigungslogik
 
-_startLocationStream() prüft vor dem Start: Sind Standortdienste aktiv?, Liegen Berechtigungen vor? [@geolocatorPkg; @android_background_location_limits_2024; @apple_request_location_authorization_2026].
+_startLocationStream() prüft vor dem Start: Sind Standortdienste aktiv?, Liegen Berechtigungen vor? [@geolocatorPkg].
 
-Dann startet Geolocator.getPositionStream(...) mit: hoher Genauigkeit (best), distanceFilter: 2 Meter [@geolocatorPkg; @dart_using_streams_2025].
+Dann startet Geolocator.getPositionStream(...) mit: hoher Genauigkeit (best), distanceFilter: 2 Meter [@geolocatorPkg].
 
 Bei jedem Standortupdate passieren drei Dinge: UI-Zustand aktualisieren, Position gedrosselt in Firestore schreiben (_dbWriteCooldown = 10s), Spielregeln prüfen (Radius, Geschwindigkeit, Zeitschätzung).
 
@@ -295,7 +295,7 @@ Grenze des Ansatzes: Ohne saubere Zustandsmodellierung entstehen auch deklarativ
 
 Theoretisch sollte Zustand nach Lebensdauer getrennt werden: kurzlebig (Dialog geöffnet, Fokus, Button-Disable), funktionsbezogen (aktive Station, Warnungszähler, Countdown), dauerhaft gespeichert (Profil, Punkte, Stationsreihenfolge).
 
-GeoQuest nutzt hierfür eine Mischform aus lokalem Widget-State, ValueNotifier und Firestore als dauerhaft gespeicherte Wahrheit. Diese Kombination ist für mittelgroße Projekte pragmatisch, erfordert aber klare Verantwortungsgrenzen [@flutter_app_arch_guide_2026; @firestore_data_model_2026].
+GeoQuest nutzt hierfür eine Mischform aus lokalem Widget-State, ValueNotifier und Firestore als dauerhaft gespeicherte Wahrheit. Diese Kombination ist für mittelgroße Projekte pragmatisch, erfordert aber klare Verantwortungsgrenzen [@flutterDocs].
 
 ### Navigation als Zustandsautomat
 
@@ -335,7 +335,7 @@ Das in GeoQuest umgesetzte Stufenmodell (Warnung -> Sperre -> Punktabzug) ist de
 
 Moderne Mobile-Apps sind asynchron: Streams, Netzwerk, Timer und UI-Events laufen parallel. Typische Risiken sind gleichzeitige Konflikte, doppelte Schreibvorgänge und veraltete Anzeige.
 
-Gegenmaßnahmen sind Firestore-Transaktionen für kritische Summenfelder, eine Update-Logik ohne Doppelwirkungen je Station, Guard-Flags gegen Doppeltrigger und sauberes Stoppen von Streams und Timern [@firestore_transactions_2026; @dart_async_await_2025; @dart_using_streams_2025].
+Gegenmaßnahmen sind Firestore-Transaktionen für kritische Summenfelder, eine Update-Logik ohne Doppelwirkungen je Station, Guard-Flags gegen Doppeltrigger und sauberes Stoppen von Streams und Timern [@firestoreDocs].
 
 Diese Punkte sind nicht optional, sondern eine Grundvoraussetzung für stabile Einsätze in der Praxis.
 
@@ -347,7 +347,7 @@ Ein inkonsistentes Datenmodell wirkt direkt als UX-Problem. Wenn Punkte, Fortsch
 
 Sichere Anmeldung allein reicht nicht, auch Rollenrechte müssen korrekt durchgesetzt werden. GeoQuest kombiniert deshalb die technische Identität über Firebase Authentication mit einer zusätzlichen Rollen-Freigabe über eine Admin-E-Mail-Liste.
 
-Diese Trennung entspricht gängigen Security-Prinzipien wie "so wenig Rechte wie nötig" [@owaspMasvs; @firebase_rules_and_auth_2026].
+Diese Trennung entspricht gängigen Security-Prinzipien wie "so wenig Rechte wie nötig" [@owaspMasvs].
 
 ### Datenschutz und Transparenz
 
@@ -367,7 +367,7 @@ Für Karten bedeutet das zusätzlich, dass wichtige Zustände textlich begleitet
 
 Performance ist auf Mobilgeräten nicht nur von einem Faktor abhängig: Reaktionsgeschwindigkeit, Speicherverbrauch, Energiebedarf, stabile Gerätetemperatur.
 
-Standortstream + Karte + Netzwerkzugriffe können diese Faktoren schnell verschlechtern. Deshalb sind Drosselung, gezielte Neuberechnungen und sauberes Subscription-Management zentrale architektonische Maßnahmen [@android_background_location_limits_2024; @apple_request_location_authorization_2026; @flutterPerf].
+Standortstream + Karte + Netzwerkzugriffe können diese Faktoren schnell verschlechtern. Deshalb sind Drosselung, gezielte Neuberechnungen und sauberes Subscription-Management zentrale architektonische Maßnahmen [@flutterPerf].
 
 ### Wartbarkeit und technische Schulden
 
