@@ -43,7 +43,20 @@ class GeoQuestApp extends StatelessWidget {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       scaffoldBackgroundColor: bg,
+      inputDecorationTheme: InputDecorationTheme(
+        isDense: false,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(48, 48),
+          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: bg,
         surfaceTintColor: bg,
@@ -86,7 +99,20 @@ class GeoQuestApp extends StatelessWidget {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       scaffoldBackgroundColor: bg,
+      inputDecorationTheme: InputDecorationTheme(
+        isDense: false,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(48, 48),
+          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: bg,
         surfaceTintColor: bg,

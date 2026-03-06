@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 import 'create_account_screen.dart';
 import 'login_screen.dart';
 
@@ -72,8 +73,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       setState(
         () => _msg = tr(
-            'Reset-E-Mail gesendet. Bitte Link in der E-Mail öffnen.',
-            'Reset email sent. Please open the link in your email.'),
+            'Reset-E-Mail gesendet. Bitte Link in der E-Mail öffnen und auch den Spam-Ordner prüfen.',
+            'Reset email sent. Please open the link in your email and also check your spam folder.'),
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
@@ -94,28 +95,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     required String hint,
     Widget? suffixIcon,
   }) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: isDark
-          ? scheme.surface.withValues(alpha: 0.65)
-          : scheme.onSurface.withValues(alpha: 0.06),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: scheme.primary, width: 1),
-      ),
+    return buildAppFieldDecoration(
+      context: context,
+      hint: hint,
       suffixIcon: suffixIcon,
     );
   }
@@ -281,3 +263,4 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 }
+

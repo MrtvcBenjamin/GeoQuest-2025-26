@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 
 class AppNav {
   static final ValueNotifier<int> selectedIndex = ValueNotifier<int>(0);
@@ -10,3 +10,4 @@ class AppNav {
   /// False bedeutet: Map zeigt nur den eigenen Standort.
   static final ValueNotifier<bool> stationActive = ValueNotifier<bool>(false);
 }
+

@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../auth/admin_access.dart';
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 import 'login_screen.dart';
 
 class AdminFirstTimeSetupScreen extends StatefulWidget {
@@ -107,8 +108,8 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
             role: LoginRole.admin,
             prefilledUsername: email,
             infoText: tr(
-              'Verifizierungs-E-Mail gesendet. Bitte zuerst bestätigen und danach als Admin anmelden.',
-              'Verification email sent. Please verify first, then sign in as admin.',
+              'Verifizierungs-E-Mail gesendet. Bitte zuerst bestätigen und danach als Admin anmelden. Bitte auch den Spam-Ordner prüfen.',
+              'Verification email sent. Please verify first, then sign in as admin. Please also check your spam folder.',
             ),
           ),
         ),
@@ -157,27 +158,9 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
     required String hint,
     Widget? suffixIcon,
   }) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: isDark
-          ? scheme.surface.withValues(alpha: 0.65)
-          : scheme.onSurface.withValues(alpha: 0.06),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: scheme.primary, width: 1),
-      ),
+    return buildAppFieldDecoration(
+      context: context,
+      hint: hint,
       suffixIcon: suffixIcon,
     );
   }
@@ -214,6 +197,19 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
                     color: scheme.onSurface.withValues(alpha: 0.60),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  tr(
+                    'Format für Lehrer-Admin-E-Mail: vorname.nachname@htl-leoben.at',
+                    'Teacher admin email format: firstname.lastname@htl-leoben.at',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurface.withValues(alpha: 0.55),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -327,3 +323,4 @@ class _AdminFirstTimeSetupScreenState extends State<AdminFirstTimeSetupScreen> {
     );
   }
 }
+

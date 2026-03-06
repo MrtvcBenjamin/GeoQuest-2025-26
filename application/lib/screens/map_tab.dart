@@ -21,6 +21,8 @@ enum MapUiState {
   inRadius
 }
 
+enum MapPopupType { none, network, gps, error }
+
 class MapTab extends StatefulWidget {
   final bool isActive;
 
@@ -99,9 +101,12 @@ class _MapTabState extends State<MapTab> {
   double _playerSpeedMps = 0;
 
   bool _didInitialFit = false;
-  bool _qrUnlockedForStation = false;
-  bool get _canStartQuiz =>
-      _uiState == MapUiState.inRadius || _qrUnlockedForStation;
+  static const Set<int> _qrOnlyStationNumbers = {1, 3, 5, 7, 9, 11};
+  bool get _isCurrentStationQrOnly =>
+      _qrOnlyStationNumbers.contains(_currentStationNumber());
+  bool get _isCurrentStationLocationTeacher => !_isCurrentStationQrOnly;
+  bool get _canOpenLocationTeacherFlow =>
+      _isCurrentStationLocationTeacher && _uiState == MapUiState.inRadius;
 
 // DB throttling (location writes)
   DateTime? _lastDbWriteAt;
@@ -117,6 +122,9 @@ class _MapTabState extends State<MapTab> {
   int? _remainingSeconds;
   Timer? _remainingTicker;
   DateTime? _stationStartedAt;
+  MapPopupType _popupType = MapPopupType.none;
+  String _popupMessage = '';
+  Timer? _popupTimer;
 
   void _setStatusHint(String? hint) {
     if (!mounted) return;
@@ -188,7 +196,6 @@ class _MapTabState extends State<MapTab> {
       allStadionData = [];
       _stadionIndex = 0;
       _didInitialFit = false;
-      _qrUnlockedForStation = false;
       _stationStartedAt = DateTime.now();
       _init();
       return;
@@ -204,9 +211,23 @@ class _MapTabState extends State<MapTab> {
     AppNav.mapBlocked.value = false;
     AppNav.stationActive.removeListener(_onStationActiveChanged);
     _blockTimer?.cancel();
+    _popupTimer?.cancel();
     _remainingTicker?.cancel();
     _stopLocationStream();
     super.dispose();
+  }
+
+  void _showPopup(MapPopupType type, String message) {
+    if (!mounted) return;
+    _popupTimer?.cancel();
+    setState(() {
+      _popupType = type;
+      _popupMessage = message;
+    });
+    _popupTimer = Timer(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      setState(() => _popupType = MapPopupType.none);
+    });
   }
 
   void _onStationActiveChanged() {
@@ -219,7 +240,6 @@ class _MapTabState extends State<MapTab> {
         _remainingSeconds = null;
         _remainingTime = '15:00';
         _stationStartedAt = DateTime.now();
-        _qrUnlockedForStation = false;
       }
     });
 
@@ -260,6 +280,10 @@ class _MapTabState extends State<MapTab> {
       _stationStartedAt ??= DateTime.now();
     } catch (e) {
       debugPrint('Firestore Load Error (Stadions): $e');
+      _showPopup(
+        MapPopupType.network,
+        tr('Keine Internetverbindung.', 'No internet connection.'),
+      );
       if (mounted) {
         setState(() {
           allStadionData = [];
@@ -301,6 +325,14 @@ class _MapTabState extends State<MapTab> {
       );
     } catch (e) {
       debugPrint('Firestore Save Error (PlayerLocation): $e');
+      final text = e.toString().toLowerCase();
+      final isNetwork = text.contains('network') || text.contains('socket');
+      _showPopup(
+        isNetwork ? MapPopupType.network : MapPopupType.error,
+        isNetwork
+            ? tr('Keine Internetverbindung.', 'No internet connection.')
+            : tr('Fehler beim Speichern.', 'Save error.'),
+      );
     }
   }
 
@@ -409,6 +441,10 @@ class _MapTabState extends State<MapTab> {
       final enabled = await Geolocator.isLocationServiceEnabled();
       if (!enabled) {
         _streamRunning = false;
+        _showPopup(
+          MapPopupType.gps,
+          tr('Kein GPS-Signal gefunden!', 'No GPS signal found!'),
+        );
         _setStatusHint(tr(
           'Standortdienste sind deaktiviert. Bitte aktiviere GPS.',
           'Location services are disabled. Please enable GPS.',
@@ -423,6 +459,10 @@ class _MapTabState extends State<MapTab> {
       if (perm == LocationPermission.denied ||
           perm == LocationPermission.deniedForever) {
         _streamRunning = false;
+        _showPopup(
+          MapPopupType.gps,
+          tr('Kein GPS-Signal gefunden!', 'No GPS signal found!'),
+        );
         _setStatusHint(tr(
           'Location permission missing. Please allow it in settings.',
           'Location permission missing. Please allow it in settings.',
@@ -468,6 +508,10 @@ class _MapTabState extends State<MapTab> {
     } catch (e) {
       debugPrint('Location stream error: $e');
       _streamRunning = false;
+      _showPopup(
+        MapPopupType.gps,
+        tr('Kein GPS-Signal gefunden!', 'No GPS signal found!'),
+      );
       _setStatusHint(tr(
         'Standort konnte nicht aktualisiert werden.',
         'Could not update location.',
@@ -698,6 +742,14 @@ class _MapTabState extends State<MapTab> {
     return teacher.trim();
   }
 
+  int _currentStationNumber() {
+    if (!_hasStadions) return _stadionIndex + 1;
+    final data = allStadionData[_stadionIndex];
+    final rawIndex = (data['stadionIndex'] as num?)?.toInt();
+    if (rawIndex != null && rawIndex >= 0) return rawIndex + 1;
+    return _stadionIndex + 1;
+  }
+
   String _expectedQrCode() {
     if (!_hasStadions) return '';
     final data = allStadionData[_stadionIndex];
@@ -716,6 +768,7 @@ class _MapTabState extends State<MapTab> {
 
   Future<void> _scanQrCode() async {
     if (!_isStationActive || _isBlocked) return;
+    if (!_isCurrentStationQrOnly) return;
 
     final expectedCode = _expectedQrCode();
     final scanned = await Navigator.of(context).push<String>(
@@ -728,8 +781,9 @@ class _MapTabState extends State<MapTab> {
 
     final ok = _normalizeQr(scanned) == _normalizeQr(expectedCode);
     if (ok) {
-      setState(() => _qrUnlockedForStation = true);
+      await _completeCurrentStationWithPoints(10.0, applyTimeBonus: false);
     }
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -837,7 +891,7 @@ class _MapTabState extends State<MapTab> {
   Future<void> _openQuiz() async {
     if (!_isStationActive) return;
     if (_isBlocked) return;
-    if (!_canStartQuiz) return;
+    if (!_canOpenLocationTeacherFlow) return;
 
     final teacherPoints = await Navigator.of(context).push<double>(
       MaterialPageRoute(
@@ -849,11 +903,21 @@ class _MapTabState extends State<MapTab> {
     );
 
     if (!mounted || teacherPoints == null) return;
+    await _completeCurrentStationWithPoints(teacherPoints);
+  }
 
+  Future<void> _completeCurrentStationWithPoints(
+    double teacherPoints, {
+    bool applyTimeBonus = true,
+  }) async {
+    if (!_hasStadions) return;
     final next = _stadionIndex + 1;
     final isFinished = next >= allStadionData.length;
 
-    await _awardPointsForCurrentStadion(teacherPoints);
+    await _awardPointsForCurrentStadion(
+      teacherPoints,
+      applyTimeBonus: applyTimeBonus,
+    );
 
     await _saveProgress(isFinished ? allStadionData.length : next,
         finished: isFinished);
@@ -863,7 +927,6 @@ class _MapTabState extends State<MapTab> {
         _stadionIndex = next;
       }
       _uiState = MapUiState.normal;
-      _qrUnlockedForStation = false;
       _didInitialFit = false;
       _remainingSeconds = null;
       _remainingTime = '15:00';
@@ -874,7 +937,10 @@ class _MapTabState extends State<MapTab> {
     AppNav.selectedIndex.value = 0;
   }
 
-  Future<void> _awardPointsForCurrentStadion(double teacherPoints) async {
+  Future<void> _awardPointsForCurrentStadion(
+    double teacherPoints, {
+    bool applyTimeBonus = true,
+  }) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || !_hasStadions) return;
 
@@ -885,7 +951,7 @@ class _MapTabState extends State<MapTab> {
         : 0;
     final remainingSeconds = _remainingSeconds ?? fallbackSeconds;
     final inTime = remainingSeconds > 0;
-    final timeBonus = inTime ? 2.0 : 0.0;
+    final timeBonus = applyTimeBonus && inTime ? 2.0 : 0.0;
     final sanitizedTeacherPoints = teacherPoints.clamp(0.0, 10.0);
     final spentSeconds = _stationStartedAt == null
         ? 0
@@ -1220,9 +1286,64 @@ class _MapTabState extends State<MapTab> {
     }
   }
 
+  Widget _statusPopup() {
+    if (_popupType == MapPopupType.none) return const SizedBox.shrink();
+    IconData icon;
+    switch (_popupType) {
+      case MapPopupType.network:
+        icon = Icons.wifi_off_rounded;
+        break;
+      case MapPopupType.gps:
+        icon = Icons.location_off_rounded;
+        break;
+      case MapPopupType.error:
+        icon = Icons.error_outline_rounded;
+        break;
+      case MapPopupType.none:
+        return const SizedBox.shrink();
+    }
+
+    return Center(
+      child: IgnorePointer(
+        child: AnimatedOpacity(
+          opacity: 1,
+          duration: const Duration(milliseconds: 160),
+          child: Container(
+            width: 220,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: Theme.of(context).dividerColor,
+                width: 1,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 72),
+                const SizedBox(height: 8),
+                Text(
+                  _popupMessage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _continueToQuizButton() {
     if (!_isStationActive) return const SizedBox.shrink();
-    if (!_canStartQuiz) return const SizedBox.shrink();
+    if (!_canOpenLocationTeacherFlow) return const SizedBox.shrink();
     if (_isBlocked) return const SizedBox.shrink();
 
     final scheme = Theme.of(context).colorScheme;
@@ -1251,7 +1372,7 @@ class _MapTabState extends State<MapTab> {
 
   Widget _scanQrButton() {
     if (!_isStationActive) return const SizedBox.shrink();
-    if (_canStartQuiz) return const SizedBox.shrink();
+    if (!_isCurrentStationQrOnly) return const SizedBox.shrink();
     if (_isBlocked) return const SizedBox.shrink();
 
     final scheme = Theme.of(context).colorScheme;
@@ -1272,7 +1393,7 @@ class _MapTabState extends State<MapTab> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           icon: const Icon(Icons.qr_code_scanner),
-          label: Text(tr('QR-Code scannen', 'Scan QR code'),
+          label: Text(tr('QR-Code scannen (+10)', 'Scan QR code (+10)'),
               style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900)),
         ),
       ),
@@ -1432,6 +1553,7 @@ class _MapTabState extends State<MapTab> {
           _continueToQuizButton(),
           _scanQrButton(),
           _testTeleportButton(),
+          _statusPopup(),
           _bottomPanel(),
 
 // Overlay (Warn/Block/Unblock)

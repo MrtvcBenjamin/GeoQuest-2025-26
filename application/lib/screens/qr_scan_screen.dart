@@ -30,6 +30,14 @@ class _QrScanScreenState extends State<QrScanScreen> {
     Navigator.of(context).pop(raw);
   }
 
+  Future<void> _finishScanForTesting() async {
+    if (_handled) return;
+    _handled = true;
+    await _controller.stop();
+    if (!mounted) return;
+    Navigator.of(context).pop(widget.expectedCode);
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -51,7 +59,23 @@ class _QrScanScreenState extends State<QrScanScreen> {
             controller: _controller,
             onDetect: _onDetect,
           ),
-          const SizedBox.shrink(),
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 28,
+            child: SafeArea(
+              child: ElevatedButton(
+                onPressed: _finishScanForTesting,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(44),
+                ),
+                child: const Text(
+                  'TEST: QR-Scan abschliessen',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

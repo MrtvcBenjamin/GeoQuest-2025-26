@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../theme/app_settings.dart';
@@ -718,3 +718,4 @@ class _DividerLine extends StatelessWidget {
     return Container(height: 1, color: color);
   }
 }
+

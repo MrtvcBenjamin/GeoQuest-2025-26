@@ -1,9 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../auth/admin_access.dart';
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 import 'admin_first_time_setup_screen.dart';
 import 'admin_map_screen.dart';
 import 'change_password_screen.dart';
@@ -155,8 +156,8 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           setState(
             () => _errorText = tr(
-              'E-Mail ist noch nicht verifiziert. Wir haben einen neuen Verifizierungslink gesendet.',
-              'Email is not verified yet. We sent a new verification link.',
+              'E-Mail ist noch nicht verifiziert. Wir haben einen neuen Verifizierungslink gesendet. Bitte auch den Spam-Ordner prüfen.',
+              'Email is not verified yet. We sent a new verification link. Please also check your spam folder.',
             ),
           );
         }
@@ -255,40 +256,11 @@ class _LoginScreenState extends State<LoginScreen> {
     Widget? suffixIcon,
     bool error = false,
   }) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: isDark
-          ? scheme.surface.withValues(alpha: 0.65)
-          : scheme.onSurface.withValues(alpha: 0.06),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color:
-              error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
-          width: 1,
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color:
-              error ? const Color(0xFFE53935) : Theme.of(context).dividerColor,
-          width: 1,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color: error ? const Color(0xFFE53935) : scheme.primary,
-          width: 1,
-        ),
-      ),
+    return buildAppFieldDecoration(
+      context: context,
+      hint: hint,
       suffixIcon: suffixIcon,
+      error: error,
     );
   }
 
@@ -330,6 +302,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: scheme.onSurface.withValues(alpha: 0.60),
                     ),
                   ),
+                  if (_adminMode) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      tr(
+                        'Admin-Lehrer-E-Mail Format: vorname.nachname@htl-leoben.at',
+                        'Teacher admin email format: firstname.lastname@htl-leoben.at',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: scheme.onSurface.withValues(alpha: 0.55),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   TextField(
                     controller: _usernameController,
@@ -502,3 +489,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

@@ -1,7 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 
 class ProgressTab extends StatelessWidget {
   const ProgressTab({super.key});
@@ -14,19 +15,20 @@ class ProgressTab extends StatelessWidget {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance.collection('Users').snapshots(),
       builder: (context, snapshot) {
-        final scheme = Theme.of(context).colorScheme;
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppLoadingState();
         }
         if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              tr('Ranking konnte nicht geladen werden.',
-                  'Ranking could not be loaded.'),
-              style: TextStyle(color: scheme.onSurface),
+          return AppMessageCard(
+            title: tr('Fehler', 'Error'),
+            body: tr(
+              'Ranking konnte nicht geladen werden.',
+              'Ranking could not be loaded.',
             ),
           );
         }
+
+        final scheme = Theme.of(context).colorScheme;
 
         final currentUid = FirebaseAuth.instance.currentUser?.uid;
         final players = (snapshot.data?.docs ?? const [])
@@ -103,10 +105,13 @@ class ProgressTab extends StatelessWidget {
                     points: currentPlayer?.points ?? 0,
                     timeBonus: currentPlayer?.timeBonusPoints ?? 0,
                     solved: progressSolved,
-                    totalTime: currentPlayer?.totalTimeText ?? '0:00',
                   ),
                   const SizedBox(height: 10),
-                  _MiniBars(color: scheme.onSurface),
+                  _StationProgressStrip(
+                    solved: progressSolved,
+                    totalStations: _totalStations,
+                    color: scheme.onSurface,
+                  ),
                   const SizedBox(height: 10),
                   Expanded(
                     child: ListView.separated(
@@ -144,13 +149,11 @@ class _StatsText extends StatelessWidget {
   final double points;
   final double timeBonus;
   final int solved;
-  final String totalTime;
 
   const _StatsText({
     required this.points,
     required this.timeBonus,
     required this.solved,
-    required this.totalTime,
   });
 
   @override
@@ -177,10 +180,6 @@ class _StatsText extends StatelessWidget {
         _StatRow(
             label: tr('Gelöste Aufgaben:', 'Solved tasks:'),
             value: '$solved',
-            style: s()),
-        _StatRow(
-            label: tr('Gesamtzeit:', 'Total time:'),
-            value: totalTime,
             style: s()),
       ],
     );
@@ -215,33 +214,39 @@ class _StatRow extends StatelessWidget {
   }
 }
 
-class _MiniBars extends StatelessWidget {
+class _StationProgressStrip extends StatelessWidget {
+  final int solved;
+  final int totalStations;
   final Color color;
-  const _MiniBars({required this.color});
+
+  const _StationProgressStrip({
+    required this.solved,
+    required this.totalStations,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Widget bar(double h, double alpha) {
-      return Container(
-        width: 22,
-        height: h,
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: alpha),
-          borderRadius: BorderRadius.circular(3),
-        ),
-      );
-    }
-
+    final solvedClamped = solved.clamp(0, totalStations);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        bar(58, 1.0),
-        const SizedBox(width: 4),
-        bar(38, 0.6),
-        const SizedBox(width: 4),
-        bar(22, 0.25),
-      ],
+      children: List.generate(
+        totalStations,
+        (i) {
+          final done = i < solvedClamped;
+          return Padding(
+            padding: EdgeInsets.only(right: i == totalStations - 1 ? 0 : 4),
+            child: Container(
+              width: 11,
+              height: 11,
+              decoration: BoxDecoration(
+                color: done ? color : color.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -395,9 +400,6 @@ class _PlayerDetailsDialog extends StatelessWidget {
             _DialogStatRow(
                 label: tr('Gelöste Aufgaben:', 'Solved tasks:'),
                 value: '$solved'),
-            _DialogStatRow(
-                label: tr('Gesamtzeit:', 'Total time:'),
-                value: player.totalTimeText),
             const SizedBox(height: 10),
             Text(
               '$percent%',
@@ -494,7 +496,6 @@ class _Player {
   final double points;
   final double timeBonusPoints;
   final int solved;
-  final String totalTimeText;
 
   const _Player({
     required this.uid,
@@ -503,7 +504,6 @@ class _Player {
     required this.points,
     required this.timeBonusPoints,
     required this.solved,
-    required this.totalTimeText,
   });
 
   factory _Player.fromDoc(String uid, Map<String, dynamic> data) {
@@ -516,9 +516,15 @@ class _Player {
         (data['TimeBonusPoints'] as num?)?.toDouble() ?? 0.0;
 
     final completedRaw = (data['CompletedStadions'] as List?) ?? const [];
-    final completedCount = completedRaw.whereType<num>().length;
+    final completedCount = completedRaw
+        .map((e) {
+          if (e is num) return e.toInt();
+          return int.tryParse(e.toString());
+        })
+        .whereType<int>()
+        .toSet()
+        .length;
     final solved = (data['SolvedCount'] as num?)?.toInt() ?? completedCount;
-    final totalTimeText = _readTotalTimeText(data);
 
     final username = (data['Username'] as String?)?.trim();
     final email = (data['Email'] as String?)?.trim();
@@ -533,21 +539,7 @@ class _Player {
       points: points,
       timeBonusPoints: timeBonusPoints,
       solved: solved,
-      totalTimeText: totalTimeText,
     );
-  }
-
-  static String _readTotalTimeText(Map<String, dynamic> data) {
-    final raw = data['TotalTimeText'] ?? data['Gesamtzeit'];
-    if (raw is String && raw.trim().isNotEmpty) return raw.trim();
-
-    final seconds = (data['TotalTimeSeconds'] as num?)?.toInt() ??
-        (data['totalTimeSeconds'] as num?)?.toInt();
-    if (seconds == null || seconds <= 0) return '0:00';
-
-    final m = (seconds ~/ 60).toString();
-    final s = (seconds % 60).toString().padLeft(2, '0');
-    return '$m:$s';
   }
 
   _Player copyWith({
@@ -557,7 +549,6 @@ class _Player {
     double? points,
     double? timeBonusPoints,
     int? solved,
-    String? totalTimeText,
   }) {
     return _Player(
       uid: uid ?? this.uid,
@@ -566,7 +557,8 @@ class _Player {
       points: points ?? this.points,
       timeBonusPoints: timeBonusPoints ?? this.timeBonusPoints,
       solved: solved ?? this.solved,
-      totalTimeText: totalTimeText ?? this.totalTimeText,
     );
   }
 }
+
+

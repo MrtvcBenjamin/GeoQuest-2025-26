@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/app_nav.dart';
 import '../models/game_state.dart';
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 
 class StartRouteScreen extends StatefulWidget {
   final String huntId;
@@ -58,6 +59,54 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
         .length;
   }
 
+  double _readPoints(Map<String, dynamic> data) {
+    return (data['Points'] as num?)?.toDouble() ??
+        (data['points'] as num?)?.toDouble() ??
+        (data['score'] as num?)?.toDouble() ??
+        0.0;
+  }
+
+  double _readTimeBonus(Map<String, dynamic> data) {
+    return (data['TimeBonusPoints'] as num?)?.toDouble() ?? 0.0;
+  }
+
+  String _readTotalTimeText(Map<String, dynamic> data) {
+    final raw = data['TotalTimeText'] ?? data['Gesamtzeit'];
+    if (raw is String && raw.trim().isNotEmpty) return raw.trim();
+    final seconds = (data['TotalTimeSeconds'] as num?)?.toInt() ??
+        (data['totalTimeSeconds'] as num?)?.toInt();
+    if (seconds == null || seconds <= 0) return '0:00';
+    final m = (seconds ~/ 60).toString();
+    final s = (seconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+
+  String _fmtPoints(double value) {
+    final n = double.parse(value.toStringAsFixed(1));
+    if (n % 1 == 0) return n.toInt().toString();
+    return n.toStringAsFixed(1);
+  }
+
+  int _resolveRank(
+    String uid,
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final ranked = docs
+        .map((d) => (
+              uid: d.id,
+              points: _readPoints(d.data()),
+              solved: _readSolvedCount(d.data()),
+            ))
+        .toList();
+    ranked.sort((a, b) {
+      final byPoints = b.points.compareTo(a.points);
+      if (byPoints != 0) return byPoints;
+      return b.solved.compareTo(a.solved);
+    });
+    final idx = ranked.indexWhere((e) => e.uid == uid);
+    return idx < 0 ? 0 : idx + 1;
+  }
+
   bool _isFinished(Map<String, dynamic> data, int totalStations) {
     final finishedByHunt =
         ((data['FinishedHunts'] as Map?)?[widget.huntId] as bool?) ?? false;
@@ -92,7 +141,16 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
           builder: (context, userSnap) {
             final username = userSnap.data ?? tr('Spieler', 'Player');
             if (userSnap.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const AppLoadingState();
+            }
+            if (userSnap.hasError) {
+              return AppMessageCard(
+                title: tr('Fehler', 'Error'),
+                body: tr(
+                  'Nutzerdaten konnten nicht geladen werden.',
+                  'User data could not be loaded.',
+                ),
+              );
             }
 
             return FutureBuilder<int>(
@@ -163,52 +221,144 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                               ),
                             ),
                             child: finished
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        tr('Alle Rätsel gelöst',
-                                            'All puzzles solved'),
-                                        style: TextStyle(
-                                          fontSize: 26,
-                                          fontWeight: FontWeight.w900,
-                                          height: 1.0,
-                                          color: scheme.onSurface,
+                                ? StreamBuilder<
+                                        QuerySnapshot<Map<String, dynamic>>>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('Users')
+                                        .snapshots(
+                                          includeMetadataChanges: true,
                                         ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        tr(
-                                          'Du bist fertig: $solvedCount / $totalStations Stationen abgeschlossen.',
-                                          'You are done: $solvedCount / $totalStations stations completed.',
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w800,
-                                          color: scheme.onSurface
-                                              .withValues(alpha: 0.85),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 46,
-                                        child: ElevatedButton(
-                                          onPressed: null,
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: scheme.primary,
-                                            foregroundColor: scheme.onPrimary,
-                                          ),
-                                          child: Text(
-                                            tr('Fertig', 'Done'),
+                                    builder: (context, usersSnap) {
+                                      final points = _readPoints(data);
+                                      final timeBonus = _readTimeBonus(data);
+                                      final totalTimeText =
+                                          _readTotalTimeText(data);
+                                      final rankingLoading =
+                                          usersSnap.connectionState ==
+                                                  ConnectionState.waiting &&
+                                              !usersSnap.hasData;
+                                      final rank = _uid == null ||
+                                              !usersSnap.hasData
+                                          ? 0
+                                          : _resolveRank(
+                                              _uid!,
+                                              usersSnap.data!.docs,
+                                            );
+
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            tr('Vielen Dank',
+                                                'Thank you for playing'),
                                             style: TextStyle(
-                                                fontSize: 13.5,
-                                                fontWeight: FontWeight.w900),
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w900,
+                                              color: scheme.onSurface,
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    ],
+                                          Text(
+                                            tr('fürs Spielen, "$username"!',
+                                                'for playing, "$username"!'),
+                                            style: TextStyle(
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w900,
+                                              color: scheme.onSurface,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Text(
+                                            tr(
+                                              'Deine Platzierung: ${rankingLoading ? '...' : (rank > 0 ? rank : '-')}',
+                                              'Your ranking: ${rankingLoading ? '...' : (rank > 0 ? rank : '-')}',
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w900,
+                                              color: scheme.onSurface,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            tr(
+                                              'Die Platzierung wird live aktualisiert.',
+                                              'Ranking updates live.',
+                                            ),
+                                            style: TextStyle(
+                                              fontSize: 11.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: scheme.onSurface
+                                                  .withValues(alpha: 0.7),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.fromLTRB(
+                                                12, 10, 12, 10),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                color: scheme.onSurface
+                                                    .withValues(alpha: 0.3),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                _SummaryRow(
+                                                  label: tr('Gesamtpunkte:',
+                                                      'Total points:'),
+                                                  value:
+                                                      '${_fmtPoints(points)} p',
+                                                ),
+                                                _SummaryRow(
+                                                  label: tr(
+                                                      '+ ${_fmtPoints(timeBonus)} Zeitbonus',
+                                                      '+ ${_fmtPoints(timeBonus)} time bonus'),
+                                                  value: '',
+                                                ),
+                                                _SummaryRow(
+                                                  label: tr(
+                                                      'Gelöste Aufgaben:',
+                                                      'Solved tasks:'),
+                                                  value:
+                                                      '$solvedCount/$totalStations',
+                                                ),
+                                                _SummaryRow(
+                                                  label: tr('Gesamtzeit:',
+                                                      'Total time:'),
+                                                  value: totalTimeText,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 14),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            height: 42,
+                                            child: ElevatedButton(
+                                              onPressed: null,
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: scheme.primary,
+                                                foregroundColor:
+                                                    scheme.onPrimary,
+                                              ),
+                                              child: Text(
+                                                tr('Quiz abgeschlossen',
+                                                    'Quiz completed'),
+                                                style: const TextStyle(
+                                                  fontSize: 13.5,
+                                                  fontWeight: FontWeight.w900,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   )
                                 : Column(
                                     crossAxisAlignment:
@@ -261,36 +411,18 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          ValueListenableBuilder<int>(
-                                            valueListenable: GameState
-                                                .nextStationDistanceMeters,
-                                            builder: (_, meters, __) => Text(
-                                              '${tr('Distanz', 'Distance')}: ${meters}m',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w900,
-                                                color: scheme.onSurface
-                                                    .withValues(alpha: 0.85),
-                                              ),
-                                            ),
+                                      ValueListenableBuilder<int>(
+                                        valueListenable:
+                                            GameState.nextStationDistanceMeters,
+                                        builder: (_, meters, __) => Text(
+                                          '${tr('Distanz', 'Distance')}: ${meters}m',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w900,
+                                            color: scheme.onSurface
+                                                .withValues(alpha: 0.85),
                                           ),
-                                          const SizedBox(width: 12),
-                                          ValueListenableBuilder<int>(
-                                            valueListenable:
-                                                GameState.nextStationPoints,
-                                            builder: (_, pts, __) => Text(
-                                              '${tr('Punkte', 'Points')}: $pts p',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w900,
-                                                color: scheme.onSurface
-                                                    .withValues(alpha: 0.85),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                        ),
                                       ),
                                       const SizedBox(height: 14),
                                       ValueListenableBuilder<bool>(
@@ -396,6 +528,47 @@ class _StartRouteScreenState extends State<StartRouteScreen> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _SummaryRow({
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.5,
+                fontWeight: FontWeight.w800,
+                color: scheme.onSurface,
+              ),
+            ),
+          ),
+          if (value.isNotEmpty)
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 14.5,
+                fontWeight: FontWeight.w800,
+                color: scheme.onSurface,
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 import 'change_password_screen.dart';
 import 'login_screen.dart';
 
@@ -128,8 +129,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             role: LoginRole.player,
             prefilledUsername: username,
             infoText: tr(
-              'Verifizierungs-E-Mail gesendet. Bitte zuerst E-Mail bestätigen und dann anmelden.',
-              'Verification email sent. Please verify your email first, then sign in.',
+              'Verifizierungs-E-Mail gesendet. Bitte zuerst E-Mail bestätigen und dann anmelden. Bitte auch den Spam-Ordner prüfen.',
+              'Verification email sent. Please verify your email first, then sign in. Please also check your spam folder.',
             ),
           ),
         ),
@@ -154,28 +155,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     required String hint,
     Widget? suffixIcon,
   }) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: isDark
-          ? scheme.surface.withValues(alpha: 0.65)
-          : scheme.onSurface.withValues(alpha: 0.06),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).dividerColor),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: scheme.primary, width: 1),
-      ),
+    return buildAppFieldDecoration(
+      context: context,
+      hint: hint,
       suffixIcon: suffixIcon,
     );
   }
@@ -364,3 +346,4 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     );
   }
 }
+

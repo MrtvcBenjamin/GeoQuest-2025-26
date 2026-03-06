@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_text.dart';
+import '../theme/app_ui.dart';
 
 class StartHuntScreen extends StatelessWidget {
   const StartHuntScreen({super.key});
@@ -29,7 +30,16 @@ class StartHuntScreen extends StatelessWidget {
           builder: (context, snapshot) {
             final username = snapshot.data ?? tr('Spieler', 'Player');
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const AppLoadingState();
+            }
+            if (snapshot.hasError) {
+              return AppMessageCard(
+                title: tr('Fehler', 'Error'),
+                body: tr(
+                  'Profil konnte nicht geladen werden. Bitte prüfe die Internetverbindung.',
+                  'Could not load profile. Please check the internet connection.',
+                ),
+              );
             }
 
             return Padding(
@@ -47,6 +57,7 @@ class StartHuntScreen extends StatelessWidget {
                             width: 92,
                             height: 92,
                             fit: BoxFit.contain,
+                            semanticLabel: 'GeoQuest Logo',
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -187,3 +198,4 @@ class _InfoBullet extends StatelessWidget {
     );
   }
 }
+

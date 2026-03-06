@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import '../theme/app_text.dart';
 import 'create_account_screen.dart';
@@ -189,3 +189,4 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     );
   }
 }
+

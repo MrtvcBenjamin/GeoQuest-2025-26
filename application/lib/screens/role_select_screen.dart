@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import '../theme/app_text.dart';
 import 'login_screen.dart';
-import 'sign_in_email_screen.dart';
 
 class RoleSelectScreen extends StatelessWidget {
   const RoleSelectScreen({super.key});
@@ -78,7 +77,9 @@ class RoleSelectScreen extends StatelessWidget {
                 buttonText: tr('Als Spieler anmelden', 'Sign in as player'),
                 onTap: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const SignInEmailScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const LoginScreen(role: LoginRole.player),
+                    ),
                   );
                 },
               ),

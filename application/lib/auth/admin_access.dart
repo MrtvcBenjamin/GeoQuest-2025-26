@@ -1,4 +1,4 @@
-enum AppUserRole { player, admin }
+﻿enum AppUserRole { player, admin }
 
 class AdminAccess {
   static final Set<String> _adminEmails = _buildAdminEmails();
@@ -109,3 +109,4 @@ class AdminAccess {
         .replaceAll(RegExp(r'[^a-z0-9-]'), '');
   }
 }
+
