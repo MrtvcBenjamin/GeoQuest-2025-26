@@ -24,7 +24,7 @@ da-author:
   thema: Entwicklung - Backend
   ki-tools:
   - name: ChatGPT5.2
-    zweck: Boilerplate Codegenerierung, Informationsbeschaffung
+    zweck: Boilerplate Codegenerierung, Formatierungshilfe
   - name: Gemini Model 3
     zweck: Boilerplate Firebase Codegenerierung 
 
@@ -34,7 +34,7 @@ da-author:
   thema: Entwicklung - Frontend
   ki-tools:
   - name: ChatGPT5.1
-    zweck: Informationsbeschaffung, Boilerplate Flutter Codegenerierung 
+    zweck: Boilerplate Flutter Codegenerierung, Formatierungshilfe 
     
 da-betreuer:
 - paraffe: wb
