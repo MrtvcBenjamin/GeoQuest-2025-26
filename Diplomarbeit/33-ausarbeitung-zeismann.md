@@ -29,7 +29,7 @@ Zusätzlich wurden frühe Funktionsstände auf echten Geräten geprüft, da GPS-
 
 ### Aufbau der Frontend-Architektur
 
-Die Architektur trennt die App in wenige klare Schichten. Dazu gehören der Start- und Auth-Flow mit Splash, Onboarding, Rollenwahl, Login und Registrierung, der Spiel-Flow mit Dashboard, Karte und Bewertungslogik, der Meta-Flow mit Progress, Menü, Datenschutz, Impressum und Einstellungen sowie ein Admin-Flow mit Live-Karte für Lehrkräfte.
+Die Architektur trennt die App in wenige klare Schichten. Dazu gehören der Start- und Auth-Flow mit Splash, Onboarding, Rollenwahl, Login und Registrierung, der Spiel-Flow mit Dashboard, Karte und Bewertungslogik, der Meta-Flow mit Progress, Menü, Datenschutz, Impressum und Einstellungen sowie ein Admin-Flow mit Live-Karte für Lehrkräfte [@flutter_app_arch_guide_2026; @flutter_arch_overview_2025].
 
 Wesentliche Bausteine sind AppSettings für dauerhaft gespeicherte UI- und Session-Einstellungen, AppNav für globale Navigation und Sperrzustände, GameState als reaktiver Spielfeld-Zustand sowie die Firestore-Collections Users, PlayerLocation, Hunts und Hunts/{huntId}/Stadions.
 
@@ -40,6 +40,8 @@ Der Vorteil dieser Trennung ist, dass die Map-Logik unabhängig vom Login-Layout
 Der Splash-Screen (splash_screen.dart) ist nicht nur visuell, sondern logisch relevant. Nach einer kurzen Initialphase (1,5 Sekunden) wird der nächste Zielscreen anhand dreier Zustände bestimmt: Ist bereits ein User eingeloggt?, Ist Onboarding bereits abgeschlossen?, War der zuletzt gespeicherte Modus Spieler oder Admin?.
 
 Je nach Zustand navigiert der Code direkt zu HomeScreen, AdminMapScreen, OnboardingFlow oder RoleSelectScreen. Dadurch entsteht ein deterministischer Startprozess ohne Sackgassen.
+
+![Splash-Screen](img/screens/01_splash_screen.png)
 
 ### Onboarding als UX-Filter vor der Anmeldung
 
@@ -55,6 +57,8 @@ role_select_screen.dart trennt den Einstieg in zwei Pfade: Admin: Anmeldung nur 
 
 Die Rollenwahl wird nicht nur visuell dargestellt, sondern in AppSettings.loginMode persistiert. Dadurch kann der Splash-Screen bei erneutem App-Start korrekt zurück in den letzten Modus navigieren.
 
+![Rollenwahl](img/screens/03_rollenwahl.png)
+
 ### Authentifizierung und Kontolebenszyklus
 
 Der Auth-Bereich besteht aus mehreren Screens: SignInEmailScreen für den Einstieg mit E-Mail, CreateAccountScreen für Registrierung, LoginScreen für Anmeldung, ChangePasswordScreen für Passwort-Reset.
@@ -67,11 +71,15 @@ Danach erfolgt: Prüfung auf eindeutigen Username (Users.UsernameLower), Anlage 
 
 Ohne verifizierte E-Mail wird im Login kein dauerhafter Einstieg zugelassen. Dieser Mechanismus reduziert Fake-Accounts und sorgt im Schulbetrieb für mehr Übersicht [@firebaseAuthDocs].
 
+![Registrierung](img/screens/05_registrierung.png)
+
 #### Anmeldung
 
 LoginScreen unterstützt Username- und E-Mail-Login. Bei Username-Login wird zuerst die E-Mail aus Firestore aufgelöst. Zusätzlich gibt es einen Legacy-Fallback mit der Domain geoquest.local für ältere Testkonten.
 
 Fehler werden benutzerorientiert behandelt (z. B. "Keine Internetverbindung" statt roher SDK-Fehlercodes). Das erhöht die Nutzbarkeit deutlich.
+
+![Anmeldung](img/screens/04_anmeldung.png)
 
 #### Admin-Freigabe
 
@@ -79,15 +87,19 @@ Die Klasse admin_access.dart enthält freigegebene Admin-E-Mails und Logik zur N
 
 Damit wird ein zweistufiges Modell umgesetzt: technische Authentifizierung durch Firebase, zusätzliche Freigabe in der App durch App-Regeln.
 
+![Admin-Login](img/screens/06_admin_login.png)
+
 ### Home-Shell und Tab-Architektur
 
 home_screen.dart bildet die zentrale Spiel-Shell mit vier Tabs: Dashboard, Karte, Fortschritt, Menü.
 
-Technisch wurde IndexedStack verwendet, damit Tab-Zustände erhalten bleiben. Das vermeidet unnötige Neuinitialisierung beim Wechsel.
+Technisch wurde IndexedStack verwendet, damit Tab-Zustände erhalten bleiben. Das vermeidet unnötige Neuinitialisierung beim Wechsel [@flutterDocs].
 
 Eine wichtige Besonderheit ist der globale Sperrmechanismus: Wenn AppNav.mapBlocked aktiv ist (Anti-Cheat-Sperre), wird der Benutzer automatisch auf den Karten-Tab zurückgeführt. So kann die Sperrlogik nicht durch Tab-Wechsel umgangen werden.
 
 Im aktuellen Projektstand wurde außerdem die feste Hunt-ID entfernt. Die App ermittelt die Hunt dynamisch aus den gespeicherten Benutzerdaten und nutzt nur dann einen Fallback, wenn dort keine Zuordnung vorliegt. Damit funktioniert derselbe Build verlässlich mit unterschiedlichen Datenständen in Firebase.
+
+![Home-Shell](img/screens/07_homeshell.png)
 
 ### Dashboard-Flow: Hunt-Start und nächste Route
 
@@ -96,6 +108,8 @@ Der Dashboard-Pfad besteht aus: StartHuntScreen als Einstieg mit Spielkontext un
 In StartRouteScreen werden Daten aus Firestore und GameState zusammengeführt. Im aktuellen Stand stehen dort vor allem die nächste Station und die Distanz im Fokus. Die Gesamtzeit wird nur am Abschlussbildschirm angezeigt.
 
 Beim ersten Start ruft der Button GameState.startHunt() auf und aktiviert AppNav.stationActive. Danach wird direkt auf die Karte gewechselt.
+
+![Hunt-Start und Route](img/screens/08_hunt_start.png)
 
 ### Reaktiver Kern über GameState
 
@@ -117,11 +131,13 @@ Die Kartenansicht ist in map_tab.dart implementiert und umfasst über 1200 Zeile
 
 Die Karte basiert auf flutter_map mit OSM-Tiles. Zusätzlich wird ein MapController eingesetzt, um den initialen Kartenausschnitt dynamisch zu setzen: nur Spielerposition, wenn keine aktive Station, Bounds-Spieler-zu-Station, wenn eine Station aktiv ist.
 
+![Kartenansicht](img/screens/09_karte.png)
+
 ### Standortstream und Berechtigungslogik
 
-_startLocationStream() prüft vor dem Start: Sind Standortdienste aktiv?, Liegen Berechtigungen vor?.
+_startLocationStream() prüft vor dem Start: Sind Standortdienste aktiv?, Liegen Berechtigungen vor? [@geolocatorPkg; @android_background_location_limits_2024; @apple_request_location_authorization_2026].
 
-Dann startet Geolocator.getPositionStream(...) mit: hoher Genauigkeit (best), distanceFilter: 2 Meter.
+Dann startet Geolocator.getPositionStream(...) mit: hoher Genauigkeit (best), distanceFilter: 2 Meter [@geolocatorPkg; @dart_using_streams_2025].
 
 Bei jedem Standortupdate passieren drei Dinge: UI-Zustand aktualisieren, Position gedrosselt in Firestore schreiben (_dbWriteCooldown = 10s), Spielregeln prüfen (Radius, Geschwindigkeit, Zeitschätzung).
 
@@ -136,6 +152,8 @@ _stationRadiusMeters = 15.
 Wird der Radius unterschritten, wechselt der UI-Zustand auf MapUiState.inRadius, und der Button "Zur Aufgabenbewertung" wird freigeschaltet.
 
 Dieser Radius ist ein praxisbasierter Kompromiss: zu klein führt bei GPS-Schwankungen zu Frust, zu groß reduziert Fairness.
+
+![Radiusprüfung und Freigabe](img/screens/11_radius.png)
 
 ### QR-Validierung als zweiter Freischaltkanal
 
@@ -179,6 +197,8 @@ Zusätzlich werden angezeigt: eigene Gesamtpunkte, Zeitbonusanteil, gelöste Auf
 
 Die Kombination aus persönlichem Fortschritt und Leaderboard wirkt motivierend, solange die Rangliste stabil und nachvollziehbar bleibt [@nielsen1994].
 
+![Fortschritt und Ranking](img/screens/12_Progress.png)
+
 ### Admin-Karte für Lehrkräfte
 
 admin_map_screen.dart ist ein eigener Frontend-Modus und zeigt Live-Positionen aller aktiven Spieler.
@@ -186,6 +206,8 @@ admin_map_screen.dart ist ein eigener Frontend-Modus und zeigt Live-Positionen a
 Funktionen: Stream auf Users und PlayerLocation, Filterung von Admin-Konten, Marker pro Spieler, Suchfeld nach Name/E-Mail, Detailsheet mit nächster Station und Stationsanzahl, Fokus-Funktion auf gewählten Spieler.
 
 Für die Anzeige der nächsten Station werden entweder die persönliche Reihenfolge (StationOrderByHunt) oder die allgemeine Hunt-Reihenfolge verwendet. Diese Logik stellt sicher, dass die Admin-Ansicht mit dem tatsächlichen Spielverlauf übereinstimmt.
+
+![Admin-Karte](img/screens/15_admin_map.png)
 
 ### Menü, Einstellungen und rechtliche Screens
 
@@ -197,17 +219,19 @@ Der Datenschutz-Screen erklärt verständlich: welche Daten verarbeitet werden, 
 
 Damit wird Datenschutz nicht nur formal, sondern als Teil der UX umgesetzt [@gdpr].
 
+![Menü und Einstellungen](img/screens/13_menu.png)
+
 ### Internationalisierung und Sprachumschaltung
 
 Die App besitzt zwei Ebenen der Mehrsprachigkeit: globale Flutter-Lokalisierung in main.dart (supportedLocales), projektinterne Kurzfunktion tr(de, en) für schnelle Textumschaltung.
 
-Zusätzlich existieren ARB-Dateien (app_de.arb, app_en.arb). Die Sprachauswahl wird in SharedPreferences gespeichert, sodass der Nutzer nach Neustart in der gewählten Sprache bleibt.
+Zusätzlich existieren ARB-Dateien (app_de.arb, app_en.arb). Die Sprachauswahl wird in SharedPreferences gespeichert, sodass der Nutzer nach Neustart in der gewählten Sprache bleibt [@flutterDocs].
 
 ### Fehlerbehandlung und Recovery-Strategien
 
 Aus den Feldtests ergaben sich typische Fehlerbilder: GPS ausgeschaltet, Permission verweigert, instabile Internetverbindung, auslaufende Session, verzögerte Firestore-Antworten.
 
-Die Frontend-Strategie arbeitet mit drei Ebenen: Prävention: Vorabprüfungen und Guard-Logik, Kommunikation: klare Hinweise statt technischer Rohtexte, Recovery: Retry-Buttons, sichere Rücksprünge, erneute Berechtigungsabfrage.
+Die Frontend-Strategie arbeitet mit drei Ebenen: Prävention: Vorabprüfungen und Guard-Logik, Kommunikation: klare Hinweise statt technischer Rohtexte, Recovery: Retry-Buttons, sichere Rücksprünge, erneute Berechtigungsabfrage [@nielsen1994].
 
 Ein konkretes Beispiel ist MapTab: Kann die Stationenliste nicht geladen werden, bleibt die Oberfläche bedienbar und bietet "Erneut versuchen" anstatt eines stillen Abbruchs.
 
@@ -225,7 +249,7 @@ Datenschutzrelevant ist vor allem die Standortverarbeitung. Diese wird funktiona
 
 ### Teststrategie und Qualitätssicherung
 
-Die QS bestand aus drei Bausteinen, nämlich manuellen End-to-End-Tests auf Emulator und realen Geräten, Wiederholungstests für kritische Flows wie Login, Karte und Fortschritt sowie einem Integrationstest für App-Start und Sichtbarkeit zentraler UI-Elemente.
+Die QS bestand aus drei Bausteinen, nämlich manuellen End-to-End-Tests auf Emulator und realen Geräten, Wiederholungstests für kritische Flows wie Login, Karte und Fortschritt sowie einem Integrationstest für App-Start und Sichtbarkeit zentraler UI-Elemente [@istqb_ctfl_2024].
 
 Typische Testfälle waren die Registrierung mit E-Mail-Verifizierung, der Start einer Hunt mit individueller Reihenfolge, die Freischaltung nur per Radius oder QR, die Anti-Cheat-Sperre mit korrektem Countdown sowie die transaktionssichere Speicherung von Punkten und Zeitbonus.
 
@@ -234,6 +258,8 @@ Zusätzlich wurden Dark-/Light-Mode und Deutsch/Englisch visuell geprüft, um ab
 ### Vergleich von Ziel und Ergebnis
 
 Die ursprünglichen Frontend-Ziele wurden im Wesentlichen erreicht. Der Einstieg ist geführt, die Login- und Session-Logik arbeitet stabil, der Map-Flow mit Radius, QR und Lehrerstationen ist umgesetzt, ebenso die faire Spielmechanik mit Sanktionen sowie Fortschritt, Ranking und Admin-Monitoring.
+
+![Abschlussscreen](img/screens/14_Abschlussscreen.png)
 
 Offene Verbesserungsfelder bleiben vor allem mehr automatisierte Widget- und Golden-Tests, eine feinere Offline-Strategie und eine stärkere Entkopplung der großen Map-Logik in kleinere Subkomponenten.
 
@@ -269,7 +295,7 @@ Grenze des Ansatzes: Ohne saubere Zustandsmodellierung entstehen auch deklarativ
 
 Theoretisch sollte Zustand nach Lebensdauer getrennt werden: kurzlebig (Dialog geöffnet, Fokus, Button-Disable), funktionsbezogen (aktive Station, Warnungszähler, Countdown), dauerhaft gespeichert (Profil, Punkte, Stationsreihenfolge).
 
-GeoQuest nutzt hierfür eine Mischform aus lokalem Widget-State, ValueNotifier und Firestore als dauerhaft gespeicherte Wahrheit. Diese Kombination ist für mittelgroße Projekte pragmatisch, erfordert aber klare Verantwortungsgrenzen.
+GeoQuest nutzt hierfür eine Mischform aus lokalem Widget-State, ValueNotifier und Firestore als dauerhaft gespeicherte Wahrheit. Diese Kombination ist für mittelgroße Projekte pragmatisch, erfordert aber klare Verantwortungsgrenzen [@flutter_app_arch_guide_2026; @firestore_data_model_2026].
 
 ### Navigation als Zustandsautomat
 
@@ -309,7 +335,7 @@ Das in GeoQuest umgesetzte Stufenmodell (Warnung -> Sperre -> Punktabzug) ist de
 
 Moderne Mobile-Apps sind asynchron: Streams, Netzwerk, Timer und UI-Events laufen parallel. Typische Risiken sind gleichzeitige Konflikte, doppelte Schreibvorgänge und veraltete Anzeige.
 
-Gegenmaßnahmen sind Firestore-Transaktionen für kritische Summenfelder, eine Update-Logik ohne Doppelwirkungen je Station, Guard-Flags gegen Doppeltrigger und sauberes Stoppen von Streams und Timern.
+Gegenmaßnahmen sind Firestore-Transaktionen für kritische Summenfelder, eine Update-Logik ohne Doppelwirkungen je Station, Guard-Flags gegen Doppeltrigger und sauberes Stoppen von Streams und Timern [@firestore_transactions_2026; @dart_async_await_2025; @dart_using_streams_2025].
 
 Diese Punkte sind nicht optional, sondern eine Grundvoraussetzung für stabile Einsätze in der Praxis.
 
@@ -321,7 +347,7 @@ Ein inkonsistentes Datenmodell wirkt direkt als UX-Problem. Wenn Punkte, Fortsch
 
 Sichere Anmeldung allein reicht nicht, auch Rollenrechte müssen korrekt durchgesetzt werden. GeoQuest kombiniert deshalb die technische Identität über Firebase Authentication mit einer zusätzlichen Rollen-Freigabe über eine Admin-E-Mail-Liste.
 
-Diese Trennung entspricht gängigen Security-Prinzipien wie "so wenig Rechte wie nötig" [@owaspMasvs].
+Diese Trennung entspricht gängigen Security-Prinzipien wie "so wenig Rechte wie nötig" [@owaspMasvs; @firebase_rules_and_auth_2026].
 
 ### Datenschutz und Transparenz
 
@@ -341,7 +367,7 @@ Für Karten bedeutet das zusätzlich, dass wichtige Zustände textlich begleitet
 
 Performance ist auf Mobilgeräten nicht nur von einem Faktor abhängig: Reaktionsgeschwindigkeit, Speicherverbrauch, Energiebedarf, stabile Gerätetemperatur.
 
-Standortstream + Karte + Netzwerkzugriffe können diese Faktoren schnell verschlechtern. Deshalb sind Drosselung, gezielte Neuberechnungen und sauberes Subscription-Management zentrale architektonische Maßnahmen.
+Standortstream + Karte + Netzwerkzugriffe können diese Faktoren schnell verschlechtern. Deshalb sind Drosselung, gezielte Neuberechnungen und sauberes Subscription-Management zentrale architektonische Maßnahmen [@android_background_location_limits_2024; @apple_request_location_authorization_2026; @flutterPerf].
 
 ### Wartbarkeit und technische Schulden
 
@@ -441,3 +467,4 @@ Die Kombination aus Spielmechanik und klarer Oberfläche macht GeoQuest aus mein
 ### Kurzfazit des Anhangs
 
 Die ausführlichen Detailblöcke wurden hier bewusst komprimiert. Inhaltlich bleibt der Kern erhalten: Das Frontend steuert nicht nur Oberfläche, sondern einen großen Teil der Fachlogik rund um Fairness, Fortschritt und Betrieb.
+
