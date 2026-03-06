@@ -61,7 +61,7 @@ Projektauftraggeber ist Herr Klaus Kepplinger, der an der HTL Leoben für die Or
 
 #### Projektkosten
 
-Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte Kosten im Laufe dieser Diplomarbeit an.
+Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerten Kosten im Laufe dieser Diplomarbeit an.
 
 #### Projektrisiken
 
@@ -97,7 +97,7 @@ Aufgrund der rein digitalen Natur unserer Diplomarbeit fielen keine nennenswerte
 
 | Projektrolle           | Rollenbeschreibung     | Name              |
 |:------------------------|:------------------------|:-------------------|
-| Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens sowie technischer Support in der Entwicklung | Benjamin Muratovic |
+| Projektleiter | Verantwortlicher für Einhaltung des Projektrahmens sowie technischer Support in der Entwicklung | B. Muratovic |
 | Auftraggeber | Auftraggeber der internen Diplomarbeit | K. Kepplinger |
 | Betreuer | Schulischer Betreuer | A. Weichbold |
 
