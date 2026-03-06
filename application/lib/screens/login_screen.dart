@@ -1,4 +1,4 @@
-﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../auth/admin_access.dart';
@@ -183,7 +183,8 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => _adminMode ? const AdminMapScreen() : const HomeScreen(),
+          builder: (_) =>
+              _adminMode ? const AdminMapScreen() : const HomeScreen(),
         ),
         (_) => false,
       );
@@ -255,6 +256,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Future<void> _enterAdminForTesting() async {
+    await AppSettings.setLoginMode(AppLoginMode.admin);
+    await AppSettings.setOnboardingDone(true);
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const AdminMapScreen()),
+      (_) => false,
+    );
+  }
+
   InputDecoration _fieldDecoration({
     required BuildContext context,
     required String hint,
@@ -298,7 +310,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 22),
                   Text(
                     _adminMode
-                        ? tr('Admin Login mit E-Mail', 'Admin sign in with email')
+                        ? tr('Admin Login mit E-Mail',
+                            'Admin sign in with email')
                         : tr('Melde dich mit Username oder E-Mail an',
                             'Sign in with username or email'),
                     style: TextStyle(
@@ -440,8 +453,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 6),
                     TextButton(
                       onPressed: _goToCreateAccount,
-                      style:
-                          TextButton.styleFrom(foregroundColor: scheme.onSurface),
+                      style: TextButton.styleFrom(
+                          foregroundColor: scheme.onSurface),
                       child: Text(
                         tr('Registrieren', 'Sign up'),
                         style: const TextStyle(
@@ -460,7 +473,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                       style: TextButton.styleFrom(
-                        foregroundColor: scheme.onSurface.withValues(alpha: 0.75),
+                        foregroundColor:
+                            scheme.onSurface.withValues(alpha: 0.75),
                       ),
                       child: Text(
                         tr('Erstes Admin-Login?', 'First admin login?'),
@@ -470,6 +484,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+                  if (_adminMode) ...[
+                    const SizedBox(height: 2),
+                    TextButton(
+                      onPressed: _isLoading ? null : _enterAdminForTesting,
+                      style: TextButton.styleFrom(
+                        foregroundColor:
+                            scheme.onSurface.withValues(alpha: 0.72),
+                      ),
+                      child: Text(
+                        tr('Nur Test: Admin öffnen',
+                            'Test only: open admin app'),
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
                   TextButton(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
@@ -501,7 +533,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
-
-
