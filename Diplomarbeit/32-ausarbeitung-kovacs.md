@@ -67,7 +67,7 @@ Für die Qualitätssicherung ist entscheidend, dass Security Rules nicht nur als
 
 Damit das Backend-Verhalten reproduzierbar bleibt, müssen sowohl Code als auch Konfigurationen konsistent sein. Auf App-Seite werden Abhängigkeiten und SDK-Bereiche in der pubspec.yaml festgelegt. Zusätzlich entstehen Konfigurationsartefakte für Firebase, etwa eine firebase.json, Firestore Rules-Dateien und eine Datei für Indexdefinitionen. Für Flutter empfiehlt Firebase, die Projektkonfiguration über die FlutterFire CLI zu erzeugen, wodurch eine firebase_options.dart entsteht, die die plattformspezifischen Parameter kapselt und im Code in Firebase.initializeApp eingebunden wird [@firebase_flutter_setup_2026] [@flutterfire_cli_2026].
 
-```yaml
+~~~{caption="pubspec.yaml: SDK- und Firebase-Abhängigkeiten" .yaml}
 environment:
   sdk: ">=3.2.0 <4.0.0"
 
@@ -75,11 +75,11 @@ dependencies:
   firebase_core: ^3.0.0
   firebase_auth: ^5.0.0
   cloud_firestore: ^5.0.0
-```
+~~~
 
 Für lokale Validierung wurde die Firebase Local Emulator Suite eingesetzt. Sie wird über die Firebase CLI installiert und ermöglicht es, Firestore, Auth und eine UI lokal zu starten. Dadurch kann das Team Security Rules testen, ohne produktive Daten zu gefährden, und es lassen sich Fehlkonfigurationen früh erkennen [@firebase_emulator_suite_2026] [@firebase_emulator_install_config_2026] [@firebase_cli_reference_2026].
 
-```json
+~~~{caption="firebase.json: Emulator-Konfiguration" .json}
 {
   "firestore": {
     "rules": "firestore.rules",
@@ -91,7 +91,7 @@ Für lokale Validierung wurde die Firebase Local Emulator Suite eingesetzt. Sie 
     "ui": { "enabled": true, "port": 4000 }
   }
 }
-```
+~~~
 
 Ein weiterer Aspekt der Reproduzierbarkeit ist der kontrollierte Rollout von Konfigurationsänderungen. Firebase beschreibt, dass Rules und Indexe über lokale Dateien verwaltet und mit der CLI deployt werden können. Der zentrale Vorteil liegt darin, dass lokale Dateien die im Projekt gültige Wahrheit darstellen und Deployments nachvollziehbar werden, anstatt Änderungen ausschließlich in Web-UIs vorzunehmen [@firebase_manage_rules_deploy_2026] [@firestore_indexing_2026].
 
@@ -101,7 +101,7 @@ Das Datenmodell wurde so entworfen, dass es den Spielablauf abbildet und zugleic
 
 Ein Hunt-Dokument enthält Metadaten, die für Auswahl und Anzeige relevant sind. Stationen werden als Subcollection unter einer Hunt geführt, wodurch der fachliche Zusammenhang strukturell abgebildet wird. Der Fortschritt wird benutzerspezifisch gespeichert, sodass sich Änderungen am Spielzustand nicht mit Stammdaten vermischen. Die nachfolgenden JSON-Beispiele dienen als strukturelle Referenz und sind bewusst minimal gehalten.
 
-```json
+~~~{caption="JSON-Struktur: Hunt-Dokument" .json}
 {
   "Hunts/huntA": {
     "title": "HTL Leoben Tour",
@@ -110,9 +110,9 @@ Ein Hunt-Dokument enthält Metadaten, die für Auswahl und Anzeige relevant sind
     "createdAt": "serverTimestamp"
   }
 }
-```
+~~~
 
-```json
+~~~{caption="JSON-Struktur: Station-Dokument" .json}
 {
   "Hunts/huntA/Stations/station01": {
     "stationIndex": 1,
@@ -122,9 +122,9 @@ Ein Hunt-Dokument enthält Metadaten, die für Auswahl und Anzeige relevant sind
     "points": 10
   }
 }
-```
+~~~
 
-```json
+~~~{caption="JSON-Struktur: Benutzerprofil" .json}
 {
   "Users/uid123": {
     "username": "Max",
@@ -132,25 +132,25 @@ Ein Hunt-Dokument enthält Metadaten, die für Auswahl und Anzeige relevant sind
     "createdAt": "serverTimestamp"
   }
 }
-```
+~~~
 
-```json
+~~~{caption="JSON-Struktur: Fortschrittsdokument" .json}
 {
   "Progress/uid123/Hunts/huntA": {
     "currentStationIndex": 2,
     "updatedAt": "serverTimestamp"
   }
 }
-```
+~~~
 
-```json
+~~~{caption="JSON-Struktur: PlayerLocation-Dokument" .json}
 {
   "PlayerLocation/uid123": {
     "location": { "lat": 47.377, "lng": 15.094 },
     "timestamp": "serverTimestamp"
   }
 }
-```
+~~~
 
 Diese Struktur unterstützt typische App-Screens. Eine Hunt-Auswahl lädt Hunt-Metadaten. Der Spielscreen lädt Stationen einer Hunt. Fortschritt wird benutzerbezogen abgefragt und aktualisiert. Standortdaten werden als letzter bekannter Wert gespeichert, wodurch eine Verlaufshistorie vermieden wird und Kosten sowie Datenschutzrisiko sinken.
 
@@ -160,7 +160,7 @@ Firestore ist eine NoSQL-Datenbank, bei der Abfragen ohne Joins geplant werden m
 
 Diese Denormalisierung hat eine klare Gegenleistung. Duplizierte Daten können inkonsistent werden, wenn sie nicht gemeinsam aktualisiert werden. Firestore stellt für konsistente Mehrfachupdates Batched Writes bereit, bei denen mehrere Schreiboperationen zusammen ausgeführt werden [@firestore_transactions_2026]. Das folgende Listing zeigt beispielhaft, wie eine Änderung an einem Hunt-Titel, der zusätzlich in Stationen gespeichert wird, per Batch auf mehrere Dokumente übertragen werden kann.
 
-```dart
+~~~{caption="Batched Write: Hunt-Titel konsistent aktualisieren" .dart}
 Future<void> updateHuntTitleEverywhere({
   required FirebaseFirestore db,
   required String huntId,
@@ -178,7 +178,7 @@ Future<void> updateHuntTitleEverywhere({
 
   await batch.commit();
 }
-```
+~~~
 
 In GeoQuest wurde Denormalisierung gezielt begrenzt und vor allem dort eingesetzt, wo sie einen klaren Vorteil für Latenz und Kosten bringt. Wo möglich, bleibt eine eindeutige Quelle der Wahrheit erhalten, und zusätzliche Felder dienen der Darstellung oder der Query-Unterstützung.
 
@@ -188,7 +188,7 @@ Stationen werden primär pro Hunt geladen. Für bestimmte Auswertungen kann es j
 
 Das folgende Listing zeigt eine Collection Group Query, die alle Stationen einer Hunt über das Feld huntId aggregiert.
 
-```dart
+~~~{caption="Collection Group Query: Stationen einer Hunt" .dart}
 Query<Map<String, dynamic>> stationsOfHuntAcrossDb({
   required FirebaseFirestore db,
   required String huntId,
@@ -198,11 +198,11 @@ Query<Map<String, dynamic>> stationsOfHuntAcrossDb({
       .where('huntId', isEqualTo: huntId)
       .orderBy('stationIndex');
 }
-```
+~~~
 
 Für mobile Anwendungen ist Pagination relevant, weil große Datenmengen nicht in einem Schritt geladen werden sollen. Firestore unterstützt hierfür limit und Cursor-basierte Pagination über startAfterDocument oder startAt, wodurch fortlaufendes Nachladen möglich wird [@firestore_queries_2026].
 
-```dart
+~~~{caption="Pagination mit Cursor für Stationsdaten" .dart}
 Future<(List<QueryDocumentSnapshot<Map<String, dynamic>>>, QueryDocumentSnapshot<Map<String, dynamic>>?)>
 loadStationsPage({
   required FirebaseFirestore db,
@@ -226,7 +226,7 @@ loadStationsPage({
   final nextCursor = docs.isNotEmpty ? docs.last : null;
   return (docs, nextCursor);
 }
-```
+~~~
 
 ### Offline-Persistenz und Synchronisationsverhalten
 
@@ -234,7 +234,7 @@ Firestore unterstützt Offline-Persistenz, indem Daten, die aktiv verwendet werd
 
 Für bestimmte Situationen ist es hilfreich, die Datenquelle bewusst zu wählen. In FlutterFire können GetOptions verwendet werden, um Reads aus dem Cache zu erzwingen oder den Server zu bevorzugen. Das folgende Listing zeigt beispielhaft einen Read, der explizit aus dem Cache erfolgt, um Offline-Verhalten reproduzierbar testen zu können.
 
-```dart
+~~~{caption="Offline-Read aus Firestore-Cache" .dart}
 Future<Map<String, dynamic>?> loadUserFromCache({
   required FirebaseFirestore db,
   required String uid,
@@ -246,7 +246,7 @@ Future<Map<String, dynamic>?> loadUserFromCache({
 
   return snap.data();
 }
-```
+~~~
 
 Offline-Fähigkeit löst jedoch nicht alle Konflikte automatisch. Wenn mehrere Geräte denselben Zustand ändern, kann es zu konkurrierenden Writes kommen. Für kritische Updates, etwa Punkte oder Fortschritt, ist deshalb eine atomare Update-Logik sinnvoll, die Inkonsistenzen reduziert. Firestore-Transaktionen sind hierfür ein geeignetes Werkzeug, weil sie Reads und Writes innerhalb einer Operation konsistent bündeln [@firestore_transactions_2026].
 
@@ -254,7 +254,7 @@ Offline-Fähigkeit löst jedoch nicht alle Konflikte automatisch. Wenn mehrere G
 
 Die Benutzerverwaltung basiert auf Firebase Authentication und einer ergänzenden Speicherung eines Benutzerprofils in Firestore. Jedes Benutzerprofil wird als eigenes Dokument abgelegt, dessen Dokument-ID der UID entspricht. Dadurch entsteht ein direkter Zugriffspfad, der sowohl performanz- als auch sicherheitsrelevant ist, weil Security Rules ohne zusätzliche Suche auf request.auth.uid prüfen können [@firebase_rules_and_auth_2026].
 
-```dart
+~~~{caption="Benutzerprofil in Firestore anlegen" .dart}
 Future<void> createUserProfile({
   required FirebaseFirestore db,
   required String uid,
@@ -266,13 +266,13 @@ Future<void> createUserProfile({
     'createdAt': FieldValue.serverTimestamp(),
   });
 }
-```
+~~~
 
 ### Stationsfortschritt und atomare Updates
 
 Für den Fortschritt ist aus Backend-Sicht wichtig, dass Zustandsänderungen konsistent erfolgen. Wird eine Station als erreicht markiert und gleichzeitig ein Punktestand erhöht, entsteht ein Integritätsbedarf. Firestore stellt hierfür Transaktionen bereit [@firestore_transactions_2026].
 
-```dart
+~~~{caption="Transaktion: Station abschließen und Punkte vergeben" .dart}
 Future<void> completeStation({
   required FirebaseFirestore db,
   required String uid,
@@ -302,7 +302,7 @@ Future<void> completeStation({
     });
   });
 }
-```
+~~~
 
 ### Sicherheitskonzept mit Firestore Security Rules
 
@@ -310,7 +310,7 @@ Security Rules sind in einer serverlosen Architektur der zentrale Mechanismus zu
 
 Ein Designziel war, Rules so zu formulieren, dass sie möglichst wenig zusätzliche Dokumentreads benötigen. Dokumentbasierte Zugriffsfunktionen wie exists(), get() oder getAfter() sind pro Anfrage limitiert, und Reads zur Rule-Evaluation können kostenrelevant sein [@firestore_quotas_2026] [@firestore_pricing_firebase_2026]. Daraus folgt, dass Autorisierung primär über Pfade und Auth-Kontext erfolgen sollte und Querabhängigkeiten minimiert werden.
 
-```txt
+~~~{caption="Firestore Security Rules für GeoQuest" .txt}
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -353,13 +353,13 @@ service cloud.firestore {
     }
   }
 }
-```
+~~~
 
 ### Rollenmodell über Custom Claims
 
 Firebase beschreibt Custom Claims als Mechanismus, um Rolleninformationen in Tokens abzubilden, die anschließend in Security Rules geprüft werden können [@firebase_rules_and_auth_2026]. Damit kann beispielsweise eine Lehrkraft als Administrator markiert werden, ohne dass die App selbst rollenbasierte Logik implementieren muss.
 
-```javascript
+~~~{caption="Custom Claims setzen (Admin-Rolle)" .javascript}
 import admin from "firebase-admin";
 
 admin.initializeApp();
@@ -369,7 +369,7 @@ async function setAdmin(uid) {
 }
 
 await setAdmin("teacherUid");
-```
+~~~
 
 ### Missbrauchsschutz durch Firebase App Check
 
@@ -379,7 +379,7 @@ Firebase stellt mit App Check einen Mechanismus bereit, der eingehenden Traffic 
 
 Firebase beschreibt Unit Tests für Security Rules als Bestandteil eines zuverlässigen Entwicklungsprozesses. Tests werden lokal gegen Emulatoren ausgeführt und prüfen erlaubte sowie unerlaubte Zugriffe reproduzierbar [@firebase_rules_unit_tests_2026]. Die Unit-Testing-Bibliothek nutzt JavaScript/Node.js und ergänzt damit den Flutter/Dart-Teil des Projekts um eine testbare Sicherheits- und Backend-Konfiguration.
 
-```javascript
+~~~{caption="Unit Tests für Firestore Security Rules" .javascript}
 import { initializeTestEnvironment, assertFails, assertSucceeds } from "@firebase/rules-unit-testing";
 import fs from "node:fs";
 
@@ -403,17 +403,17 @@ await assertFails(
 await assertSucceeds(
   adminCtx.collection("Hunts").doc("huntA").set({ title: "HTL Tour" })
 );
-```
+~~~
 
 ### Deployment, Versionierung und Betrieb
 
 Firebase beschreibt die Verwaltung und den Deployment-Prozess für Security Rules und weist darauf hin, dass Deployments per CLI lokale Regeln als maßgebliche Quelle verwenden und dabei vorhandene Regeln in der Konsole überschreiben können [@firebase_manage_rules_deploy_2026]. Für Indexe beschreibt Firebase, dass Deployments über firebase deploy mit einem --only-Filter möglich sind [@firestore_indexing_2026].
 
-```bash
+~~~{caption="Firebase CLI Deployment-Befehle" .bash}
 firebase deploy --only firestore:rules
 firebase deploy --only firestore:indexes
 firebase deploy --only firestore
-```
+~~~
 
 ### Kostenmodell, Monitoring und Budgetierung
 
