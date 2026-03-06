@@ -11,14 +11,7 @@ Die inhaltliche Herausforderung war, dass in GeoQuest laufend neue Ereignisse ei
 
 ### Zielsetzung und Abnahmekriterien
 
-Für die Frontend-Teilaufgabe wurden vor der Implementierung konkrete Abnahmekriterien definiert. Ein Frontend galt nur dann als fertig, wenn die zentralen Kernpfade unter realistischen Bedingungen funktionieren. Dazu zählen:
-
-- App-Start mit Splash, Onboarding und Rollenwahl.
-- Registrierung und Anmeldung mit E-Mail und Passwort.
-- Spielstart über Dashboard und Route sowie eine stabile Live-Karte.
-- Freischaltung von Aufgaben nur im Stationsradius oder per QR-Code.
-- Punktevergabe mit Zeitbonus, dauerhaft gespeicherter Fortschritt und Ranking im Progress-Tab.
-- Admin-Karte zur Live-Beobachtung einzelner Spieler.
+Für die Frontend-Teilaufgabe wurden vor der Implementierung konkrete Abnahmekriterien definiert. Ein Frontend galt nur dann als fertig, wenn die zentralen Kernpfade unter realistischen Bedingungen funktionieren. Dazu zählen ein stabiler App-Start mit Splash, Onboarding und Rollenwahl, die Registrierung und Anmeldung mit E-Mail und Passwort, der Spielstart über Dashboard und Route mit einer stabilen Live-Karte, die Freischaltung von Aufgaben nur im Stationsradius oder per QR-Code, eine Punktevergabe mit Zeitbonus samt dauerhaft gespeichertem Fortschritt und Ranking im Progress-Tab sowie eine Admin-Karte zur Live-Beobachtung einzelner Spieler.
 
 Die Qualität wurde zusätzlich über nicht-funktionale Kriterien abgesichert: kurze Reaktionszeiten, nachvollziehbare Fehlermeldungen, konsistente Navigation und saubere Trennung zwischen UI, Zustandslogik und Datenzugriff.
 
@@ -26,11 +19,7 @@ Die Qualität wurde zusätzlich über nicht-funktionale Kriterien abgesichert: k
 
 Die App wurde mit Flutter und Dart umgesetzt. Flutter erlaubt eine gemeinsame Codebasis für mehrere Plattformen und passt gut zu einem UI-lastigen Projekt mit vielen Zustandsänderungen [@flutterDocs]. Der Einstiegspunkt liegt in application/lib/main.dart. Dort werden Firebase und App-Einstellungen initialisiert, bevor die UI startet: Firebase.initializeApp(...) lädt die Plattformkonfiguration, auf Web wird Persistence.LOCAL aktiviert, AppSettings.load() lädt Theme, Sprache, Login-Modus und Onboarding-Status.
 
-Als Backend-Dienste wurden Firebase Authentication und Cloud Firestore eingesetzt [@firebaseAuthDocs; @firestoreDocs]. Die Kartenansicht basiert auf OpenStreetMap-Daten über flutter_map [@flutterMapDocs; @openstreetmapCopyright]. Die Standortdaten kommen über geolocator [@geolocatorPkg].
-
-> "Build apps for any screen." [@flutterWebsite]
-
-Diese kurze Aussage aus der Flutter-Dokumentation beschreibt genau den technischen Kern unseres Vorgehens: eine gemeinsame UI-Codebasis mit konsistentem Verhalten.
+Als Backend-Dienste wurden Firebase Authentication und Cloud Firestore eingesetzt [@firebaseAuthDocs; @firestoreDocs]. Die Kartenansicht basiert auf OpenStreetMap-Daten über flutter_map [@flutterMapDocs; @openstreetmapCopyright]. Die Standortdaten kommen über geolocator [@geolocatorPkg]. Die Flutter-Dokumentation fasst den technischen Kern dieses Vorgehens prägnant zusammen: "Build apps for any screen." [@flutterWebsite]. Damit ist eine gemeinsame UI-Codebasis mit konsistentem Verhalten gemeint.
 
 ### Entwicklungsumgebung und Arbeitsprozess
 
@@ -40,12 +29,7 @@ Zusätzlich wurden frühe Funktionsstände auf echten Geräten geprüft, da GPS-
 
 ### Aufbau der Frontend-Architektur
 
-Die Architektur trennt die App in wenige klare Schichten:
-
-- Start- und Auth-Flow mit Splash, Onboarding, Rollenwahl, Login und Registrierung.
-- Spiel-Flow mit Dashboard, Karte und Bewertungslogik.
-- Meta-Flow mit Progress, Menü, Datenschutz, Impressum und Einstellungen.
-- Admin-Flow mit Live-Karte für Lehrkräfte.
+Die Architektur trennt die App in wenige klare Schichten. Dazu gehören der Start- und Auth-Flow mit Splash, Onboarding, Rollenwahl, Login und Registrierung, der Spiel-Flow mit Dashboard, Karte und Bewertungslogik, der Meta-Flow mit Progress, Menü, Datenschutz, Impressum und Einstellungen sowie ein Admin-Flow mit Live-Karte für Lehrkräfte.
 
 Wesentliche Bausteine sind AppSettings für dauerhaft gespeicherte UI- und Session-Einstellungen, AppNav für globale Navigation und Sperrzustände, GameState als reaktiver Spielfeld-Zustand sowie die Firestore-Collections Users, PlayerLocation, Hunts und Hunts/{huntId}/Stadions.
 
@@ -57,8 +41,6 @@ Der Splash-Screen (splash_screen.dart) ist nicht nur visuell, sondern logisch re
 
 Je nach Zustand navigiert der Code direkt zu HomeScreen, AdminMapScreen, OnboardingFlow oder RoleSelectScreen. Dadurch entsteht ein deterministischer Startprozess ohne Sackgassen.
 
-![Screenshot 1: Splash-Screen](img/screens/01_splash_screen.png)
-
 ### Onboarding als UX-Filter vor der Anmeldung
 
 Das Onboarding (onboarding_flow.dart) besteht aus vier klaren Seiten: Einführung in das Spielprinzip, Erklärung der zufälligen Stationsreihenfolge, Erklärung des Aufgabenformats, Fairness-Regeln (Standortnähe, Geschwindigkeitsprüfung).
@@ -67,15 +49,11 @@ Jede Seite besitzt genau eine Primäraktion (Weiter bzw. Los gehts!). Die linear
 
 Dieses Muster folgt dem UX-Prinzip "Progressive Disclosure": nur die Informationen zeigen, die für den nächsten Schritt notwendig sind [@normanDesign].
 
-![Screenshot 2: Onboarding](img/screens/02_onboarding.png)
-
 ### Rollenwahl und Benutzergruppen
 
 role_select_screen.dart trennt den Einstieg in zwei Pfade: Admin: Anmeldung nur mit freigegebener Lehrkräfte-E-Mail, Spieler: Registrierung oder Login für Teilnehmende.
 
 Die Rollenwahl wird nicht nur visuell dargestellt, sondern in AppSettings.loginMode persistiert. Dadurch kann der Splash-Screen bei erneutem App-Start korrekt zurück in den letzten Modus navigieren.
-
-![Screenshot 3: Rollenwahl](img/screens/03_rollenwahl.png)
 
 ### Authentifizierung und Kontolebenszyklus
 
@@ -89,23 +67,17 @@ Danach erfolgt: Prüfung auf eindeutigen Username (Users.UsernameLower), Anlage 
 
 Ohne verifizierte E-Mail wird im Login kein dauerhafter Einstieg zugelassen. Dieser Mechanismus reduziert Fake-Accounts und sorgt im Schulbetrieb für mehr Übersicht [@firebaseAuthDocs].
 
-![Screenshot 5: Registrierung](img/screens/05_registrierung.png)
-
 #### Anmeldung
 
 LoginScreen unterstützt Username- und E-Mail-Login. Bei Username-Login wird zuerst die E-Mail aus Firestore aufgelöst. Zusätzlich gibt es einen Legacy-Fallback mit der Domain geoquest.local für ältere Testkonten.
 
 Fehler werden benutzerorientiert behandelt (z. B. "Keine Internetverbindung" statt roher SDK-Fehlercodes). Das erhöht die Nutzbarkeit deutlich.
 
-![Screenshot 4: Anmeldung](img/screens/04_anmeldung.png)
-
 #### Admin-Freigabe
 
 Die Klasse admin_access.dart enthält freigegebene Admin-E-Mails und Logik zur Namensnormalisierung. Nach erfolgreichem Firebase-Login prüft die App, ob die E-Mail in der Admin-Liste liegt. Bei negativem Ergebnis wird die Sitzung sofort beendet.
 
 Damit wird ein zweistufiges Modell umgesetzt: technische Authentifizierung durch Firebase, zusätzliche Freigabe in der App durch App-Regeln.
-
-![Screenshot 6: Admin-Login](img/screens/06_admin_login.png)
 
 ### Home-Shell und Tab-Architektur
 
@@ -253,11 +225,7 @@ Datenschutzrelevant ist vor allem die Standortverarbeitung. Diese wird funktiona
 
 ### Teststrategie und Qualitätssicherung
 
-Die QS bestand aus drei Bausteinen:
-
-- Manuelle End-to-End-Tests auf Emulator und realen Geräten.
-- Wiederholungstests für kritische Flows wie Login, Karte und Fortschritt.
-- Integrationstest für App-Start und Sichtbarkeit zentraler UI-Elemente.
+Die QS bestand aus drei Bausteinen, nämlich manuellen End-to-End-Tests auf Emulator und realen Geräten, Wiederholungstests für kritische Flows wie Login, Karte und Fortschritt sowie einem Integrationstest für App-Start und Sichtbarkeit zentraler UI-Elemente.
 
 Typische Testfälle waren die Registrierung mit E-Mail-Verifizierung, der Start einer Hunt mit individueller Reihenfolge, die Freischaltung nur per Radius oder QR, die Anti-Cheat-Sperre mit korrektem Countdown sowie die transaktionssichere Speicherung von Punkten und Zeitbonus.
 
@@ -281,7 +249,7 @@ Die Frontend-Teilaufgabe liefert ein funktionsfähiges und in realen Tests belas
 
 Aus technischer Sicht ist die Umsetzung nicht nur ein Prototyp, sondern eine solide Basis für weitere nächste Schritte wie neue Spielmodi, komplexere Aufgabenformate oder detaillierte Auswertungen.
 
-## Theoretischer Teil - Frontend der Schnitzeljagd-App "GeoQuest"
+## Theorie
 
 ### Frontend als praktische Schnittstelle
 
@@ -347,13 +315,7 @@ Diese Punkte sind nicht optional, sondern eine Grundvoraussetzung für stabile E
 
 ### Datenstruktur und Benutzererlebnis
 
-Ein inkonsistentes Datenmodell wirkt direkt als UX-Problem. Wenn Punkte, Fortschritt und Zeitdaten fachlich nicht zueinander passen, verliert die Benutzeroberfläche an Glaubwürdigkeit.
-
-Cloud Firestore wird offiziell als "flexible, scalable" Datenbank beschrieben [@firestoreDocs].
-
-> "Cloud Firestore is a flexible, scalable database." [@firestoreDocs]
-
-Im Projekt wurde diese Flexibilität gezielt genutzt, aber durch strukturierte Feldnamen und klar definierte Verantwortlichkeiten eingegrenzt.
+Ein inkonsistentes Datenmodell wirkt direkt als UX-Problem. Wenn Punkte, Fortschritt und Zeitdaten fachlich nicht zueinander passen, verliert die Benutzeroberfläche an Glaubwürdigkeit. Cloud Firestore wird offiziell als "flexible, scalable" Datenbank beschrieben; die Dokumentation formuliert dies mit "Cloud Firestore is a flexible, scalable database." [@firestoreDocs]. Im Projekt wurde diese Flexibilität gezielt genutzt, aber durch strukturierte Feldnamen und klar definierte Verantwortlichkeiten eingegrenzt.
 
 ### Authentifizierung und Autorisierung
 
@@ -441,13 +403,7 @@ Diese Punkte sind keine Showstopper, aber sie begrenzen die Wartbarkeit im näch
 
 ### Konkreter Refactoring-Pfad
 
-Für die nächste Iteration ist ein kompakter, realistischer Plan sinnvoll:
-
-- MapTab in kleinere Verantwortungsbereiche aufteilen (Tracking, Freischaltung, Bewertung, Overlay).
-- Firestore-Schreibzugriffe stärker in Services bündeln.
-- Ein einheitliches Fehlermodell statt verteilter Einzelmeldungen umsetzen.
-- Mehr Widget-Tests für kritische Zustandswechsel ergänzen.
-- Gezielte Accessibility-Checks für Labels, Fokus und Touch-Ziele durchführen.
+Für die nächste Iteration ist ein kompakter, realistischer Plan sinnvoll. Konkret sollte MapTab in kleinere Verantwortungsbereiche wie Tracking, Freischaltung, Bewertung und Overlay aufgeteilt werden. Zusätzlich sollten Firestore-Schreibzugriffe stärker in Services gebündelt, ein einheitliches Fehlermodell statt verteilter Einzelmeldungen umgesetzt, mehr Widget-Tests für kritische Zustandswechsel ergänzt und gezielte Accessibility-Checks für Labels, Fokus und Touch-Ziele durchgeführt werden.
 
 Damit sinkt technische Komplexität, ohne den laufenden Betrieb zu riskieren.
 
