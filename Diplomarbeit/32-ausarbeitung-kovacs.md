@@ -25,7 +25,7 @@ Für lokale Tests und Sicherheitsvalidierung ist die Firebase Local Emulator Sui
 
 ### Flutter als Entwicklungsframework und Dart als Sprache
 
-Flutter ist ein plattformübergreifendes Framework, das mit einer einzigen Codebasis Anwendungen für mehrere Zielplattformen ermöglicht. Für die Architektur ist relevant, dass Flutter ein deklaratives und reaktives UI-Modell verwendet. Die Benutzeroberfläche wird aus dem aktuellen Zustand der Anwendung abgeleitet und bei Zustandsänderungen neu aufgebaut. Diese Eigenschaft wirkt indirekt auf das Backend-Design, weil Datenmodelle, Zustandsübergänge und Datenzugriffe klar beschrieben werden müssen, damit UI und Persistenz konsistent bleiben [@flutter_arch_overview_2025] [@flutter_app_arch_guide_2026]. Flutter empfiehlt dafür eine Schichtenstruktur, in der Datenzugriff über definierte Schnittstellen erfolgt. Für den Backend-Teil ist dabei entscheidend, dass sicherheits- und kostenrelevante Entscheidungen nicht unkontrolliert in UI-Code verteilt sind, sondern zentral umgesetzt werden [@flutter_app_arch_guide_2026].
+Flutter ist ein plattformübergreifendes Framework, das mit einer einzigen Codebasis Anwendungen für mehrere Zielplattformen ermöglicht. Für die Architektur ist relevant, dass Flutter ein deklaratives und reaktives UI-Modell verwendet. Die Benutzeroberfläche wird aus dem aktuellen Zustand der Anwendung abgeleitet und bei Zustandsänderungen neu aufgebaut. Daraus ergeben sich Anforderungen an die Anwendungsarchitektur, weil Datenmodelle, Zustandsübergänge und Datenzugriffe klar definiert sein müssen, damit Benutzeroberfläche und Datenhaltung konsistent zusammenarbeiten [@flutter_arch_overview_2025] [@flutter_app_arch_guide_2026]. Flutter empfiehlt dafür eine Schichtenstruktur, in der der Datenzugriff über definierte Schnittstellen erfolgt. Für den Backend-Teil ist dabei entscheidend, dass sicherheits- und zugriffsrelevante Entscheidungen nicht im UI-Code verteilt sind, sondern zentral umgesetzt werden [@flutter_app_arch_guide_2026].
 
 Dart unterstützt asynchrone Programmierung, die im Mobile-Kontext essenziell ist, weil Netzwerkzugriffe und Sensorabfragen nicht sofort abgeschlossen werden. Futures repräsentieren ein einmaliges Ergebnis in der Zukunft, etwa das Laden eines Dokuments aus einer Datenbank. Streams repräsentieren eine Folge von Ereignissen, etwa fortlaufende Standortupdates oder Realtime-Listener auf Datenbankänderungen [@dart_async_await_2025] [@dart_using_streams_2025]. Diese Unterscheidung beeinflusst das Backend-Design, weil Abfragen von Stammdaten typischerweise als einzelne Ladevorgänge modelliert werden, während Standorttracking und Live-Updates den Charakter eines kontinuierlichen Datenstroms besitzen.
 
@@ -33,13 +33,13 @@ Hot Reload ist ein wichtiger Bestandteil des Flutter-Entwicklungsprozesses und b
 
 ### Firebase als Backend-Plattform
 
-Firebase ist eine Backend-as-a-Service-Plattform, die typische Backend-Funktionen als Cloud-Dienst bereitstellt. In GeoQuest werden insbesondere Firebase Authentication und Cloud Firestore genutzt. Der BaaS-Ansatz reduziert den Aufwand für Infrastruktur, weil kein eigener Server betrieben werden muss. Gleichzeitig bedeutet serverlos nicht, dass keine Serverlogik existiert, sondern dass Autorisierung und Datenvalidierung in großen Teilen durch Security Rules und Managed Services abgebildet werden [@firebase_rules_get_started_2026]. Daraus folgt, dass korrekt formulierte Sicherheitsregeln, konsistente Dokumentpfade und ein kostenbewusstes Zugriffsmuster zentrale Bestandteile des Backend-Designs sind.
+Firebase ist eine Backend-as-a-Service-Plattform(BaaS-Platform), die typische Backend-Funktionen als Cloud-Dienst bereitstellt. In GeoQuest werden insbesondere Firebase Authentication und Cloud Firestore genutzt. Der BaaS-Ansatz reduziert den Aufwand für Infrastruktur, weil kein eigener Server betrieben werden muss. Gleichzeitig bedeutet serverlos nicht, dass keine Serverlogik existiert, sondern dass Autorisierung und Datenvalidierung in großen Teilen durch Security Rules und Managed Services abgebildet werden [@firebase_rules_get_started_2026]. Daraus folgt, dass korrekt formulierte Sicherheitsregeln, konsistente Dokumentpfade und ein kostenbewusstes Zugriffsmuster zentrale Bestandteile des Backend-Designs sind.
 
 Ein Vorteil von Firestore ist die starke Konsistenz von Reads. Standardmäßig liefern Reads den neuesten Datenstand, der alle bis zum Start des Reads abgeschlossenen Writes berücksichtigt [@firestore_understand_reads_writes_scale_2026]. Zusätzlich unterstützt Firestore Realtime-Listener. Firebase beschreibt für Realtime-Abfragen ein Konsistenzverhalten, bei dem Updates in der Reihenfolge der Commit-Operationen verarbeitet werden und damit ein nachvollziehbarer Änderungsfluss entsteht [@firestore_realtime_queries_scale_2026]. Für GeoQuest ist dies relevant, weil Spielzustände und Fortschrittsanzeigen davon profitieren, wenn Änderungen konsistent beim Client ankommen, ohne dass zusätzliche Synchronisationslogik implementiert werden muss.
 
 #### Firebase Authentication
 
-Firebase Authentication ermöglicht Registrierung und Login. Nach erfolgreicher Anmeldung erhält jeder Benutzer eine eindeutige UID. Diese UID ist in der Architektur ein zentrales Element, weil sie als stabile Referenz für Benutzerprofile und benutzerspezifische Daten dient. In Security Rules steht die Authentifizierungsinformation als Variable zur Verfügung. Firebase beschreibt, dass request.auth unter anderem uid und Token-Informationen enthält, wodurch Regeln identitätsbasiert formuliert werden können [@firebase_rules_and_auth_2026]. Für GeoQuest ist dies besonders hilfreich, weil Zugriffskontrolle über Dokumentpfade wie Users/{uid} oder PlayerLocation/{uid} präzise und ohne zusätzliche Suchabfragen umgesetzt werden kann.
+Firebase Authentication ermöglicht Registrierung und Login. Nach erfolgreicher Anmeldung erhält jeder Benutzer eine eindeutige UID. Diese UID ist in der Architektur ein zentrales Element, weil sie als stabile Referenz für Benutzerprofile und benutzerspezifische Daten dient. In Security Rules steht die Authentifizierungsinformation als Variable zur Verfügung. Firebase beschreibt, dass request.auth unter anderem UID und Token-Informationen enthält, wodurch Regeln identitätsbasiert formuliert werden können [@firebase_rules_and_auth_2026]. Für GeoQuest ist dies besonders hilfreich, weil Zugriffskontrolle über Dokumentpfade wie Users/{uid} oder PlayerLocation/{uid} präzise und ohne zusätzliche Suchabfragen umgesetzt werden kann.
 
 Darüber hinaus eröffnet Authentication die Möglichkeit, Rollenmodelle über Custom Claims zu realisieren. Auch wenn in GeoQuest zunächst ein bewusst schlankes Rollenmodell gewählt wurde, bleibt die Architektur prinzipiell erweiterbar. Über Custom Claims könnten in späteren Versionen beispielsweise Lehrkräfte oder Administratoren privilegierte Schreibrechte für Inhalte wie Hunts und Stationen erhalten, ohne dass diese Rechte in der App selbst hartkodiert werden müssen [@firebase_rules_and_auth_2026]. Die klare Trennung zwischen Authentifizierung und Autorisierung entspricht auch typischen mobilen Sicherheitsanforderungen im OWASP-MASVS-Kontext [@owasp_masvs_auth_2026].
 
@@ -51,7 +51,7 @@ Für konsistente Änderungen über mehrere Dokumente stellt Firestore Transaktio
 
 Ein weiterer zentraler Aspekt ist die Indexierung. Firestore nutzt automatische Single-Field-Indizes und für komplexere Abfragen zusammengesetzte Indizes. Firebase dokumentiert, dass fehlende Indizes bei bestimmten Abfragen als Fehler sichtbar werden und dann gezielt ergänzt werden können. Zudem lassen sich Indexdefinitionen als Datei verwalten und über die Firebase CLI deployen, wodurch Indexe und Rules als versionierbare Backend-Konfiguration behandelt werden können [@firestore_indexing_2026] [@firebase_manage_rules_deploy_2026].
 
-Cloud Firestore unterstützt außerdem Offline-Persistenz, bei der relevante Daten lokal gecacht werden. Dadurch können Apps auch bei instabiler Verbindung lesen, schreiben und Abfragen ausführen, während lokale Änderungen bei erneuter Verbindung synchronisiert werden [@firestore_enable_offline_2026]. Für GeoQuest ist das praxisrelevant, weil Schulumgebungen und Außenbereiche nicht immer zuverlässige Netzabdeckung bieten und die App dadurch robuster eingesetzt werden kann.
+Cloud Firestore unterstützt außerdem Offline-Persistenz, bei der relevante Daten lokal im Cache gespeichert werden. Dadurch können Apps auch bei instabiler Verbindung lesen, schreiben und Abfragen ausführen, während lokale Änderungen bei erneuter Verbindung synchronisiert werden [@firestore_enable_offline_2026]. Für GeoQuest ist das praxisrelevant, weil Schulumgebungen und Außenbereiche nicht immer zuverlässige Netzabdeckung bieten und die App dadurch robuster eingesetzt werden kann.
 
 ## Praktische Arbeit
 
@@ -93,7 +93,7 @@ Für lokale Validierung wurde die Firebase Local Emulator Suite eingesetzt. Sie 
 }
 ~~~
 
-Ein weiterer Aspekt der Reproduzierbarkeit ist der kontrollierte Rollout von Konfigurationsänderungen. Firebase beschreibt, dass Rules und Indexe über lokale Dateien verwaltet und mit der CLI deployt werden können. Der zentrale Vorteil liegt darin, dass lokale Dateien die im Projekt gültige Wahrheit darstellen und Deployments nachvollziehbar werden, anstatt Änderungen ausschließlich in Web-UIs vorzunehmen [@firebase_manage_rules_deploy_2026] [@firestore_indexing_2026].
+Ein weiterer Aspekt der Reproduzierbarkeit ist der kontrollierte Rollout von Konfigurationsänderungen. Firebase beschreibt, dass Rules und Indexe über lokale Dateien verwaltet und mit der CLI deployed werden können. Der zentrale Vorteil liegt darin, dass lokale Dateien die im Projekt gültige Wahrheit darstellen und Deployments nachvollziehbar werden, anstatt Änderungen ausschließlich in Web-UIs vorzunehmen [@firebase_manage_rules_deploy_2026] [@firestore_indexing_2026].
 
 ### Datenmodell im Detail
 
@@ -230,7 +230,7 @@ loadStationsPage({
 
 ### Offline-Persistenz und Synchronisationsverhalten
 
-Firestore unterstützt Offline-Persistenz, indem Daten, die aktiv verwendet werden, lokal gecacht werden. Laut Firebase können Apps damit auch offline lesen, schreiben, auf Daten lauschen und Abfragen durchführen; lokale Änderungen werden nach Wiederverbindung synchronisiert [@firestore_enable_offline_2026]. Für GeoQuest ist das praxisrelevant, weil Spielabläufe nicht durch kurzfristige Netzprobleme unterbrochen werden sollen.
+Firestore unterstützt Offline-Persistenz, indem Daten, die aktiv verwendet werden, lokal im Cache gespeichert werden. Laut Firebase können Apps damit auch offline lesen, schreiben, auf Daten lauschen und Abfragen durchführen; lokale Änderungen werden nach Wiederverbindung synchronisiert [@firestore_enable_offline_2026]. Für GeoQuest ist das praxisrelevant, weil Spielabläufe nicht durch kurzfristige Netzprobleme unterbrochen werden sollen.
 
 Für bestimmte Situationen ist es hilfreich, die Datenquelle bewusst zu wählen. In FlutterFire können GetOptions verwendet werden, um Reads aus dem Cache zu erzwingen oder den Server zu bevorzugen. Das folgende Listing zeigt beispielhaft einen Read, der explizit aus dem Cache erfolgt, um Offline-Verhalten reproduzierbar testen zu können.
 
@@ -311,48 +311,7 @@ Security Rules sind in einer serverlosen Architektur der zentrale Mechanismus zu
 Ein Designziel war, Rules so zu formulieren, dass sie möglichst wenig zusätzliche Dokumentreads benötigen. Dokumentbasierte Zugriffsfunktionen wie exists(), get() oder getAfter() sind pro Anfrage limitiert, und Reads zur Rule-Evaluation können kostenrelevant sein [@firestore_quotas_2026] [@firestore_pricing_firebase_2026]. Daraus folgt, dass Autorisierung primär über Pfade und Auth-Kontext erfolgen sollte und Querabhängigkeiten minimiert werden.
 
 ~~~{caption="Firestore Security Rules für GeoQuest" .txt}
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return signedIn() && request.auth.uid == userId;
-    }
-
-    match /Users/{userId} {
-      allow read: if true;
-      allow create: if isOwner(userId)
-        && request.resource.data.keys().hasOnly(['username','totalPoints','createdAt'])
-        && request.resource.data.username is string
-        && request.resource.data.totalPoints is int
-        && request.resource.data.totalPoints == 0;
-
-      allow update: if isOwner(userId)
-        && request.resource.data.keys().hasOnly(['username','totalPoints','createdAt'])
-        && request.resource.data.username is string
-        && request.resource.data.totalPoints is int
-        && request.resource.data.totalPoints >= resource.data.totalPoints;
-    }
-
-    match /Hunts/{huntId} {
-      allow read: if true;
-      allow write: if signedIn() && request.auth.token.admin == true;
-
-      match /Stations/{stationId} {
-        allow read: if true;
-        allow write: if signedIn() && request.auth.token.admin == true;
-      }
-    }
-
-    match /PlayerLocation/{userId} {
-      allow read, write: if isOwner(userId);
-    }
-  }
-}
+  
 ~~~
 
 ### Rollenmodell über Custom Claims

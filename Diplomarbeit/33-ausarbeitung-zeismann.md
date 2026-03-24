@@ -1,4 +1,4 @@
-﻿# Teilaufgabe Schüler Zeismann
+# Teilaufgabe Schüler Zeismann
 \textauthor{Tobias Zeismann}
 
 ## Praktische Arbeit
@@ -113,7 +113,7 @@ Beim ersten Start ruft der Button GameState.startHunt() auf und aktiviert AppNav
 
 ### Reaktiver Kern über GameState
 
-game_state.dart ist der zentrale Datenvermittler zwischen Firestore und UI.
+*game_state.dart* ist der zentrale Datenvermittler zwischen Firestore und UI.
 
 Wichtige ValueNotifier: huntStarted, nextStationName, nextStationDistanceMeters, nextStationPoints, remainingTime.
 
