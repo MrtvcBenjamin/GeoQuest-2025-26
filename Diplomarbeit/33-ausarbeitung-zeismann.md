@@ -19,7 +19,7 @@ Die Qualität wurde zusätzlich über nicht-funktionale Kriterien abgesichert: k
 
 Die App wurde mit Flutter und Dart umgesetzt. Flutter erlaubt eine gemeinsame Codebasis für mehrere Plattformen und passt gut zu einem UI-lastigen Projekt mit vielen Zustandsänderungen [@flutterDocs]. Der Einstiegspunkt liegt in application/lib/main.dart. Dort werden Firebase und App-Einstellungen initialisiert, bevor die UI startet: Firebase.initializeApp(...) lädt die Plattformkonfiguration, auf Web wird Persistence.LOCAL aktiviert, AppSettings.load() lädt Theme, Sprache, Login-Modus und Onboarding-Status.
 
-Als Backend-Dienste wurden Firebase Authentication und Cloud Firestore eingesetzt [@firebaseAuthDocs]. Die Kartenansicht basiert auf OpenStreetMap-Daten über flutter_map [@flutterMapDocs]. Die Standortdaten kommen über geolocator [@geolocatorPkg]. Die Flutter-Dokumentation fasst den technischen Kern dieses Vorgehens prägnant zusammen: "Build apps for any screen." [@flutterWebsite]. Damit ist eine gemeinsame UI-Codebasis mit konsistentem Verhalten gemeint.
+Als Backend-Dienste wurden Firebase Authentication und Cloud Firestore eingesetzt [@firebaseAuthDocs]. Die Kartenansicht basiert auf OpenStreetMap-Daten über flutter_map [@flutterMapDocs]. Die Standortdaten kommen über geolocator [@geolocatorPkg]. Für unser Projekt war Flutter vor allem deshalb passend, weil wir damit denselben Anwendungsfluss und dieselbe Oberflächenlogik über mehrere Plattformen hinweg konsistent umsetzen konnten [@flutterWebsite].
 
 ### Entwicklungsumgebung und Arbeitsprozess
 
@@ -279,13 +279,13 @@ Aus technischer Sicht ist die Umsetzung nicht nur ein Prototyp, sondern eine sol
 
 ### Frontend als praktische Schnittstelle
 
-In standortbasierten Lernanwendungen ist das Frontend eine praktische Schnittstelle: Es verbindet Menschen, Regeln, Orte und Datenströme. Theoretisch lässt sich seine Rolle in drei Ebenen beschreiben: Interaktionsebene: Bedienung, Lesbarkeit, Feedback, Kontrollebene: Regelprüfung, gültige Zustandsübergänge, Vertrauensebene: Transparenz bei Daten, Fairness und Fehlern.
+In standortbasierten Lernanwendungen übernimmt das Frontend mehr als reine Darstellung. Es verbindet Benutzerführung, Spielregeln, Standortbezug und Datenverarbeitung in einer gemeinsamen Oberfläche. Für GeoQuest waren dabei vor allem drei Ebenen wichtig: die eigentliche Interaktion mit der App, die Durchsetzung gültiger Abläufe und das Vertrauen der Nutzer in faire und nachvollziehbare Rückmeldungen.
 
 Ein Frontend ist damit nicht bloß "die Oberfläche", sondern ein aktiver Teil der Systemzuverlässigkeit.
 
 ### Deklarative UI als Architekturprinzip
 
-Flutter arbeitet nach einem klaren Prinzip: Die Oberfläche richtet sich immer nach dem aktuellen Zustand [@flutterDocs]. Für GeoQuest passt das sehr gut, weil sich Standort, Fortschritt und Session laufend ändern.
+Flutter folgt dem Prinzip, dass sich die sichtbare Oberfläche aus dem aktuellen Zustand der App ableitet [@flutterDocs]. Genau das war in GeoQuest wichtig, weil sich Standort, Fortschritt und Sessionstatus laufend ändern und die UI darauf direkt reagieren muss.
 
 Der Ansatz hat drei praktische Vorteile. Erstens bleibt die Übersicht besser, weil sich der UI-Zustand direkt aus den Daten ergibt. Zweitens lassen sich Zustandswechsel sauber testen. Drittens bleibt der Code leichter wartbar, weil weniger UI-Workarounds nötig sind.
 
@@ -293,13 +293,13 @@ Grenze des Ansatzes: Ohne saubere Zustandsmodellierung entstehen auch deklarativ
 
 ### Zustandsmanagement in dynamischen Spielszenarien
 
-Theoretisch sollte Zustand nach Lebensdauer getrennt werden: kurzlebig (Dialog geöffnet, Fokus, Button-Disable), funktionsbezogen (aktive Station, Warnungszähler, Countdown), dauerhaft gespeichert (Profil, Punkte, Stationsreihenfolge).
+Für die Modellierung des Zustands ist es sinnvoll, nach Lebensdauer und Verantwortung zu unterscheiden. In GeoQuest betraf das kurzfristige UI-Zustände wie Dialoge oder deaktivierte Buttons, funktionsbezogene Zustände wie aktive Station oder Countdown sowie dauerhaft gespeicherte Daten wie Profil, Punkte und Stationsreihenfolge.
 
 GeoQuest nutzt hierfür eine Mischform aus lokalem Widget-State, ValueNotifier und Firestore als dauerhaft gespeicherte Wahrheit. Diese Kombination ist für mittelgroße Projekte pragmatisch, erfordert aber klare Verantwortungsgrenzen [@flutterDocs].
 
 ### Navigation als Zustandsautomat
 
-Navigation kann als klarer Ablauf mit festen Zuständen gesehen werden: Jeder Screen ist ein Zustand, jeder Button ein Übergang. Fehler entstehen dort, wo ungültige Übergänge zugelassen werden.
+Navigation lässt sich in diesem Projekt gut als Abfolge klarer Zustände verstehen. Jeder Screen markiert einen bestimmten Abschnitt im Ablauf, und jede Aktion führt nur dann weiter, wenn die dafür nötigen Bedingungen erfüllt sind. Probleme entstehen vor allem dort, wo solche Übergänge nicht sauber abgesichert sind.
 
 Beispiele für gültige Guard-Regeln: ohne Login kein Eintritt in Spielbereiche, ohne aktive Station keine Aufgabenbewertung, während Sperre kein Wechsel in Umgehungszustände.
 
@@ -307,7 +307,7 @@ Diese Perspektive hilft, UI-Entscheidungen systematisch statt ad hoc zu treffen.
 
 ### Informationsarchitektur und kognitive Last
 
-Kognitive Last steigt stark, wenn pro Screen mehrere gleichgewichtige Entscheidungen verlangt werden. Die App reduziert diese Last durch: eine dominante Primäraktion pro Schritt, linearen Einstieg, tab-basierten Betrieb nach Initialphase, konsistente Positionen zentraler Bedienelemente.
+Die kognitive Last steigt vor allem dann, wenn Benutzer auf einem Screen mehrere gleich wichtige Entscheidungen gleichzeitig treffen müssen. In GeoQuest wurde das bewusst reduziert: Der Einstieg verläuft linear, pro Schritt gibt es eine klare Hauptaktion, und zentrale Bedienelemente bleiben über weite Teile der App an vertrauten Positionen.
 
 Diese Reduktion ist kein Funktionsverlust, sondern eine Optimierung der Entscheidungsqualität unter Zeitdruck.
 
@@ -327,7 +327,7 @@ Genau diese Kombination wurde praktisch umgesetzt, um einen fairen und zugleich 
 
 ### Anti-Cheat aus Systemtheorie-Sicht
 
-Anti-Cheat ist in Lernspielen nicht primär eine Sicherheitsfrage, sondern eine Fairnessfrage. Ein wirksames Modell braucht: nachvollziehbare Regeln, reproduzierbare Erkennung, angemessene Strafen, transparente Kommunikation.
+Im Kontext von GeoQuest ist Anti-Cheat weniger als klassisches Sicherheitsthema zu sehen, sondern eher als Voraussetzung für ein faires Spielerlebnis. Entscheidend ist dabei, dass Regeln verständlich bleiben, Erkennungen nicht willkürlich wirken, Sanktionen verhältnismäßig sind und der Benutzer nachvollziehen kann, warum eine Warnung oder Sperre ausgelöst wurde.
 
 Das in GeoQuest umgesetzte Stufenmodell (Warnung -> Sperre -> Punktabzug) ist deshalb wirksam, weil es nicht sofort maximal bestraft, aber wiederholtes Fehlverhalten klar begrenzt.
 
@@ -341,7 +341,7 @@ Diese Punkte sind nicht optional, sondern eine Grundvoraussetzung für stabile E
 
 ### Datenstruktur und Benutzererlebnis
 
-Ein inkonsistentes Datenmodell wirkt direkt als UX-Problem. Wenn Punkte, Fortschritt und Zeitdaten fachlich nicht zueinander passen, verliert die Benutzeroberfläche an Glaubwürdigkeit. Cloud Firestore wird offiziell als "flexible, scalable" Datenbank beschrieben; die Dokumentation formuliert dies mit "Cloud Firestore is a flexible, scalable database." [@firestoreDocs]. Im Projekt wurde diese Flexibilität gezielt genutzt, aber durch strukturierte Feldnamen und klar definierte Verantwortlichkeiten eingegrenzt.
+Ein inkonsistentes Datenmodell wird vom Benutzer schnell als Oberflächenproblem wahrgenommen. Wenn Punkte, Fortschritt und Zeitdaten nicht zusammenpassen, leidet das Vertrauen in die App unmittelbar. Firestore war für uns hilfreich, weil sich das Datenmodell damit flexibel aufbauen ließ [@firestoreDocs]. Gleichzeitig musste diese Flexibilität im Projekt durch klare Feldnamen und saubere Zuständigkeiten begrenzt werden, damit die Daten konsistent bleiben.
 
 ### Authentifizierung und Autorisierung
 
@@ -351,7 +351,7 @@ Diese Trennung entspricht gängigen Security-Prinzipien wie "so wenig Rechte wie
 
 ### Datenschutz und Transparenz
 
-Standortbasierte Anwendungen verarbeiten personenbezogene Daten. Aus DSGVO-Sicht sind besonders relevant: Zweckbindung, Datenminimierung, Transparenz, Rechte der Betroffenen [@gdpr].
+Standortbasierte Anwendungen verarbeiten personenbezogene Daten. Aus DSGVO-Sicht sind dabei vor allem Zweckbindung, Datenminimierung, Transparenz und die Rechte der Betroffenen relevant [@gdpr].
 
 Im Frontend bedeutet das: Berechtigungen nicht verstecken, Nutzen vor Abfrage erklären, verständliche Datenschutzinfos direkt in der App anbieten.
 
@@ -377,7 +377,7 @@ GeoQuest zeigt hier zwei Seiten: positiv: klare Funktionsgrenzen zwischen vielen
 
 ### Qualitätsmodell für GeoQuest
 
-Ein passendes Qualitätsmodell für die Frontend-Schicht kombiniert drei Ebenen: Funktionale Qualität: korrekte Abläufe bei Normalbetrieb, Robustheitsqualität: sinnvolle Reaktion auf Fehler/Randfälle, gefühlte Qualität: Verständlichkeit, Vertrauen, Motivation.
+Für die Frontend-Schicht war ein Qualitätsverständnis sinnvoll, das nicht nur den Normalfall betrachtet. Entscheidend waren für GeoQuest drei Ebenen: funktionierende Abläufe im Regelbetrieb, ein robuster Umgang mit Fehlern und Randfällen sowie eine Oberfläche, die verständlich wirkt und Vertrauen schafft.
 
 Viele Projekte fokussieren nur Ebene 1. In standortbasierten Apps entscheidet jedoch vor allem Ebene 2 über reale Einsatzfähigkeit.
 
