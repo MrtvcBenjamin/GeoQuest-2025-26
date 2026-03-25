@@ -41,7 +41,7 @@ Der Splash-Screen (splash_screen.dart) ist nicht nur visuell, sondern logisch re
 
 Je nach Zustand navigiert der Code direkt zu HomeScreen, AdminMapScreen, OnboardingFlow oder RoleSelectScreen. Dadurch entsteht ein deterministischer Startprozess ohne Sackgassen.
 
-<img src="img/screens/01_splash_screen.png" alt="Splash-Screen" width="260">
+![Splash-Screen](img/screens/01_splash_screen.png){ width=35% }
 
 ### Onboarding als UX-Filter vor der Anmeldung
 
@@ -57,7 +57,7 @@ role_select_screen.dart trennt den Einstieg in zwei Pfade: Admin: Anmeldung nur 
 
 Die Rollenwahl wird nicht nur visuell dargestellt, sondern in AppSettings.loginMode persistiert. Dadurch kann der Splash-Screen bei erneutem App-Start korrekt zurück in den letzten Modus navigieren.
 
-<img src="img/screens/03_rollenwahl.png" alt="Rollenwahl" width="260">
+![Rollenwahl](img/screens/03_rollenwahl.png){ width=35% }
 
 ### Authentifizierung und Kontolebenszyklus
 
@@ -71,7 +71,7 @@ Danach erfolgt: Prüfung auf eindeutigen Username (Users.UsernameLower), Anlage 
 
 Ohne verifizierte E-Mail wird im Login kein dauerhafter Einstieg zugelassen. Dieser Mechanismus reduziert Fake-Accounts und sorgt im Schulbetrieb für mehr Übersicht [@firebaseAuthDocs].
 
-<img src="img/screens/05_registrierung.png" alt="Registrierung" width="260">
+![Registrierung](img/screens/05_registrierung.png){ width=35% }
 
 #### Anmeldung
 
@@ -79,7 +79,7 @@ LoginScreen unterstützt Username- und E-Mail-Login. Bei Username-Login wird zue
 
 Fehler werden benutzerorientiert behandelt (z. B. "Keine Internetverbindung" statt roher SDK-Fehlercodes). Das erhöht die Nutzbarkeit deutlich.
 
-<img src="img/screens/04_anmeldung.png" alt="Anmeldung" width="260">
+![Anmeldung](img/screens/04_anmeldung.png){ width=35% }
 
 #### Admin-Freigabe
 
@@ -87,7 +87,7 @@ Die Klasse admin_access.dart enthält freigegebene Admin-E-Mails und Logik zur N
 
 Damit wird ein zweistufiges Modell umgesetzt: technische Authentifizierung durch Firebase, zusätzliche Freigabe in der App durch App-Regeln.
 
-<img src="img/screens/06_admin_login.png" alt="Admin-Login" width="260">
+![Admin-Login](img/screens/06_admin_login.png){ width=35% }
 
 ### Home-Shell und Tab-Architektur
 
@@ -99,7 +99,7 @@ Eine wichtige Besonderheit ist der globale Sperrmechanismus: Wenn AppNav.mapBloc
 
 Im aktuellen Projektstand wurde außerdem die feste Hunt-ID entfernt. Die App ermittelt die Hunt dynamisch aus den gespeicherten Benutzerdaten und nutzt nur dann einen Fallback, wenn dort keine Zuordnung vorliegt. Damit funktioniert derselbe Build verlässlich mit unterschiedlichen Datenständen in Firebase.
 
-<img src="img/screens/07_homeshell.png" alt="Home-Shell" width="260">
+![Home-Shell](img/screens/07_homeshell.png){ width=35% }
 
 ### Dashboard-Flow: Hunt-Start und nächste Route
 
@@ -109,7 +109,7 @@ In StartRouteScreen werden Daten aus Firestore und GameState zusammengeführt. I
 
 Beim ersten Start ruft der Button GameState.startHunt() auf und aktiviert AppNav.stationActive. Danach wird direkt auf die Karte gewechselt.
 
-<img src="img/screens/08_hunt_start.png" alt="Hunt-Start und Route" width="260">
+![Hunt-Start und Route](img/screens/08_hunt_start.png){ width=35% }
 
 ### Reaktiver Kern über GameState
 
@@ -131,7 +131,7 @@ Die Kartenansicht ist in map_tab.dart implementiert und umfasst über 1200 Zeile
 
 Die Karte basiert auf flutter_map mit OSM-Tiles. Zusätzlich wird ein MapController eingesetzt, um den initialen Kartenausschnitt dynamisch zu setzen: nur Spielerposition, wenn keine aktive Station, Bounds-Spieler-zu-Station, wenn eine Station aktiv ist.
 
-<img src="img/screens/09_karte.png" alt="Kartenansicht" width="260">
+![Kartenansicht](img/screens/09_karte.png){ width=35% }
 
 ### Standortstream und Berechtigungslogik
 
@@ -153,7 +153,7 @@ Wird der Radius unterschritten, wechselt der UI-Zustand auf MapUiState.inRadius,
 
 Dieser Radius ist ein praxisbasierter Kompromiss: zu klein führt bei GPS-Schwankungen zu Frust, zu groß reduziert Fairness.
 
-<img src="img/screens/11_radius.png" alt="Radiusprüfung und Freigabe" width="260">
+![Radiusprüfung und Freigabe](img/screens/11_radius.png){ width=35% }
 
 ### QR-Validierung als zweiter Freischaltkanal
 
@@ -197,7 +197,7 @@ Zusätzlich werden angezeigt: eigene Gesamtpunkte, Zeitbonusanteil, gelöste Auf
 
 Die Kombination aus persönlichem Fortschritt und Leaderboard wirkt motivierend, solange die Rangliste stabil und nachvollziehbar bleibt [@nielsen1994].
 
-<img src="img/screens/12_Progress.png" alt="Fortschritt und Ranking" width="260">
+![Fortschritt und Ranking](img/screens/12_Progress.png){ width=35% }
 
 ### Admin-Karte für Lehrkräfte
 
@@ -207,7 +207,7 @@ Funktionen: Stream auf Users und PlayerLocation, Filterung von Admin-Konten, Mar
 
 Für die Anzeige der nächsten Station werden entweder die persönliche Reihenfolge (StationOrderByHunt) oder die allgemeine Hunt-Reihenfolge verwendet. Diese Logik stellt sicher, dass die Admin-Ansicht mit dem tatsächlichen Spielverlauf übereinstimmt.
 
-<img src="img/screens/15_admin_map.png" alt="Admin-Karte" width="260">
+![Admin-Karte](img/screens/15_admin_map.png){ width=35% }
 
 ### Menü, Einstellungen und rechtliche Screens
 
@@ -219,7 +219,7 @@ Der Datenschutz-Screen erklärt verständlich: welche Daten verarbeitet werden, 
 
 Damit wird Datenschutz nicht nur formal, sondern als Teil der UX umgesetzt [@gdpr].
 
-<img src="img/screens/13_menu.png" alt="Menü und Einstellungen" width="260">
+![Menü und Einstellungen](img/screens/13_menu.png){ width=35% }
 
 ### Internationalisierung und Sprachumschaltung
 
@@ -259,7 +259,7 @@ Zusätzlich wurden Dark-/Light-Mode und Deutsch/Englisch visuell geprüft, um ab
 
 Die ursprünglichen Frontend-Ziele wurden im Wesentlichen erreicht. Der Einstieg ist geführt, die Login- und Session-Logik arbeitet stabil, der Map-Flow mit Radius, QR und Lehrerstationen ist umgesetzt, ebenso die faire Spielmechanik mit Sanktionen sowie Fortschritt, Ranking und Admin-Monitoring.
 
-<img src="img/screens/14_Abschlussscreen.png" alt="Abschlussscreen" width="260">
+![Abschlussscreen](img/screens/14_Abschlussscreen.png){ width=35% }
 
 Offene Verbesserungsfelder bleiben vor allem mehr automatisierte Widget- und Golden-Tests, eine feinere Offline-Strategie und eine stärkere Entkopplung der großen Map-Logik in kleinere Subkomponenten.
 
