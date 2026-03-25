@@ -22,9 +22,10 @@ Technische Weiterentwicklungen liegen außerhalb des Einflussbereichs der Schule
 
 ### Wie wir als Team an die Diplomarbeit herangehen
 Um diese Ausgangslage nachhaltig zu verbessern, entwickeln wir im Rahmen der Diplomarbeit eine eigene mobile, standortbasierte Schnitzeljagd-Anwendung, die vollständig an die Anforderungen der Schule angepasst und langfristig weiterentwickelbar ist. Dabei arbeiten wir strukturiert und arbeitsteilig:
-- **Projektmanagement (Muratovic):** Koordination, Termin- und Qualitätsmanagement, Dokumentation, Abstimmung mit Auftraggeber und Betreuung sowie technischer Support in der Entwicklung  
-- **Backend (Kovacs):** Datenhaltung, Schnittstellen/API, Authentifizierung und serverseitige Logik  
-- **Frontend (Zeismann):** UI/UX, App-Ablauf, Kartenansicht und Interaktion mit Backend-Diensten  
+
++ **Projektmanagement (Muratovic):** Koordination, Termin- und Qualitätsmanagement, Dokumentation, Abstimmung mit Auftraggeber und Betreuung sowie technischer Support in der Entwicklung  
++ **Backend (Kovacs):** Datenhaltung, Schnittstellen/API, Authentifizierung und serverseitige Logik  
++ **Frontend (Zeismann):** UI/UX, App-Ablauf, Kartenansicht und Interaktion mit Backend-Diensten  
 
 Die Umsetzung erfolgt **iterativ**: Anforderungen werden in Arbeitspakete zerlegt, priorisiert umgesetzt und regelmäßig zusammengeführt. Durch kontinuierliche Abstimmung stellen wir sicher, dass Implementierung und Dokumentation konsistent bleiben und die Anwendung didaktisch sinnvoll einsetzbar ist – insbesondere, indem der Ablauf für Schüler klar, motivierend und nachvollziehbar gestaltet wird.
 
