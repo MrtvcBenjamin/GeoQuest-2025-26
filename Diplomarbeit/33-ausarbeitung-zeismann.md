@@ -121,9 +121,7 @@ Datenquellen: Hunts/{huntId} (z. B. durationMinutes), Hunts/{huntId}/Stadions (T
 
 #### Deterministische Stationsreihenfolge
 
-Um Menschenansammlungen an einzelnen Stationen zu reduzieren, wird für jeden Benutzer eine reproduzierbare, aber individuelle Reihenfolge berechnet. Dazu werden Stations-IDs mit einem Seed aus uid:huntId geshuffelt und in Users.StationOrderByHunt gespeichert.
-
-Diese Lösung erfüllt zwei Ziele gleichzeitig: faire Verteilung im Gelände, stabile Reihenfolge über App-Neustarts hinweg.
+Um Menschenansammlungen an einzelnen Stationen zu reduzieren, wird für jeden Benutzer eine reproduzierbare, aber individuelle Reihenfolge berechnet. Dazu werden Stations-IDs mit einem Seed aus uid:huntId geshuffelt und in Users.StationOrderByHunt gespeichert. Diese Lösung erfüllt zwei Ziele gleichzeitig: faire Verteilung im Gelände, stabile Reihenfolge über App-Neustarts hinweg.
 
 ### Kartenansicht als zentrale Spielfläche
 
